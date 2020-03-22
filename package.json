@@ -1,0 +1,42 @@
+{
+  "name": "admin.vue",
+  "version": "1.0.0",
+  "private": true,
+  "description": "中台admin前端解决方案",
+  "author": "小雪转中雪",
+  "license": "MIT",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "core-js": "^3.6.4",
+    "crypto-js": "^3.1.9-1",
+    "element-ui": "2.12.0",
+    "font-awesome": "^4.7.0",
+    "js-cookie": "^2.2.0",
+    "moment": "^2.24.0",
+    "sortablejs": "^1.10.2",
+    "tui-editor": "^1.4.10",
+    "vue": "^2.6.11",
+    "vue-i18n": "^8.10.0",
+    "vue-router": "^3.1.5",
+    "vuex": "^3.1.2"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.1.1",
+    "@vue/cli-plugin-eslint": "^4.1.1",
+    "@vue/cli-plugin-unit-jest": "^4.1.1",
+    "@vue/cli-service": "^4.1.1",
+    "@vue/test-utils": "^1.0.0-beta.20",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.15.3",
+    "eslint-plugin-vue": "^5.2.2",
+    "mockjs": "^1.0.1-beta3",
+    "node-sass": "^4.13.1",
+    "sass-loader": "^8.0.2",
+    "vue-template-compiler": "^2.6.11"
+  }
+}

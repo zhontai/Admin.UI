@@ -1,0 +1,292 @@
+<template>
+  <section>
+    <el-row :gutter="10">
+      <!--工具条-->
+      <el-col :span="8" class="toolbar roles">
+        <el-card>
+          <div slot="header" class="clearfix">
+            <span>角色</span>
+            <el-button
+              :loading="loadingRoles"
+              type="text"
+              style="float: right; padding: 3px 0"
+              @click="getRoles"
+            >刷新</el-button>
+          </div>
+          <div
+            v-for="o in roles"
+            :key="o.id"
+            :class="o.id == roleId ? 'active' : ''"
+            class="item role-item"
+            @click="roleSelect(o.id)"
+          >
+            <span>{{ o.name }}</span>
+            <span style="float:right;">{{ o.description }}</span>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="16" class="toolbar perms">
+        <el-card>
+          <div slot="header" class="clearfix">
+            <span>权限</span>
+
+            <confirm-button
+              :validate="saveValidate"
+              :loading="loadingSave"
+              :disabled="disabledSave"
+              :placement="'left'"
+              type="text"
+              class="save"
+              style="float: right;"
+              @click="save"
+            >
+              <p slot="content">确定要保存吗？</p>保存
+            </confirm-button>
+            <el-button
+              :loading="loadingPermissions"
+              type="text"
+              style="float: right; padding: 3px 0"
+              @click="getPermissions"
+            >刷新</el-button>
+          </div>
+          <el-table
+            ref="multipleTable"
+            :data="permissionTree"
+            :default-expand-all="true"
+            :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+            row-key="id"
+            highlight-current-row
+            style="width: 100%;"
+            @select-all="selectAll"
+            @select="select"
+          >
+            <el-table-column type="selection" width="50" />
+            <el-table-column prop="label" label="导航菜单" width="180" />
+            <el-table-column label="菜单接口" width>
+              <template slot-scope="{ $index, row }">
+                <el-checkbox-group v-if="row.apis && row.apis.length > 0" v-model="chekedApis">
+                  <el-checkbox v-for="api in row.apis" :key="api.id" :label="api.id">{{ api.label }}</el-checkbox>
+                </el-checkbox-group>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </el-col>
+    </el-row>
+  </section>
+</template>
+
+<script>
+import { treeToList, listToTree } from '@/utils'
+import { getRoleListPage } from '@/api/admin/role'
+import {
+  getPermissions,
+  getPermissionIds,
+  addRolePermission
+} from '@/api/admin/permission'
+import ConfirmButton from '@/components/ConfirmButton'
+
+export default {
+  name: 'Assign',
+  components: {
+    ConfirmButton
+  },
+  data() {
+    return {
+      roles: [],
+      roleId: 0,
+      permissionTree: [],
+      apis: [],
+      loadingRoles: false,
+      loadingPermissions: false,
+      loadingSave: false,
+      checkedPermissions: [],
+      chekedApis: []
+    }
+  },
+  computed: {
+    disabledSave() {
+      return !(
+        this.roleId > 0 &&
+        (this.checkedPermissions.length > 0 || this.chekedApis.length > 0)
+      )
+    }
+  },
+  mounted() {
+    this.getRoles()
+    this.getPermissions()
+  },
+  methods: {
+    // 获取角色列表
+    async getRoles() {
+      this.loadingRoles = true
+      const res = await getRoleListPage()
+      this.loadingRoles = false
+      this.roles = res.data.list
+    },
+    // 获取权限树
+    async getPermissions() {
+      this.loadingPermissions = true
+      this.selectAll([])
+
+      const para = {}
+      const res = await getPermissions(para)
+      this.loadingPermissions = false
+      const tree = listToTree(_.cloneDeep(res.data))
+      this.permissionTree = tree
+      this.getRolePermission()
+    },
+    // 获取角色权限
+    async getRolePermission() {
+      if (!this.roleId > 0) {
+        return
+      }
+
+      this.loadingPermissions = true
+      const para = { roleId: this.roleId }
+      const res = await getPermissionIds(para)
+
+      this.loadingPermissions = false
+      const permissionIds = res.data
+      const rows = treeToList(this.permissionTree)
+      rows.forEach(row => {
+        const checked = permissionIds.includes(row.id)
+        this.$refs.multipleTable.toggleRowSelection(row, checked)
+      })
+      this.checkedPermissions = this.$refs.multipleTable.selection
+
+      const menuIds = this.checkedPermissions.map(s => {
+        return s.id
+      })
+      const apiIds = []
+      permissionIds.forEach(permissionId => {
+        if (!menuIds.includes(permissionId)) {
+          apiIds.push(permissionId)
+        }
+      })
+      this.chekedApis = apiIds
+    },
+    // 验证保存
+    saveValidate() {
+      let isValid = true
+      if (!(this.roleId > 0)) {
+        this.$message({
+          message: '请选择角色！',
+          type: 'warning'
+        })
+        isValid = false
+        return isValid
+      }
+      if (!(this.checkedPermissions.length > 0 || this.chekedApis.length > 0)) {
+        this.$message({
+          message: '请选择权限！',
+          type: 'warning'
+        })
+        isValid = false
+        return isValid
+      }
+      return isValid
+    },
+    // 保存权限
+    async save() {
+      const permissionIds = this.checkedPermissions.map(s => {
+        return s.id
+      })
+      if (this.chekedApis.length > 0) {
+        permissionIds.push(...this.chekedApis)
+      }
+      const para = { permissionIds, roleId: this.roleId }
+
+      this.loadingSave = true
+      const res = await addRolePermission(para)
+      this.loadingSave = false
+      if (res.success) {
+        this.$message({
+          message: this.$t('admin.saveOk'),
+          type: 'success'
+        })
+      } else {
+        this.$message({
+          message: res.msg,
+          type: 'error'
+        })
+      }
+    },
+    roleSelect(id) {
+      this.roleId = id
+      this.selectAll([])
+      this.getRolePermission()
+    },
+    selectApis(checked, row) {
+      if (row.apis) {
+        row.apis.forEach(a => {
+          const index = this.chekedApis.indexOf(a.id)
+          if (checked) {
+            if (index === -1) {
+              this.chekedApis.push(a.id)
+            }
+          } else {
+            if (index > -1) {
+              this.chekedApis.splice(index, 1)
+            }
+          }
+        })
+      }
+    },
+    selectAll: function(selection) {
+      const selections = treeToList(selection)
+      const rows = treeToList(this.permissionTree)
+      const checked = selections.length === rows.length
+      rows.forEach(row => {
+        this.$refs.multipleTable.toggleRowSelection(row, checked)
+        this.selectApis(checked, row)
+      })
+
+      this.checkedPermissions = this.$refs.multipleTable.selection
+    },
+    select: function(selection, row) {
+      const checked = selection.some(s => s.id === row.id)
+      if (row.children && row.children.length > 0) {
+        const rows = treeToList(row.children)
+        rows.forEach(r => {
+          this.$refs.multipleTable.toggleRowSelection(r, checked)
+          this.selectApis(checked, r)
+        })
+      } else {
+        this.selectApis(checked, row)
+      }
+
+      this.checkedPermissions = this.$refs.multipleTable.selection
+    }
+  }
+}
+</script>
+
+<style scoped>
+.role-item {
+  font-size: 14px;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.role-item.active {
+  background: #ebf5ff;
+}
+
+.role-item:hover {
+  background: #ebf5ff;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+.clearfix:after {
+  clear: both;
+}
+
+.save >>> [_button] {
+  padding: 3px 0px;
+}
+</style>
