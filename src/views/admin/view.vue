@@ -417,37 +417,18 @@ export default {
     },
     // 同步view
     async onSync() {
+      const unFinish = true
+      if (unFinish) {
+        this.$message({
+          message: '开发中',
+          type: 'info'
+        })
+        return
+      }
+
       this.syncLoading = true
 
-      const res = {}
-      const tags = res.tags
-      const paths = res.paths
-
       const views = []
-      // tags
-      if (tags && tags.length > 0) {
-        tags.forEach(t => {
-          views[views.length] = {
-            label: t.description,
-            path: t.name
-          }
-        })
-      }
-      // paths
-      if (paths) {
-        for (const [key, value] of Object.entries(paths)) {
-          const keys = Object.keys(value)
-          const values = Object.values(value)
-          const v = values && values.length > 0 ? values[0] : {}
-          const parentPath = v.tags && v.tags.length > 0 ? v.tags[0] : ''
-          views[views.length] = {
-            label: v.summary,
-            path: key,
-            parentPath,
-            httpMethods: keys.join(',')
-          }
-        }
-      }
 
       const r = await syncView({ views })
 
