@@ -7,7 +7,7 @@
           <el-form-item>
             <el-input
               v-model="filter.name"
-              placeholder="昵称/登录名"
+              placeholder="用户名/昵称"
               clearable
               @keyup.enter.native="getUsers"
             >
@@ -47,8 +47,8 @@
     >
       <el-table-column type="selection" width="50" />
       <el-table-column type="index" width="80" />
-      <el-table-column prop="nickName" label="昵称" width />
-      <el-table-column prop="userName" label="登录名" width />
+      <el-table-column prop="userName" label="用户名" width />
+      <el-table-column prop="name" label="姓名" width />
       <el-table-column prop="roleNames" label="角色" width>
         <template v-slot="{row}">
           {{ row.roleNames ? row.roleNames.join(','):'' }}
@@ -116,8 +116,13 @@
           <el-row>
             <el-col :xs="24" :sm="24" :md="24" :lg="18" :xl="18">
               <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-                <el-form-item label="登录名" prop="userName">
+                <el-form-item label="用户名" prop="userName">
                   <el-input v-model="editForm.userName" autocomplete="off" />
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
+                <el-form-item label="姓名" prop="name">
+                  <el-input v-model="editForm.name" autocomplete="off" />
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
@@ -169,7 +174,7 @@
           <el-row>
             <el-col :xs="24" :sm="24" :md="24" :lg="18" :xl="18">
               <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-                <el-form-item label="登录名" prop="userName">
+                <el-form-item label="用户名" prop="userName">
                   <el-input
                     v-model="addForm.userName"
                     autocomplete="off"
@@ -182,6 +187,11 @@
               <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
                 <el-form-item label="密码" prop="password">
                   <el-input v-model="addForm.password" show-password autocomplete="off" />
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
+                <el-form-item label="姓名" prop="name">
+                  <el-input v-model="addForm.name" autocomplete="off" />
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
@@ -242,9 +252,9 @@ export default {
       editLoading: false,
       editFormRules: {
         userName: [
-          { required: true, message: '请输入登录名', trigger: 'blur' }
+          { required: true, message: '请输入用户名', trigger: 'blur' }
         ],
-        nickName: [{ required: true, message: '请输入昵称', trigger: 'blur' }]
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
       },
       userNameReadonly: true,
       // 编辑界面数据
@@ -259,11 +269,9 @@ export default {
       addFormVisible: false, // 新增界面是否显示
       addLoading: false,
       addFormRules: {
-        userName: [
-          { required: true, message: '请输入登录名', trigger: 'blur' }
-        ],
-        nickName: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
-        password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+        userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
       },
       // 新增界面数据
       addForm: {

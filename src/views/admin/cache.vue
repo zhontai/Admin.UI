@@ -19,7 +19,7 @@
             :icon="'el-icon-delete'"
             @click="onClearCache($index, row)"
           >
-            <p slot="content">确定清除缓存吗？</p>清除
+            <p slot="content">确定要清除该缓存吗？</p>清除
           </confirm-button>
         </template>
       </el-table-column>

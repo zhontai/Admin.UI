@@ -28,13 +28,13 @@ export const addApi = params => {
 }
 
 export const updateGroup = params => {
-  return request.post('/api/admin/permission/updateGroup', params)
+  return request.put('/api/admin/permission/updateGroup', params)
 }
 export const updateMenu = params => {
-  return request.post('/api/admin/permission/updateMenu', params)
+  return request.put('/api/admin/permission/updateMenu', params)
 }
 export const updateApi = params => {
-  return request.post('/api/admin/permission/updateApi', params)
+  return request.put('/api/admin/permission/updateApi', params)
 }
 
 export const getGroup = params => {
