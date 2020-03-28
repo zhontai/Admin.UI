@@ -39,7 +39,7 @@
       <el-table-column type="selection" width="50" />
       <el-table-column type="index" width="50" />
       <el-table-column prop="name" label="字典名称" width="180" />
-      <el-table-column prop="id" label="Id" width="70" />
+      <el-table-column prop="id" label="编号" width="70" />
       <el-table-column prop="code" label="字典编码" width="120" />
       <el-table-column prop="value" label="字典值" width />
       <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width="140" />

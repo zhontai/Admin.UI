@@ -59,7 +59,7 @@
       <el-table-column type="selection" width="50" />
       <el-table-column type="index" width="50" />
       <el-table-column prop="label" label="视图名" width="180" />
-      <el-table-column prop="id" label="Id" width="80" />
+      <el-table-column prop="id" label="编号" width="80" />
       <el-table-column prop="path" label="视图地址" width />
       <el-table-column prop="description" label="视图描述" width />
       <el-table-column prop="enabled" label="状态" width="100">

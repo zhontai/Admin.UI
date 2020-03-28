@@ -65,7 +65,7 @@
           {{ scope.row.label }}
         </template>
       </el-table-column>
-      <el-table-column prop="id" label="Id" width="80" />
+      <el-table-column prop="id" label="编号" width="80" />
       <el-table-column label="类型" width="100">
         <template v-slot="{ row }">
           {{ row.type === 1 ? '分组' : row.type === 2 ? '菜单' : row.type === 3 ? '接口':'' }}

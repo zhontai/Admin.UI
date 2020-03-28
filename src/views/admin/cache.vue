@@ -10,7 +10,7 @@
       <el-table-column type="index" width="80" />
       <el-table-column prop="name" label="键名" width />
       <el-table-column prop="value" label="键值" width />
-      <el-table-column prop="description" label="描述" width />
+      <el-table-column prop="description" label="缓存名" width />
       <el-table-column label="操作" width="180">
         <template v-slot="{ $index, row }">
           <confirm-button
