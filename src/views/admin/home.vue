@@ -1,6 +1,13 @@
 <template>
   <section style="padding:20px 20px 0px 0px;">
     <el-timeline>
+      <el-timeline-item timestamp="版本 1.0.1" placement="top">
+        <el-card>
+          <h4>新增 日志管理-登录日志和操作日志</h4>
+          <h4>优化 数据同步使用事物，数据同步SqlServer自增长处理。更新NuGet包到最新版本。</h4>
+          <p>小雪转中雪 提交于 2020-3-28</p>
+        </el-card>
+      </el-timeline-item>
       <el-timeline-item timestamp="版本 1.0.0" placement="top">
         <el-card>
           <h4>新增 更新日志</h4>

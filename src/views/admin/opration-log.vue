@@ -30,7 +30,7 @@
       @selection-change="selsChange"
     >
       <el-table-column prop="id" label="编号" width="80" />
-      <el-table-column prop="createdUserName" label="操作账号" width="140">
+      <el-table-column prop="createdUserName" label="操作账号">
         <template v-slot="scope">
           {{ scope.row.realName ? `${scope.row.realName}（${scope.row.createdUserName}）` : scope.row.createdUserName }}
         </template>
@@ -40,7 +40,11 @@
       <el-table-column prop="apiPath" label="操作接口" width="" />
       <!-- <el-table-column prop="browser" label="浏览器" width="100" />
       <el-table-column prop="os" label="操作系统" width="100" /> -->
-      <el-table-column prop="elapsedMilliseconds" label="耗时" width="70" />
+      <el-table-column prop="elapsedMilliseconds" width="70">
+        <template slot="header">
+          耗时<br>毫秒
+        </template>
+      </el-table-column>
       <el-table-column prop="status" label="操作状态" width="80">
         <template v-slot="scope">
           <el-tag
@@ -49,7 +53,7 @@
           >{{ scope.row.status ? '成功' : '失败' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="msg" label="操作消息" width="" />
+      <el-table-column prop="msg" label="操作消息" />
       <el-table-column prop="createdTime" label="操作时间" :formatter="formatCreatedTime" width />
     </el-table>
 

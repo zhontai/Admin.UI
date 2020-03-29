@@ -14,6 +14,7 @@
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
+              style="width:240px"
               :picker-options="pickerOptions"
             />
           </el-form-item>
