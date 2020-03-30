@@ -4,7 +4,7 @@
       <div style="height:10%;" />
       <el-card shadow="always" class="login-card" :body-style="{ padding: '0px' }">
         <div class="title">Admin</div>
-        <div class="desc">admin 企业级中台管理系统</div>
+        <div class="desc">admin 后台管理系统</div>
         <el-form ref="form" :model="form" :rules="formRules">
           <el-form-item prop="userName">
             <el-input

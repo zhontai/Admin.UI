@@ -34,7 +34,7 @@
           {{ scope.row.createdUserName }}<br>{{ scope.row.realName }}
         </template>
       </el-table-column>
-      <el-table-column prop="ip" label="IP地址" width="120" />
+      <el-table-column prop="ip" label="IP地址" width="130" />
       <el-table-column prop="apiLabel" label="操作名称" width="" />
       <el-table-column prop="apiPath" label="操作接口" width="" />
       <!-- <el-table-column prop="browser" label="浏览器" width="100" />
