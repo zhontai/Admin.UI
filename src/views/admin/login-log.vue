@@ -29,9 +29,9 @@
       style="width: 100%;height:100%;"
     >
       <el-table-column prop="id" label="编号" width="80" />
-      <el-table-column prop="createdUserName" label="登录账号">
+      <el-table-column prop="createdUserName" label="操作账号" width="100">
         <template v-slot="scope">
-          {{ scope.row.realName ? `${scope.row.realName}（${scope.row.createdUserName}）` : scope.row.createdUserName }}
+          {{ scope.row.createdUserName }}<br>{{ scope.row.realName }}
         </template>
       </el-table-column>
       <el-table-column prop="ip" label="IP地址" width="120" />
