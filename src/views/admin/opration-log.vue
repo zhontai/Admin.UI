@@ -27,7 +27,6 @@
       :data="list"
       highlight-current-row
       style="width: 100%;height:100%;"
-      @selection-change="selsChange"
     >
       <el-table-column prop="id" label="编号" width="80" />
       <el-table-column prop="createdUserName" label="操作账号">
