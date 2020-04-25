@@ -22,14 +22,29 @@
             </el-col>
             <el-col :sm="12" :xs="24">
               <el-form-item label="头像">
-                <el-avatar shape="square" :src="avatar" :size="90">
-                  <img :src="avatarDefault">
-                </el-avatar>
-                <div>
-                  <el-button plain>
-                    <i class="el-icon-upload el-icon--right" />上传
-                  </el-button>
-                </div>
+                <el-upload
+                  v-loading="avatarLoading"
+                  class="avatar-uploader"
+                  action="/api/admin/img/avatarupload"
+                  :headers="token"
+                  :show-file-list="false"
+                  :before-upload="()=>{avatarLoading = true}"
+                  :on-success="onAvatarSuccess"
+                  :on-error="()=>{avatarLoading = false}"
+                  style="display: inline-block;"
+                >
+                  <el-image class="el-avatar el-avatar--square" :src="avatar" style="height:90px;width:90px;line-height: 90px;">
+                    <template #error>
+                      <img :src="avatarDefault">
+                    </template>
+                  </el-image>
+                  <div>
+                    <el-button plain style="width:90px;">
+                      <i class="el-icon-upload el-icon--left" />上传
+                    </el-button>
+                  </div>
+                </el-upload>
+
               </el-form-item>
             </el-col>
           </el-row>
@@ -43,7 +58,10 @@
                   style="margin-left:0px;"
                   @click="onSubmit"
                 >
-                  <p slot="content">确定要更新基本信息吗？</p>更新基本信息
+                  <template #content>
+                    <p>确定要更新基本信息吗？</p>
+                  </template>
+                  更新基本信息
                 </confirm-button>
               </el-form-item>
             </el-col>
@@ -89,12 +107,15 @@
           <el-form-item>
             <confirm-button
               :validate="editPwdFormvalidate"
-              :placement="'top-start'"
+              :placement="'top-end'"
               :loading="editPwdLoading"
               style="margin-left:0px;"
               @click="onSubmitPwd"
             >
-              <p slot="content">确定要更新密码吗？</p>更新密码
+              <template #content>
+                <p>确定要更新密码吗？</p>
+              </template>
+              更新密码
             </confirm-button>
           </el-form-item>
         </el-form>
@@ -125,7 +146,7 @@ export default {
 
     const validateConfirmPassword = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('输入确认密码'))
+        callback(new Error('请输入确认密码'))
       } else if (value !== this.editPwdForm.newPassword) {
         callback(new Error('新密码和确认密码不一致!'))
       } else {
@@ -149,8 +170,8 @@ export default {
 
       editPwdFormRules: {
         oldPassword: [{ required: true, message: '请输入旧密码', trigger: 'blur' }],
-        newPassword: [{ validator: validateNewPassword, trigger: 'blur' }],
-        confirmPassword: [{ validator: validateConfirmPassword, trigger: 'blur' }]
+        newPassword: [{ required: true, validator: validateNewPassword, trigger: 'blur' }],
+        confirmPassword: [{ required: true, validator: validateConfirmPassword, trigger: 'blur' }]
       },
       editPwdForm: {
         id: 0,
@@ -163,12 +184,17 @@ export default {
       loading: false,
       editLoading: false,
       editPwdLoading: false,
+      avatarLoading: false,
       avatarDefault: require('@/assets/avatar.png')
     }
   },
   computed: {
     avatar() {
-      return this.editForm.avatar ? (process.env.VUE_APP_AVATAR_URL + this.editForm.avatar) : this.avatarDefault
+      const path = this.editForm.avatar ? (process.env.VUE_APP_AVATAR_URL + this.editForm.avatar) : this.avatarDefault
+      return path
+    },
+    token() {
+      return { 'Authorization': 'Bearer ' + this.$store.getters.token }
     }
   },
   created() {
@@ -198,7 +224,20 @@ export default {
     this.editPwdForm.version = data.version
   },
   methods: {
-    editFormvalidate: function() {
+    onAvatarSuccess(res) {
+      this.avatarLoading = false
+      if (!(res && res.code === 1)) {
+        if (res.msg) {
+          this.$message({
+            message: res.msg,
+            type: 'error'
+          })
+        }
+        return
+      }
+      this.editForm.avatar = res.data
+    },
+    editFormvalidate() {
       let isValid = false
       this.$refs.editForm.validate(valid => {
         isValid = valid
@@ -218,6 +257,8 @@ export default {
           message: this.$t('admin.updateOk'),
           type: 'success'
         })
+        this.$store.commit('user/setName', para.nickName)
+        this.$store.commit('user/setAvatar', para.avatar)
       } else {
         this.$message({
           message: res.msg,
@@ -225,7 +266,7 @@ export default {
         })
       }
     },
-    editPwdFormvalidate: function() {
+    editPwdFormvalidate() {
       let isValid = false
       this.$refs.editPwdForm.validate(valid => {
         isValid = valid
@@ -278,5 +319,10 @@ export default {
   background-color: #e4e7ed;
   z-index: 0;
   top: 0;
+}
+
+.avatar-uploader >>> .el-loading-spinner .circular{
+  width:26px;
+  height:26px;
 }
 </style>

@@ -1,48 +1,46 @@
 <template>
-  <section>
-    <!--工具条-->
-    <el-row>
-      <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-        <el-form size="small" :inline="true" :model="filters" @submit.native.prevent>
-          <el-form-item label="创建日期">
-            <el-date-picker
-              v-model="filters.createTime"
-              type="daterange"
-              align="left"
-              value-format="yyyy-MM-dd"
-              unlink-panels
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              style="width:240px"
-              :picker-options="pickerOptions"
-            />
-          </el-form-item>
-          <el-form-item>
-            <el-input
-              v-model="filters.label"
-              placeholder="权限名称"
-              @keyup.enter.native="getPermissions"
-            />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="el-icon-search" @click="getPermissions">查询</el-button>
-          </el-form-item>
-          <el-form-item>
-            <el-dropdown>
-              <el-button type="primary" size="small">
-                新增<i class="el-icon-arrow-down el-icon--right" />
-              </el-button>
-              <el-dropdown-menu slot="dropdown" :visible-arrow="false" style="margin-top: 2px;">
-                <el-dropdown-item icon="el-icon-folder" @click.native="onOpenAddGroup">新增分组</el-dropdown-item>
-                <el-dropdown-item icon="el-icon-tickets" @click.native="onOpenAddMenu">新增菜单</el-dropdown-item>
-                <el-dropdown-item icon="el-icon-s-operation" @click.native="onOpenAddApi">新增接口</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
+  <section style="padding:10px;">
+    <!--查询-->
+    <el-form class="ad-form-query" :inline="true" :model="filters" @submit.native.prevent>
+      <el-form-item label="创建日期">
+        <el-date-picker
+          v-model="filters.createTime"
+          type="daterange"
+          align="left"
+          value-format="yyyy-MM-dd"
+          unlink-panels
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          style="width:240px"
+          :picker-options="pickerOptions"
+        />
+      </el-form-item>
+      <el-form-item>
+        <el-input
+          v-model="filters.label"
+          placeholder="权限名称"
+          @keyup.enter.native="getPermissions"
+        />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="el-icon-search" @click="getPermissions">查询</el-button>
+      </el-form-item>
+      <el-form-item>
+        <el-dropdown>
+          <el-button type="primary">
+            新增<i class="el-icon-arrow-down el-icon--right" />
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;">
+              <el-dropdown-item icon="el-icon-folder" @click.native="onOpenAddGroup">新增分组</el-dropdown-item>
+              <el-dropdown-item icon="el-icon-tickets" @click.native="onOpenAddMenu">新增菜单</el-dropdown-item>
+              <el-dropdown-item icon="el-icon-s-operation" @click.native="onOpenAddApi">新增接口</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </el-form-item>
+    </el-form>
 
     <!--列表-->
     <el-table
@@ -58,12 +56,12 @@
       @select-all="onSelectAll"
       @select="onSelect"
     >
-      <el-table-column type="selection" width="50" />
-      <el-table-column type="index" width="50" />
+      <!-- <el-table-column type="selection" width="50" /> -->
+      <el-table-column type="index" width="50" label="#" />
       <el-table-column label="权限" width="220">
-        <template slot-scope="scope">
-          <i :class="scope.row.icon" />
-          {{ scope.row.label }}
+        <template v-slot="{row}">
+          <i :class="row.icon" />
+          {{ row.label }}
         </template>
       </el-table-column>
       <el-table-column prop="id" label="编号" width="80" />
@@ -80,20 +78,19 @@
       <!-- <el-table-column prop="createTime" label="创建时间" :formatter="formatCreateTime" width="100" >
       </el-table-column>-->
       <el-table-column prop="enabled" label="状态" width="100">
-        <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.enabled ? 'success' : 'danger'"
-            disable-transitions
-          >{{ scope.row.enabled ? '正常' : '禁用' }}</el-tag>
+        <template v-slot="{row}">
+          <el-tag :type="row.enabled ? 'success' : 'danger'" disable-transitions>
+            {{ row.enabled ? '正常' : '禁用' }}
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="180">
         <template v-slot="{ $index, row }">
           <!-- <el-link @click="onEdit(scope.$index, scope.row)" icon="el-icon-edit" style="color:#409eff">编辑</el-link>
           <el-link @click="onEdit(scope.$index, scope.row)" icon="el-icon-delete" style="margin-left:10px;color:#f56c6c;">删除</el-link>-->
-          <!-- <el-button type="primary" size="mini" icon="el-icon-edit" circle></el-button>
-          <el-button type="danger" size="mini" icon="el-icon-delete" circle style="margin-left:10px;"></el-button>-->
-          <el-button size="small" icon="el-icon-edit" @click="onEdit($index, row)">编辑</el-button>
+          <!-- <el-button type="primary" icon="el-icon-edit" circle></el-button>
+          <el-button type="danger" icon="el-icon-delete" circle style="margin-left:10px;"></el-button>-->
+          <el-button icon="el-icon-edit" @click="onEdit($index, row)">编辑</el-button>
           <confirm-button
             type="delete"
             :loading="row._loading"
@@ -142,10 +139,12 @@
           <el-switch v-model="permissionGroup.form.enabled" />
         </el-form-item> -->
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click.native="permissionGroup.visible = false">取消</el-button>
-        <confirm-button :validate="validateGroup" :loading="permissionGroup.loading" @click="onSubmitGroup" />
-      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click.native="permissionGroup.visible = false">取消</el-button>
+          <confirm-button type="submit" :validate="validateGroup" :loading="permissionGroup.loading" @click="onSubmitGroup" />
+        </div>
+      </template>
     </el-dialog>
 
     <!--菜单-->
@@ -214,10 +213,12 @@
           <el-switch v-model="permissionMenu.form.enabled" />
         </el-form-item> -->
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click.native="permissionMenu.visible = false">取消</el-button>
-        <confirm-button :validate="validateMenu" :loading="permissionMenu.loading" @click="onSubmitMenu" />
-      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click.native="permissionMenu.visible = false">取消</el-button>
+          <confirm-button type="submit" :validate="validateMenu" :loading="permissionMenu.loading" @click="onSubmitMenu" />
+        </div>
+      </template>
     </el-dialog>
 
     <!--接口-->
@@ -270,10 +271,12 @@
           <el-switch v-model="permissionApi.form.enabled" />
         </el-form-item> -->
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click.native="permissionApi.visible = false">取消</el-button>
-        <confirm-button :validate="validateApi" :loading="permissionApi.loading" @click="onSubmitApi" />
-      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click.native="permissionApi.visible = false">取消</el-button>
+          <confirm-button type="submit" :validate="validateApi" :loading="permissionApi.loading" @click="onSubmitApi" />
+        </div>
+      </template>
     </el-dialog>
   </section>
 </template>
@@ -446,7 +449,7 @@ export default {
         this.viewTree = listToTree(_.cloneDeep(res.data))
       }
     },
-    // 获取用户列表
+    // 获取权限列表
     async getPermissions() {
       const para = {
         key: this.filters.label,

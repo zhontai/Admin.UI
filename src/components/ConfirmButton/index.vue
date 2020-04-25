@@ -1,7 +1,9 @@
 <!--
 一般提交
 <confirm-button @click="syncApi" :icon="'el-icon-refresh'" style="margin:0px;">
-    <p slot="content">确定要同步Api吗？</p>
+    <template #content>
+      <p>确定要同步Api吗？</p>
+    </template>
     同步Api
 </confirm-button>
 
@@ -13,13 +15,16 @@
 
 设置位置
 <confirm-button @click="submit" :validate="editFormvalidate" :placement="'top-start'" :loading="editLoading">
-    <p slot="content">确定要更新基本信息吗？</p>
+    <template #content>
+      <p>确定要更新基本信息吗？</p>
+    </template>
     更新基本信息
 </confirm-button>
 -->
 <template>
   <span style="margin-left:10px;line-height: 1;display: inline-block;">
     <el-popover
+      ref="popover"
       v-model="visible"
       :placement="placement"
       width="160"
@@ -34,23 +39,22 @@
       </slot>
       <slot name="footer">
         <div style="text-align: right; margin: 0">
-          <el-button size="mini" type="text" @click="visible = false">取消</el-button>
-          <el-button type="primary" size="mini" @click="sure">确定</el-button>
+          <el-button type="text" @click="visible = false">取消</el-button>
+          <el-button type="primary" @click="sure">确定</el-button>
         </div>
       </slot>
-      <el-button
-        slot="reference"
-        :icon="icon"
-        :type="buttonType"
-        :size="size"
-        :loading="loading"
-        :disabled="disabled"
-        _button
-        @click="valid"
-      >
-        <slot>{{ type === 'delete' ? '删除' : '提交' }}</slot>
-      </el-button>
     </el-popover>
+    <el-button
+      v-popover:popover
+      :icon="icon"
+      :type="buttonType"
+      :loading="loading"
+      :disabled="disabled"
+      _button
+      @click="valid"
+    >
+      <slot>{{ buttonText }}</slot>
+    </el-button>
   </span>
 </template>
 
@@ -101,8 +105,8 @@ export default {
     return {
       visible: false,
       disabledPopover: this.validate !== null,
-      size: this.type === 'delete' ? 'small' : '',
-      buttonType: this.type === 'delete' ? 'danger' : this.type,
+      buttonType: this.type === 'delete' ? 'danger' : (this.type === 'submit' ? 'primary' : this.type),
+      buttonText: this.type === 'delete' ? '删除' : (this.type === 'submit' ? '提交' : ''),
       style: ''
     }
   },

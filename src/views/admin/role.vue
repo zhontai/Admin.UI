@@ -1,68 +1,72 @@
 <template>
-  <section>
-    <!--工具条-->
-    <el-row>
-      <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-        <el-form size="small" :inline="true" :model="filter" @submit.native.prevent>
-          <el-form-item>
-            <el-input
-              v-model="filter.name"
-              placeholder="角色名"
-              clearable
-              @keyup.enter.native="getRoles"
-            >
-              <i slot="prefix" class="el-input__icon el-icon-search" />
-            </el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="getRoles">查询</el-button>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="onAdd">新增</el-button>
-          </el-form-item>
-          <el-form-item>
-            <confirm-button
-              v-if="sels.length > 0"
-              :type="'delete'"
-              :placement="'bottom-end'"
-              :loading="deleteLoading"
-              :validate="batchDeleteValidate"
-              style="margin-left: 0px;"
-              @click="onBatchDelete"
-            >
-              <p slot="content">确定要批量删除吗？</p>批量删除
-            </confirm-button>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
+  <container>
+    <!--查询-->
+    <template #header>
+      <el-form class="ad-form-query" :inline="true" :model="filter" @submit.native.prevent>
+        <el-form-item>
+          <el-input
+            v-model="filter.name"
+            placeholder="角色名"
+            clearable
+            @keyup.enter.native="getRoles"
+          >
+            <template #prefix>
+              <i class="el-input__icon el-icon-search" />
+            </template>
+          </el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="getRoles">查询</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onAdd">新增</el-button>
+        </el-form-item>
+        <el-form-item>
+          <confirm-button
+            :disabled="sels.length === 0"
+            :type="'delete'"
+            :placement="'bottom-end'"
+            :loading="deleteLoading"
+            :validate="batchDeleteValidate"
+            style="margin-left: 0px;"
+            @click="onBatchDelete"
+          >
+            <template #content>
+              <p>确定要批量删除吗？</p>
+            </template>
+            批量删除
+          </confirm-button>
+        </el-form-item>
+      </el-form>
+    </template>
 
     <!--列表-->
     <el-table
       v-loading="listLoading"
       :data="roles"
       highlight-current-row
+      height="'100%'"
       style="width: 100%;height:100%;"
       @selection-change="selsChange"
     >
       <el-table-column type="selection" width="50" />
-      <el-table-column type="index" width="80" />
+      <el-table-column type="index" width="80" label="#" />
       <el-table-column prop="name" label="角色名" width />
       <el-table-column prop="description" label="说明" width />
       <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width />
       <!--<el-table-column prop="CreatedUserName" label="创建者" width="" >-->
       <!--</el-table-column>-->
       <el-table-column prop="enabled" label="状态" width="200">
-        <template v-slot="scope">
+        <template v-slot="{row}">
           <el-tag
-            :type="scope.row.enabled ? 'success' : 'danger'"
+            :type="row.enabled ? 'success' : 'danger'"
             disable-transitions
-          >{{ scope.row.enabled ? '正常' : '禁用' }}</el-tag>
+          >{{ row.enabled ? '正常' : '禁用' }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="180">
         <template v-slot="{ $index, row }">
-          <el-button size="small" @click="onEdit($index, row)">编辑</el-button>
+          <el-button @click="onEdit($index, row)">编辑</el-button>
           <confirm-button
             type="delete"
             :loading="row._loading"
@@ -74,66 +78,19 @@
       </el-table-column>
     </el-table>
 
-    <!--工具条 prev, pager, next, jumper -->
-    <el-row>
-      <el-col :span="24" class="pagination">
-        <el-pagination
-          layout="total, slot, sizes, prev, jumper, next"
-          :current-page.sync="currentPage"
-          :page-size.sync="pageSize"
-          :total="total"
-          :page-count="pageCount"
-          background
-          style="text-align:right;"
-        >
-          <span class="el-pagination__count">，{{ pageCount }} 页</span>
-        </el-pagination>
-      </el-col>
-    </el-row>
+    <!--分页-->
+    <template #footer>
+      <pagination
+        ref="pager"
+        :page.sync="pager.currentPage"
+        :size.sync="pager.pageSize"
+        :total="pager.total"
+        :checked-count="sels.length"
+        @get-page="getRoles"
+      />
+    </template>
 
-    <!--编辑界面-->
-    <el-drawer
-      title="编辑角色"
-      :wrapper-closable="true"
-      :visible.sync="editFormVisible"
-      direction="ltr"
-      size="'auto'"
-      @close="closeEditForm"
-    >
-      <section style="padding:24px 48px 74px 24px;">
-        <el-form
-          ref="editForm"
-          :model="editForm"
-          :rules="editFormRules"
-          label-width="80px"
-          :inline="false"
-          size="small"
-        >
-          <el-form-item label="角色名" prop="name">
-            <el-input v-model="editForm.name" auto-complete="off" />
-          </el-form-item>
-          <el-form-item label="说明" prop="description">
-            <el-input v-model="editForm.description" auto-complete="off" />
-          </el-form-item>
-          <el-form-item label="状态" prop="enabled">
-            <el-select v-model="editForm.enabled" placeholder="请选择角色状态">
-              <el-option
-                v-for="item in statusList"
-                :key="item.value"
-                :label="item.name"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-        </el-form>
-      </section>
-      <div class="drawer-footer">
-        <el-button @click.native="editFormVisible = false">取消</el-button>
-        <confirm-button :validate="editFormValidate" :loading="editLoading" @click="onEditSubmit" />
-      </div>
-    </el-drawer>
-
-    <!--新增界面-->
+    <!--新增窗口-->
     <el-drawer
       title="新增角色"
       :wrapper-closable="true"
@@ -150,7 +107,6 @@
           :rules="addFormRules"
           label-width="80px"
           :inline="false"
-          size="small"
         >
           <el-row>
             <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
@@ -189,28 +145,63 @@
       </section>
       <div class="drawer-footer">
         <el-button @click.native="addFormVisible = false">取消</el-button>
-        <confirm-button :validate="addFormValidate" :loading="addLoading" @click="onAddSubmit" />
+        <confirm-button type="submit" :validate="addFormValidate" :loading="addLoading" @click="onAddSubmit" />
       </div>
     </el-drawer>
-  </section>
+
+    <!--编辑窗口-->
+    <el-drawer
+      title="编辑角色"
+      :wrapper-closable="true"
+      :visible.sync="editFormVisible"
+      direction="ltr"
+      size="'auto'"
+      @close="closeEditForm"
+    >
+      <section style="padding:24px 48px 74px 24px;">
+        <el-form
+          ref="editForm"
+          :model="editForm"
+          :rules="editFormRules"
+          label-width="80px"
+          :inline="false"
+        >
+          <el-form-item label="角色名" prop="name">
+            <el-input v-model="editForm.name" auto-complete="off" />
+          </el-form-item>
+          <el-form-item label="说明" prop="description">
+            <el-input v-model="editForm.description" auto-complete="off" />
+          </el-form-item>
+          <el-form-item label="状态" prop="enabled">
+            <el-select v-model="editForm.enabled" placeholder="请选择角色状态">
+              <el-option
+                v-for="item in statusList"
+                :key="item.value"
+                :label="item.name"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-form>
+      </section>
+      <div class="drawer-footer">
+        <el-button @click.native="editFormVisible = false">取消</el-button>
+        <confirm-button type="submit" :validate="editFormValidate" :loading="editLoading" @click="onEditSubmit" />
+      </div>
+    </el-drawer>
+  </container>
 </template>
 
 <script>
 import { formatTime } from '@/utils'
-import {
-  getRoleListPage,
-  removeRole,
-  editRole,
-  addRole,
-  batchRemoveRole,
-  getRole
-} from '@/api/admin/role'
+import { getRoleListPage, removeRole, editRole, addRole, batchRemoveRole, getRole } from '@/api/admin/role'
+import Container from '@/components/Container'
 import ConfirmButton from '@/components/ConfirmButton'
+import Pagination from '@/components/Pagination'
+
 export default {
   name: 'Roles',
-  components: {
-    ConfirmButton
-  },
+  components: { Container, ConfirmButton, Pagination },
   data() {
     return {
       filter: {
@@ -221,9 +212,7 @@ export default {
         { name: '激活', value: true },
         { name: '禁用', value: false }
       ],
-      total: 0,
-      pageSize: 10,
-      currentPage: 1,
+      pager: {},
       listLoading: false,
       sels: [], // 列表选中列
 
@@ -259,22 +248,8 @@ export default {
       deleteLoading: false
     }
   },
-  computed: {
-    pageCount() {
-      return this.total > 0 && this.pageSize > 0
-        ? Math.ceil(this.total / this.pageSize)
-        : 1
-    }
-  },
-  watch: {
-    currentPage() {
-      this.getRoles()
-    },
-    pageSize() {
-      this.getRoles()
-    }
-  },
   mounted() {
+    this.pager = this.$refs.pager.getPager()
     this.getRoles()
   },
   methods: {
@@ -284,8 +259,8 @@ export default {
     // 获取角色列表
     async getRoles() {
       const para = {
-        currentPage: this.currentPage,
-        pageSize: this.pageSize,
+        currentPage: this.pager.currentPage,
+        pageSize: this.pager.pageSize,
         filter: this.filter
       }
       this.listLoading = true
@@ -302,7 +277,7 @@ export default {
         return
       }
 
-      this.total = res.data.total
+      this.pager.total = res.data.total
       const data = res.data.list
       data.forEach(d => {
         d._loading = false

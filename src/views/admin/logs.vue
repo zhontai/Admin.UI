@@ -2,7 +2,7 @@
   <section>
     <el-row>
       <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-        <el-form size="small" :inline="true" @submit.native.prevent>
+        <el-form :inline="true" @submit.native.prevent>
           <el-form-item>
             <el-button type="primary" @click="getLogs">查询</el-button>
           </el-form-item>
@@ -12,20 +12,20 @@
 
     <el-table v-loading="listLoading" :data="tableData" style="width: 100%">
       <el-table-column type="expand">
-        <template slot-scope="props">
-          <div>{{ props.row.datetime }}</div>
+        <template v-slot="{row}">
+          <div>{{ row.datetime }}</div>
           <div
             style="white-space: normal;word-break: break-all;line-height: 30px;"
-            v-html="props.row.content"
+            v-html="row.content"
           />
         </template>
       </el-table-column>
       <el-table-column label="Datetime" prop="datetime" width="220" />
       <el-table-column label="Content">
-        <template slot-scope="scope">
+        <template v-slot="{row}">
           <div
-            :class="scope.row.logColor"
-            v-html="scope.row.content ? scope.row.content.substring(0, 100) : ''"
+            :class="row.logColor"
+            v-html="row.content ? scope.row.content.substring(0, 100) : ''"
           />
         </template>
       </el-table-column>

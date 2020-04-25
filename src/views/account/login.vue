@@ -5,7 +5,7 @@
       <el-card shadow="always" class="login-card" :body-style="{ padding: '0px' }">
         <div class="title">Admin</div>
         <div class="desc">admin 后台管理系统</div>
-        <el-form ref="form" :model="form" :rules="formRules">
+        <el-form ref="form" :model="form" :rules="formRules" size="medium">
           <el-form-item prop="userName">
             <el-input
               ref="userName"
@@ -14,7 +14,9 @@
               auto-complete="off"
               placeholder="账号"
             >
-              <i slot="prefix" class="el-input__icon el-icon-user" />
+              <template #prefix>
+                <i class="el-input__icon el-icon-user" />
+              </template>
             </el-input>
           </el-form-item>
           <el-form-item prop="password">
@@ -27,7 +29,9 @@
               placeholder="密码"
               @keyup.enter.native="onLogin"
             >
-              <i slot="prefix" class="el-input__icon el-icon-lock" />
+              <template #prefix>
+                <i class="el-input__icon el-icon-lock" />
+              </template>
             </el-input>
           </el-form-item>
           <el-form-item prop="verifyCode">
@@ -43,7 +47,9 @@
               style="width:66%;"
               @keyup.enter.native="onLogin"
             >
-              <i slot="prefix" class="el-input__icon fa fa-shield" />
+              <template #prefix>
+                <i class="el-input__icon fa fa-shield" />
+              </template>
             </el-input>
             <img
               :src="verifyCodeImg"
@@ -223,7 +229,7 @@ export default {
 </style>
 <style lang="scss" scoped>
 .login-card {
-  width: 350px;
+  width: 320px;
   padding: 25px 25px 5px 25px;
   position: relative;
   margin: 0 auto;

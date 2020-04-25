@@ -175,3 +175,17 @@ input:-webkit-autofill {
     margin-top: 15px;
     margin-bottom: 5px;
 }
+
+.ad-pagination__selection{
+    float: left;
+    font-weight: 400;
+    color: #606266;
+    margin-right:10px;
+}
+.ad-form-query{
+    & .el-form-item--mini, & .el-form-item--small{
+        &.el-form-item{
+            margin-bottom: 10px;
+        }
+    }
+}

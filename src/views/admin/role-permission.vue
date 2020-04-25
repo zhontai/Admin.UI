@@ -1,18 +1,19 @@
 <template>
-  <section>
+  <section style="padding:10px;">
     <el-row :gutter="10">
-      <!--工具条-->
-      <el-col :span="8" class="toolbar roles">
+      <el-col :span="6" class="toolbar roles">
         <el-card>
-          <div slot="header" class="clearfix">
-            <span>角色</span>
-            <el-button
-              :loading="loadingRoles"
-              type="text"
-              style="float: right; padding: 3px 0"
-              @click="getRoles"
-            >刷新</el-button>
-          </div>
+          <template #header>
+            <div class="clearfix">
+              <span>角色</span>
+              <el-button
+                :loading="loadingRoles"
+                type="text"
+                style="float: right; padding: 3px 0"
+                @click="getRoles"
+              >刷新</el-button>
+            </div>
+          </template>
           <div
             v-for="o in roles"
             :key="o.id"
@@ -25,30 +26,34 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="16" class="toolbar perms">
+      <el-col :span="18" class="toolbar perms">
         <el-card>
-          <div slot="header" class="clearfix">
-            <span>权限</span>
-
-            <confirm-button
-              :validate="saveValidate"
-              :loading="loadingSave"
-              :disabled="disabledSave"
-              :placement="'left'"
-              type="text"
-              class="save"
-              style="float: right;"
-              @click="save"
-            >
-              <p slot="content">确定要保存吗？</p>保存
-            </confirm-button>
-            <el-button
-              :loading="loadingPermissions"
-              type="text"
-              style="float: right; padding: 3px 0"
-              @click="getPermissions"
-            >刷新</el-button>
-          </div>
+          <template #header>
+            <div class="clearfix">
+              <span>权限</span>
+              <confirm-button
+                :validate="saveValidate"
+                :loading="loadingSave"
+                :disabled="disabledSave"
+                :placement="'left'"
+                type="text"
+                class="save"
+                style="float: right;"
+                @click="save"
+              >
+                <template #content>
+                  <p>确定要保存吗？</p>
+                </template>
+                保存
+              </confirm-button>
+              <el-button
+                :loading="loadingPermissions"
+                type="text"
+                style="float: right; padding: 3px 0"
+                @click="getPermissions"
+              >刷新</el-button>
+            </div>
+          </template>
           <el-table
             ref="multipleTable"
             :data="permissionTree"
@@ -61,9 +66,9 @@
             @select="select"
           >
             <el-table-column type="selection" width="50" />
-            <el-table-column prop="label" label="导航菜单" width="180" />
+            <el-table-column prop="label" label="导航菜单" width="200" />
             <el-table-column label="菜单接口" width>
-              <template slot-scope="{ $index, row }">
+              <template v-slot="{ $index, row }">
                 <el-checkbox-group v-if="row.apis && row.apis.length > 0" v-model="chekedApis">
                   <el-checkbox v-for="api in row.apis" :key="api.id" :label="api.id">{{ api.label }}</el-checkbox>
                 </el-checkbox-group>

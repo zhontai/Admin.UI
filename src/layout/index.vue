@@ -24,7 +24,7 @@
       <el-header class="header" height="auto">
         <el-row class="navbar">
           <el-col :span="10" class="left-menu">
-            <div class="left-menu-item fold-btn" @click="onCollapse">
+            <div class="left-menu-item fold-btn" :title="isCollapse ? '展开':'收起'" @click="onCollapse">
               <i :class="isCollapse ? 'fa el-icon-s-unfold' : 'fa el-icon-s-fold'" />
             </div>
             <el-breadcrumb
@@ -42,19 +42,22 @@
           <el-col :span="4" class="right-menu">
             <el-dropdown trigger="click">
               <div class="right-menu-item">
-                <el-avatar class="user-avatar" :size="36" :src="avatar">
-                  <img :src="avatarDefault">
-                </el-avatar>
+                <el-image class="user-avatar el-avatar el-avatar--circle" :src="avatar" style="height:36px;width:36px;line-height: 36px;">
+                  <template #error>
+                    <img :src="avatarDefault">
+                  </template>
+                </el-image>
                 <span>{{ userName }}</span>
               </div>
-              <el-dropdown-menu
-                slot="dropdown"
-                :visible-arrow="false"
-                style="margin-top: 2px;width:160px;"
-              >
-                <el-dropdown-item icon="el-icon-setting" @click.native="Setting">个人设置</el-dropdown-item>
-                <el-dropdown-item divided icon="el-icon-switch-button" @click.native="logout">退出登录</el-dropdown-item>
-              </el-dropdown-menu>
+              <template #dropdown>
+                <el-dropdown-menu
+                  :visible-arrow="false"
+                  style="margin-top: 2px;width:160px;"
+                >
+                  <el-dropdown-item icon="el-icon-setting" @click.native="Setting">个人设置</el-dropdown-item>
+                  <el-dropdown-item divided icon="el-icon-switch-button" @click.native="logout">退出登录</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
             </el-dropdown>
           </el-col>
         </el-row>
@@ -64,9 +67,9 @@
             ref="tabs"
             :value="tabName"
             :type="tabType"
-            @tab-click="tabClick"
-            @tab-remove="removeTab"
-            @contextmenu.prevent.native="openRightMenu($event)"
+            @tab-click="onTabClick"
+            @tab-remove="onRemoveTab"
+            @contextmenu.prevent.native="onOpenRightMenu($event)"
           >
             <el-tab-pane
               v-for="tab in tabsList"
@@ -75,22 +78,20 @@
               :label="tab.meta.title"
               :closable="tab.meta.closable"
             >
-              <span slot="label">
-                <i :class="tab.meta.icon" />
-                {{ tab.meta.title }}
-              </span>
+              <template #label>
+                <span>
+                  <i :class="tab.meta.icon" />
+                  {{ tab.meta.title }}
+                </span>
+              </template>
             </el-tab-pane>
           </el-tabs>
         </div>
       </el-header>
-      <el-main class="main">
-        <el-scrollbar class="page-component__scroll" style="height:100%">
-          <section style="padding:10px;overflow:hidden;">
-            <keep-alive :include="cachedViews">
-              <router-view :key="key" />
-            </keep-alive>
-          </section>
-        </el-scrollbar>
+      <el-main class="main" style="height:100%;">
+        <keep-alive :include="cachedViews">
+          <router-view :key="key" />
+        </keep-alive>
       </el-main>
       <el-footer v-if="tabPosition === 'bottom'" class="footer" height>
         <el-tabs
@@ -99,9 +100,9 @@
           :value="tabName"
           :type="tabType"
           :tab-position="tabPosition"
-          @tab-click="tabClick"
-          @tab-remove="removeTab"
-          @contextmenu.prevent.native="openRightMenu($event)"
+          @tab-click="onTabClick"
+          @tab-remove="onRemoveTab"
+          @contextmenu.prevent.native="onOpenRightMenu($event)"
         >
           <el-tab-pane
             v-for="tab in tabsList"
@@ -110,10 +111,12 @@
             :label="tab.meta.title"
             :closable="tab.meta.closable"
           >
-            <span slot="label">
-              <i :class="tab.meta.icon" />
-              {{ tab.meta.title }}
-            </span>
+            <template #label>
+              <span>
+                <i :class="tab.meta.icon" />
+                {{ tab.meta.title }}
+              </span>
+            </template>
           </el-tab-pane>
         </el-tabs>
       </el-footer>
@@ -209,7 +212,7 @@ export default {
         selectedTab: {}
       },
       tabPosition: 'top', // top | bottom
-      tabType: 'border-card' // '' | border-card
+      tabType: 'border-card' // '' | border-card | card
     }
   },
   computed: {
@@ -323,7 +326,7 @@ export default {
   },
   methods: {
     // 点击选项卡
-    tabClick(tab) {
+    onTabClick(tab) {
       if (tab.name && tab.name !== this.tabName) {
         this.$router.push(tab.name)
       }
@@ -359,7 +362,7 @@ export default {
       }
     },
     // 关闭选项卡
-    removeTab(targetPath) {
+    onRemoveTab(targetPath) {
       this.rightMenu.visible = false
       const index = this.tabsList.findIndex(tab => tab.path === targetPath)
       this.tabsList.splice(index, 1)[0]
@@ -394,7 +397,7 @@ export default {
       // this.collapsedClass = this.isCollapse ? 'menu-collapsed':'menu-expanded';
     },
     // tab打开右键菜单
-    openRightMenu(e) {
+    onOpenRightMenu(e) {
       const $target = e.target
       const $tab = $target.closest('[role="tab"]')
       if ($tab) {
@@ -464,7 +467,7 @@ export default {
     },
     closecurrentTab() {
       this.rightMenu.selectedTab &&
-      this.removeTab(this.rightMenu.selectedTab.fullPath)
+      this.onRemoveTab(this.rightMenu.selectedTab.fullPath)
     },
     closeOthersTabs() {
       const tab = this.rightMenu.selectedTab
@@ -514,36 +517,83 @@ export default {
 }
 </script>
 
-<style lang="css">
-
-.container .el-tabs__item:focus.is-active.is-focus:not(:active) {
+<style lang="scss" scoped>
+.container ::v-deep .el-tabs__item:focus.is-active.is-focus:not(:active) {
   -webkit-box-shadow: none;
   box-shadow: none;
   border-radius: unset;
+}
+
+.header {
+  z-index: 1;
+}
+
+.footer {
+  padding: 0px;
+  overflow: hidden;
 }
 
 .el-breadcrumb {
   line-height: 50px !important;
 }
 
-/* .el-breadcrumb__inner,.el-breadcrumb__inner:hover{
-        color:#fff!important;
-    } */
-.header {
-  z-index: 1;
+.navbar ::v-deep {
+  .el-breadcrumb__inner,.el-breadcrumb__separator{
+    color: #f4f4f5;
+  }
+  .el-breadcrumb__item:last-child .el-breadcrumb__inner,
+  .el-breadcrumb__item:last-child .el-breadcrumb__inner a,
+  .el-breadcrumb__item:last-child .el-breadcrumb__inner a:hover,
+  .el-breadcrumb__item:last-child .el-breadcrumb__inner:hover {
+    color: #fff;
+  }
+  .el-dropdown {
+    color: #fff;
+  }
 }
+</style>
 
-.el-tabs__nav {
-  padding-left: 15px;
+<style lang="scss" scoped>
+.contextmenu {
+  margin: 0;
+  background: #fff;
+  z-index: 3000;
+  position: absolute;
+  list-style-type: none;
+  padding: 5px 0;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #333;
+  border: 1px solid #ebeef5;
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1);
+  min-width: 130px;
+
+  li {
+    margin: 0;
+    padding: 7px 16px;
+    cursor: pointer;
+
+    &:hover {
+      background: #eee;
+    }
+    i {
+      margin-right: 8px;
+      font-size: 14px;
+      vertical-align: -1px;
+    }
+    span {
+      margin-left: 22px;
+    }
+  }
+  .el-divider--horizontal {
+    margin: 5px 0px;
+  }
 }
-.el-tabs--border-card .el-tabs__nav {
-  padding-left: 0px;
-}
-.el-tabs__active-bar {
-  margin-left: 15px;
-}
-.header .el-tabs__header {
-  margin-bottom: 0px;
+.user-avatar{
+  margin: 7px 8px 7px 0;
+  vertical-align: top;
+  background-color: transparent;
 }
 </style>
 
@@ -575,119 +625,5 @@ export default {
   .el-message-box {
     width: 80%;
   }
-}
-</style>
-
-<style>
-.navbar .el-breadcrumb__inner,
-.navbar .el-breadcrumb__separator {
-  /* color:#ffffffb3; */
-  color: #f4f4f5;
-}
-.navbar .el-breadcrumb__item:last-child .el-breadcrumb__inner,
-.navbar .el-breadcrumb__item:last-child .el-breadcrumb__inner a,
-.navbar .el-breadcrumb__item:last-child .el-breadcrumb__inner a:hover,
-.navbar .el-breadcrumb__item:last-child .el-breadcrumb__inner:hover {
-  color: #fff;
-}
-.navbar .el-dropdown {
-  color: #fff;
-}
-.header .el-tabs__nav-next,
-.header .el-tabs__nav-prev,
-.footer .el-tabs__nav-next,
-.footer .el-tabs__nav-prev {
-  font-size: 16px;
-  line-height: 40px;
-}
-.header .el-tabs__nav-next:hover,
-.header .el-tabs__nav-prev:hover,
-.footer .el-tabs__nav-next:hover,
-.footer .el-tabs__nav-prev:hover {
-  color: #409eff;
-}
-.aside .el-menu-item,
-.aside .el-submenu__title {
-  height: 46px;
-  line-height: 46px;
-}
-.aside .el-submenu .el-menu-item {
-  height: 40px;
-  line-height: 40px;
-}
-
-.el-tabs--bottom .el-tabs__active-bar.is-bottom,
-.el-tabs--bottom .el-tabs__nav-wrap.is-bottom:after {
-  top: 0;
-}
-.container .footer .el-tabs--bottom .el-tabs__header.is-bottom {
-  margin-top: 0px;
-}
-.container .footer {
-  padding: 0px;
-  overflow: hidden;
-}
-
-.container .header .el-tabs--border-card {
-  /* border-width: 1px 0px 0px 0px; */
-  border-width: 0px 0px 0px 0px;
-  -webkit-box-shadow: none;
-  box-shadow: none;
-}
-.container .footer .el-tabs--border-card {
-  border-width: 0px;
-  -webkit-box-shadow: none;
-  box-shadow: none;
-}
-.container .header .el-tabs--border-card > .el-tabs__content,
-.container .footer .el-tabs--border-card > .el-tabs__content {
-  padding: 0px;
-}
-</style>
-
-<style lang="scss" scoped>
-.contextmenu {
-  margin: 0;
-  background: #fff;
-  z-index: 3000;
-  position: absolute;
-  list-style-type: none;
-  padding: 5px 0;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 400;
-  color: #333;
-  border: 1px solid #ebeef5;
-  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1);
-  min-width: 130px;
-
-  li {
-    margin: 0;
-    padding: 7px 16px;
-    cursor: pointer;
-
-    &:hover {
-      background: #eee;
-    }
-
-    i {
-      margin-right: 8px;
-      font-size: 14px;
-      vertical-align: -1px;
-    }
-
-    span {
-      margin-left: 22px;
-    }
-  }
-
-  .el-divider--horizontal {
-    margin: 5px 0px;
-  }
-}
-.user-avatar{
-  margin: 7px 8px 7px 0;
-  vertical-align: top;
-  background-color: transparent;
 }
 </style>

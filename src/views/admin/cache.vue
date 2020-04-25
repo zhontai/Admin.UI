@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section style="padding:10px;">
     <!--列表-->
     <el-table
       v-loading="listLoading"
@@ -7,7 +7,7 @@
       highlight-current-row
       style="width: 100%;height:100%;"
     >
-      <el-table-column type="index" width="80" />
+      <el-table-column type="index" width="80" label="#" />
       <el-table-column prop="name" label="键名" width />
       <el-table-column prop="value" label="键值" width />
       <el-table-column prop="description" label="缓存名" width />
@@ -17,9 +17,13 @@
             type="delete"
             :loading="row._loading"
             :icon="'el-icon-delete'"
+            style="margin-left:0px;"
             @click="onClearCache($index, row)"
           >
-            <p slot="content">确定要清除该缓存吗？</p>清除
+            <template #content>
+              <p>确定要清除该缓存吗？</p>
+            </template>
+            清除
           </confirm-button>
         </template>
       </el-table-column>
@@ -85,11 +89,9 @@ export default {
         return
       }
       this.$message({
-        message: '缓存清除成功',
+        message: '清除缓存成功',
         type: 'success'
       })
-
-      this.getCaches()
     }
   }
 }

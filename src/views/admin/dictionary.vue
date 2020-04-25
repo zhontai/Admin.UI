@@ -1,27 +1,27 @@
 <template>
-  <section>
-    <!--工具条-->
-    <el-row>
-      <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-        <el-form size="small" :inline="true" :model="filter" @submit.native.prevent>
-          <el-form-item>
-            <el-input
-              v-model="filter.name"
-              placeholder="字典名称"
-              @keyup.enter.native="getDictionaries"
-            >
-              <i slot="prefix" class="el-input__icon el-icon-search" />
-            </el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="el-icon-search" @click="getDictionaries">查询</el-button>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="el-icon-plus" @click="handleAdd">新增</el-button>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
+  <container>
+    <!--查询-->
+    <template #header>
+      <el-form class="ad-form-query" :inline="true" :model="filter" @submit.native.prevent>
+        <el-form-item>
+          <el-input
+            v-model="filter.name"
+            placeholder="字典名称"
+            @keyup.enter.native="getDictionaries"
+          >
+            <template #prefix>
+              <i class="el-input__icon el-icon-search" />
+            </template>
+          </el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="el-icon-search" @click="getDictionaries">查询</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="el-icon-plus" @click="handleAdd">新增</el-button>
+        </el-form-item>
+      </el-form>
+    </template>
 
     <!--列表-->
     <el-table
@@ -32,104 +32,54 @@
       row-key="id"
       :default-expand-all="true"
       :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-      style="width: 100%;"
+      height="'100%'"
+      style="width: 100%;height:100%;"
       @select-all="selectAll"
       @select="select"
     >
       <el-table-column type="selection" width="50" />
-      <el-table-column type="index" width="50" />
+      <el-table-column type="index" width="50" label="#" />
       <el-table-column prop="name" label="字典名称" width="180" />
       <el-table-column prop="id" label="编号" width="70" />
       <el-table-column prop="code" label="字典编码" width="120" />
       <el-table-column prop="value" label="字典值" width />
       <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width="140" />
       <el-table-column prop="enabled" label="状态" width="100">
-        <template slot-scope="scope">
+        <template v-slot="{row}">
           <el-tag
-            :type="scope.row.enabled ? 'success' : 'danger'"
+            :type="row.enabled ? 'success' : 'danger'"
             disable-transitions
-          >{{ scope.row.enabled ? '正常' : '禁用' }}</el-tag>
+          >{{ row.enabled ? '正常' : '禁用' }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="180">
-        <template slot-scope="{ $index, row }">
-          <el-button size="small" icon="el-icon-edit" @click="onEdit($index, row)">编辑</el-button>
+        <template v-slot="{ $index, row }">
+          <el-button icon="el-icon-edit" @click="onEdit($index, row)">编辑</el-button>
           <confirm-button
             :type="'delete'"
             :loading="row._loading"
             :icon="'el-icon-delete'"
             @click="onDelete($index, row)"
           />
-          <!-- <el-button type="danger" size="small" @click="onDelete(scope.$index, scope.row)" icon="el-icon-delete">删除</el-button> -->
+          <!-- <el-button type="danger" @click="onDelete(scope.$index, scope.row)" icon="el-icon-delete">删除</el-button> -->
         </template>
       </el-table-column>
     </el-table>
 
-    <!--工具条-->
-    <el-row>
-      <el-col :span="24" class="pagination">
-        <!-- <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button> -->
-        <el-pagination
-          background
-          layout="prev, pager, next"
-          :page-size="50"
-          :total="total"
-          style="float:right;"
-          @current-change="handleCurrentChange"
-        />
-      </el-col>
-    </el-row>
+    <!--分页-->
+    <template #footer>
+      <pagination
+        ref="pager"
+        :layout="'fullPager'"
+        :page.sync="pager.currentPage"
+        :size.sync="pager.pageSize"
+        :total="pager.total"
+        :checked-count="sels.length"
+        @get-page="getDictionaries"
+      />
+    </template>
 
-    <!--编辑界面-->
-    <el-dialog
-      v-model="editFormVisible"
-      title="编辑"
-      :visible.sync="editFormVisible"
-      :close-on-click-modal="false"
-      @close="closeEditForm"
-    >
-      <el-form ref="editForm" :model="editForm" label-width="100px" :rules="editFormRules">
-        <el-form-item prop="parentIds" label="字典父级">
-          <el-cascader
-            :key="editFormKey"
-            v-model="editForm.parentIds"
-            placeholder="请选择，支持搜索功能"
-            :options="dictionaries"
-            :props="{ checkStrictly: true, label: 'name', value: 'id' }"
-            filterable
-            style="width:100%;"
-          />
-        </el-form-item>
-        <el-form-item label="字典名称" prop="name">
-          <el-input v-model="editForm.name" auto-complete="off" />
-        </el-form-item>
-        <el-form-item label="字典编码" prop="code">
-          <el-input v-model="editForm.code" auto-complete="off" />
-        </el-form-item>
-        <el-form-item label="字典值" prop="value">
-          <el-input v-model="editForm.value" auto-complete="off" />
-        </el-form-item>
-        <el-form-item label="状态" prop="enabled">
-          <el-select v-model="editForm.enabled" placeholder="请选择状态">
-            <el-option
-              v-for="item in statusList"
-              :key="item.value"
-              :label="item.name"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="说明" prop="description">
-          <el-input v-model="editForm.description" type="textarea" rows="4" auto-complete="off" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click.native="editFormVisible = false">取消</el-button>
-        <confirm-button :loading="editLoading" :validate="editFormValidate" @click="onEditSubmit" />
-      </div>
-    </el-dialog>
-
-    <!--新增界面-->
+    <!--新增窗口-->
     <el-dialog
       v-model="addFormVisible"
       title="新增"
@@ -172,12 +122,66 @@
           <el-input v-model="addForm.description" type="textarea" rows="4" auto-complete="off" />
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click.native="addFormVisible = false">取消</el-button>
-        <confirm-button :loading="addLoading" :validate="addFormValidate" @click="onAddSubmit" />
-      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click.native="addFormVisible = false">取消</el-button>
+          <confirm-button type="submit" :loading="addLoading" :validate="addFormValidate" @click="onAddSubmit" />
+        </div>
+      </template>
     </el-dialog>
-  </section>
+
+    <!--编辑窗口-->
+    <el-dialog
+      v-model="editFormVisible"
+      title="编辑"
+      :visible.sync="editFormVisible"
+      :close-on-click-modal="false"
+      @close="closeEditForm"
+    >
+      <el-form ref="editForm" :model="editForm" label-width="100px" :rules="editFormRules">
+        <el-form-item prop="parentIds" label="字典父级">
+          <el-cascader
+            :key="editFormKey"
+            v-model="editForm.parentIds"
+            placeholder="请选择，支持搜索功能"
+            :options="dictionaries"
+            :props="{ checkStrictly: true, label: 'name', value: 'id' }"
+            filterable
+            style="width:100%;"
+          />
+        </el-form-item>
+        <el-form-item label="字典名称" prop="name">
+          <el-input v-model="editForm.name" auto-complete="off" />
+        </el-form-item>
+        <el-form-item label="字典编码" prop="code">
+          <el-input v-model="editForm.code" auto-complete="off" />
+        </el-form-item>
+        <el-form-item label="字典值" prop="value">
+          <el-input v-model="editForm.value" auto-complete="off" />
+        </el-form-item>
+        <el-form-item label="状态" prop="enabled">
+          <el-select v-model="editForm.enabled" placeholder="请选择状态">
+            <el-option
+              v-for="item in statusList"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="说明" prop="description">
+          <el-input v-model="editForm.description" type="textarea" rows="4" auto-complete="off" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click.native="editFormVisible = false">取消</el-button>
+          <confirm-button type="submit" :loading="editLoading" :validate="editFormValidate" @click="onEditSubmit" />
+        </div>
+      </template>
+    </el-dialog>
+
+  </container>
 </template>
 
 <script>
@@ -189,29 +193,27 @@ import {
   addDictionary,
   getDictionary
 } from '@/api/admin/dictionary'
+import Container from '@/components/Container'
+import Pagination from '@/components/Pagination'
 import ConfirmButton from '@/components/ConfirmButton'
 export default {
   name: 'Dictionary',
-  components: {
-    ConfirmButton
-  },
+  components: { Container, ConfirmButton, Pagination },
   data() {
     return {
       filter: {
         name: ''
       },
+      pager: {},
       dictionaryTree: [],
       dictionaries: [],
       statusList: [
         { name: '激活', value: true },
         { name: '禁用', value: false }
       ],
-      total: 0,
-      page: 1,
       listLoading: false,
       sels: [], // 列表选中列
 
-      addDialogFormVisible: false,
       editFormVisible: false, // 编辑界面是否显示
       editLoading: false,
       editFormRules: {
@@ -255,20 +257,18 @@ export default {
     }
   },
   mounted() {
+    this.pager = this.$refs.pager.getPager()
     this.getDictionaries()
   },
   methods: {
     formatCreatedTime: function(row, column, time) {
       return formatTime(time, 'yyyy-MM-dd hh:mm')
     },
-    handleCurrentChange(val) {
-      this.page = val
-      this.getDictionaries()
-    },
     // 获取列表
     async getDictionaries() {
       const para = {
-        page: this.page,
+        currentPage: this.pager.currentPage,
+        pageSize: this.pager.pageSize,
         filter: this.filter
       }
       this.listLoading = true
@@ -285,7 +285,7 @@ export default {
         return
       }
 
-      this.total = res.data.total
+      this.pager.total = res.data.total
       const list = _.cloneDeep(res.data.list)
 
       this.dictionaries = listToTree(_.cloneDeep(list), {

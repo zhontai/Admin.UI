@@ -1,46 +1,50 @@
 <template>
-  <section>
-    <!--工具条-->
-    <el-row>
-      <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-        <el-form :inline="true" size="small" :model="filters" @submit.native.prevent>
-          <el-form-item>
-            <el-input v-model="filters.label" placeholder="视图名或地址" @keyup.enter.native="onGetList">
-              <i slot="prefix" class="el-input__icon el-icon-search" />
-            </el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="onGetList">查询</el-button>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="onAdd">新增</el-button>
-          </el-form-item>
-          <el-form-item>
-            <confirm-button
-              :icon="'el-icon-refresh'"
-              :placement="'bottom-end'"
-              :loading="syncLoading"
-              style="margin:0px;"
-              @click="onSync"
-            >
-              <p slot="content">确定要同步视图吗？</p>同步视图
-            </confirm-button>
-          </el-form-item>
-          <el-form-item>
-            <confirm-button
-              v-if="sels.length > 0"
-              :type="'delete'"
-              :placement="'bottom-end'"
-              :loading="deleteLoading"
-              style="margin-left: 0px;"
-              @click="onBatchDelete"
-            >
-              <p slot="content">确定要批量删除吗？</p>批量删除
-            </confirm-button>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
+  <section style="padding:10px;">
+    <!--查询-->
+    <el-form :inline="true" :model="filters" @submit.native.prevent>
+      <el-form-item>
+        <el-input v-model="filters.label" placeholder="视图名或地址" @keyup.enter.native="onGetList">
+          <template #prefix>
+            <i class="el-input__icon el-icon-search" />
+          </template>
+        </el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="onGetList">查询</el-button>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="onAdd">新增</el-button>
+      </el-form-item>
+      <el-form-item>
+        <confirm-button
+          :icon="'el-icon-refresh'"
+          :placement="'bottom-end'"
+          :loading="syncLoading"
+          style="margin:0px;"
+          @click="onSync"
+        >
+          <template #content>
+            <p>确定要同步视图吗？</p>
+          </template>
+          同步视图
+        </confirm-button>
+      </el-form-item>
+      <el-form-item>
+        <confirm-button
+          :disabled="sels.length === 0"
+          :type="'delete'"
+          :placement="'bottom-end'"
+          :loading="deleteLoading"
+          style="margin-left: 0px;"
+          @click="onBatchDelete"
+        >
+          <template #content>
+            <p>确定要批量删除吗？</p>
+          </template>
+          批量删除
+        </confirm-button>
+      </el-form-item>
+    </el-form>
 
     <!--列表-->
     <el-table
@@ -57,67 +61,27 @@
       @select="onSelect"
     >
       <el-table-column type="selection" width="50" />
-      <el-table-column type="index" width="50" />
+      <el-table-column type="index" width="50" label="#" />
       <el-table-column prop="label" label="视图名" width="180" />
       <el-table-column prop="id" label="编号" width="80" />
       <el-table-column prop="path" label="视图地址" width />
       <el-table-column prop="description" label="视图描述" width />
       <el-table-column prop="enabled" label="状态" width="100">
-        <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.enabled ? 'success' : 'info'"
-            disable-transitions
-          >{{ scope.row.enabled ? '正常' : '禁用' }}</el-tag>
+        <template v-slot="{row}">
+          <el-tag :type="row.enabled ? 'success' : 'info'" disable-transitions>
+            {{ row.enabled ? '正常' : '禁用' }}
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="180">
         <template v-slot="{ $index, row }">
-          <el-button size="small" @click="onEdit($index, row)">编辑</el-button>
+          <el-button @click="onEdit($index, row)">编辑</el-button>
           <confirm-button type="delete" :loading="row._loading" @click="onDelete($index, row)" />
         </template>
       </el-table-column>
     </el-table>
 
-    <!--编辑界面-->
-    <el-dialog
-      v-model="editFormVisible"
-      title="编辑"
-      :visible.sync="editFormVisible"
-      :close-on-click-modal="false"
-      @close="onCloseEditForm"
-    >
-      <el-form ref="editForm" :model="editForm" :rules="editFormRules" label-width="80px">
-        <el-form-item prop="parentIds" label="所属模块">
-          <el-cascader
-            :key="editFormKey"
-            v-model="editForm.parentIds"
-            placeholder="请选择，支持搜索功能"
-            :options="modules"
-            :props="{ checkStrictly: true, value: 'id' }"
-            filterable
-            style="width:100%;"
-          />
-        </el-form-item>
-        <el-form-item label="视图名" prop="label">
-          <el-input v-model="editForm.label" auto-complete="off" />
-        </el-form-item>
-        <el-form-item label="视图地址" prop="path">
-          <el-input v-model="editForm.path" auto-complete="off" />
-        </el-form-item>
-        <el-form-item label="启用" prop="enabled">
-          <el-switch v-model="editForm.enabled" />
-        </el-form-item>
-        <el-form-item label="说明" prop="description">
-          <el-input v-model="editForm.description" type="textarea" rows="2" auto-complete="off" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click.native="editFormVisible = false">取消</el-button>
-        <confirm-button :validate="editFormValidate" :loading="editLoading" @click="onEditSubmit" />
-      </div>
-    </el-dialog>
-
-    <!--新增界面-->
+    <!--新增窗口-->
     <el-dialog
       v-model="addFormVisible"
       title="新增"
@@ -150,10 +114,53 @@
           <el-input v-model="addForm.description" type="textarea" rows="2" auto-complete="off" />
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click.native="addFormVisible = false">取消</el-button>
-        <confirm-button :validate="addFormValidate" :loading="addLoading" @click="onAddSubmit" />
-      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click.native="addFormVisible = false">取消</el-button>
+          <confirm-button type="submit" :validate="addFormValidate" :loading="addLoading" @click="onAddSubmit" />
+        </div>
+      </template>
+    </el-dialog>
+
+    <!--编辑窗口-->
+    <el-dialog
+      v-model="editFormVisible"
+      title="编辑"
+      :visible.sync="editFormVisible"
+      :close-on-click-modal="false"
+      @close="onCloseEditForm"
+    >
+      <el-form ref="editForm" :model="editForm" :rules="editFormRules" label-width="80px">
+        <el-form-item prop="parentIds" label="所属模块">
+          <el-cascader
+            :key="editFormKey"
+            v-model="editForm.parentIds"
+            placeholder="请选择，支持搜索功能"
+            :options="modules"
+            :props="{ checkStrictly: true, value: 'id' }"
+            filterable
+            style="width:100%;"
+          />
+        </el-form-item>
+        <el-form-item label="视图名" prop="label">
+          <el-input v-model="editForm.label" auto-complete="off" />
+        </el-form-item>
+        <el-form-item label="视图地址" prop="path">
+          <el-input v-model="editForm.path" auto-complete="off" />
+        </el-form-item>
+        <el-form-item label="启用" prop="enabled">
+          <el-switch v-model="editForm.enabled" />
+        </el-form-item>
+        <el-form-item label="说明" prop="description">
+          <el-input v-model="editForm.description" type="textarea" rows="2" auto-complete="off" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click.native="editFormVisible = false">取消</el-button>
+          <confirm-button type="submit" :validate="editFormValidate" :loading="editLoading" @click="onEditSubmit" />
+        </div>
+      </template>
     </el-dialog>
   </section>
 </template>
