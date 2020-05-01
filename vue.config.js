@@ -33,6 +33,11 @@ module.exports = {
         ws: true,
         changeOrigin: true
       },
+      '^/images': {
+        target: 'http://localhost:8888',
+        ws: true,
+        changeOrigin: true
+      },
       '^/swagger': {
         target: 'http://localhost:8888',
         ws: true,

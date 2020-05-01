@@ -118,6 +118,20 @@ export default {
     },
     getHtml() {
       return this.editor.getHtml()
+    },
+    setImg(src) {
+      const editor = this.editor.getCodeMirror()
+      const editorHtml = this.editor.getCurrentModeEditor()
+      const isMarkdownMode = this.editor.isMarkdownMode()
+      if (isMarkdownMode) {
+        editor.replaceSelection(`![img](${src})`)
+      } else {
+        const range = editorHtml.getRange()
+        const img = document.createElement('img')
+        img.src = `${src}`
+        img.alt = 'img'
+        range.insertNode(img)
+      }
     }
   }
 }

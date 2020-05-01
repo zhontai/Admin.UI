@@ -11,7 +11,7 @@
 <confirm-button type="delete" @click="handleDel($index, row)" :loading="row._loading"/>
 
 表单验证
-<confirm-button @click="editSubmit" :validate="editFormvalidate" :loading="editLoading"/>
+<confirm-button type="submit" @click="editSubmit" :validate="editFormvalidate" :loading="editLoading"/>
 
 设置位置
 <confirm-button @click="submit" :validate="editFormvalidate" :placement="'top-start'" :loading="editLoading">

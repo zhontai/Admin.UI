@@ -4,6 +4,9 @@ import request from '@/utils/request'
 export const getDocuments = params => {
   return request.get('/api/admin/document/getlist', { params: params })
 }
+export const getDocumentImages = params => {
+  return request.get('/api/admin/document/getimagelist', { params: params })
+}
 export const getGroup = params => {
   return request.get('/api/admin/document/getGroup', { params: params })
 }

@@ -4,7 +4,7 @@
       <el-container>
         <el-header class="header" height="auto" style="padding:5px 10px 5px 10px;text-align:right;">
           <span style="float:left;font-size:14px;line-height: 28px;">{{ document.form.label }}</span>
-          <el-button type="primary" :disabled="disabledSave" :loading="document.loadingSave" @click="save">保存文档</el-button>
+          <el-button type="primary" :disabled="!hasDocument" :loading="document.loadingSave" @click="save">保存文档</el-button>
         </el-header>
         <el-main class="main" style="padding:0px 5px 5px 5px;">
           <div style="height:calc(100% - 2px);">
@@ -15,61 +15,101 @@
       <el-aside width="300px" style="padding:0px;border-left: 1px solid #e6e6e6;">
         <el-container style="height:100%;overflow:hidden;">
           <el-header class="header" height="auto" style="padding:5px 10px 6px 10px;border-bottom: 1px solid #e6e6e6;text-align:right;">
-            <el-button-group>
-              <el-button type="primary" @click="getDocuments">刷新</el-button>
-              <el-dropdown>
-                <el-button type="primary">
-                  新增<i class="el-icon-arrow-down el-icon--right" />
+            <div v-show="isDocTab">
+              <el-button-group>
+                <el-button type="primary" @click="getDocuments">刷新</el-button>
+                <el-dropdown>
+                  <el-button type="primary">
+                    新增<i class="el-icon-arrow-down el-icon--right" />
+                  </el-button>
+                  <template #dropdown>
+                    <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;">
+                      <el-dropdown-item icon="el-icon-folder" @click.native="onOpenAddGroup">新增分组</el-dropdown-item>
+                      <el-dropdown-item icon="el-icon-tickets" @click.native="onOpenAddMenu">新增菜单</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+              </el-button-group>
+            </div>
+            <div v-show="isImgTab">
+              <el-button-group>
+                <el-button type="primary" :disabled="!hasDocument" @click="getDocumentImages">刷新</el-button>
+                <el-upload
+                  v-if="hasDocument"
+                  ref="upload"
+                  action="/api/admin/document/uploadimage"
+                  multiple
+                  :headers="token"
+                  :data="uploadData"
+                  :show-file-list="false"
+                  :before-upload="beforeUpload"
+                  :on-success="onSuccess"
+                  :on-error="onError"
+                  style="display: inline-block;"
+                >
+                  <el-button type="primary">
+                    <i class="el-icon-upload el-icon--left" />上传图片
+                  </el-button>
+                </el-upload>
+                <el-button v-else type="primary" :disabled="!hasDocument">
+                  <i class="el-icon-upload el-icon--left" />上传图片
                 </el-button>
-                <template #dropdown>
-                  <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;">
-                    <el-dropdown-item icon="el-icon-folder" @click.native="onOpenAddGroup">新增分组</el-dropdown-item>
-                    <el-dropdown-item icon="el-icon-tickets" @click.native="onOpenAddMenu">新增菜单</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </el-button-group>
-
-            <!-- <el-button type="primary"><i class="el-icon-upload el-icon--left" />上传</el-button> -->
+              </el-button-group>
+            </div>
           </el-header>
-          <el-main class="main" style="padding:0px 5px 5px 5px;">
-            <el-table
-              v-loading="listLoading"
-              highlight-current-row
-              :data="documentTree"
-              row-key="id"
-              :show-header="false"
-              :default-expand-all="false"
-              :expand-row-keys="expandRowKeys"
-              :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-              style="width: 100%;"
-              @current-change="onCurrentChange"
-            >
-              <el-table-column label="文档" width>
-                <template v-slot="{row}">
-                  <i :class="row.icon" />
-                  {{ row.label }}
+          <el-main class="main" :style="isImgTab?'padding:5px 10px 10px 10px':'padding:0px 5px 5px 5px;'">
+            <div v-show="isDocTab" style="height:100%;">
+              <el-table
+                v-loading="listLoading"
+                highlight-current-row
+                :data="documentTree"
+                row-key="id"
+                :show-header="false"
+                :default-expand-all="false"
+                :expand-row-keys="expandRowKeys"
+                :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+                style="width: 100%;"
+                @current-change="onCurrentChange"
+              >
+                <el-table-column label="文档" width>
+                  <template v-slot="{row}">
+                    <i :class="row.icon" />
+                    {{ row.label }}
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作" align="right">
+                  <template v-slot="{ $index, row }">
+                    <el-button type="text" icon="el-icon-edit" @click="onEdit($index, row)" />
+                    <confirm-button
+                      type="text"
+                      :loading="row._loading"
+                      :icon="'el-icon-delete'"
+                      @click="onDelete($index, row)"
+                    >
+                      <template #content>
+                        <p>确定要删除吗？</p>
+                      </template>
+                    </confirm-button>
+                  </template>
+                </el-table-column>
+                <template #empty>
+                  暂无文档
                 </template>
-              </el-table-column>
-              <el-table-column label="操作" align="right">
-                <template v-slot="{ $index, row }">
-                  <el-button type="text" icon="el-icon-edit" @click="onEdit($index, row)" />
-                  <confirm-button
-                    type="text"
-                    :loading="row._loading"
-                    :icon="'el-icon-delete'"
-                    @click="onDelete($index, row)"
-                  >
-                    <template #content>
-                      <p>确定要删除吗？</p>
+              </el-table>
+            </div>
+            <div v-show="isImgTab" v-loading="document.loadingImageList" style="height:100%;">
+              <el-row :gutter="10">
+                <el-col v-for="(image, index) in document.images" :key="'doc_img_'+index" :span="12">
+                  <el-image :src="image" lazy :fit="'cover'" class="image-container" @click="onSelectImage(image)">
+                    <template #error>
+                      <div class="image-slot">
+                        <i class="el-icon-picture-outline" />
+                      </div>
                     </template>
-                  </confirm-button>
-                </template>
-              </el-table-column>
-              <template #empty>
-                暂无文档
-              </template>
-            </el-table>
+                  </el-image>
+                </el-col>
+              </el-row>
+            </div>
           </el-main>
           <el-footer style="height: auto;padding: 0px;">
             <el-tabs
@@ -81,7 +121,7 @@
               @tab-click="onTabClick"
             >
               <el-tab-pane name="docs" label="文档管理" />
-              <!-- <el-tab-pane name="doc-imgs" label="文档图片" /> -->
+              <el-tab-pane name="imgs" label="文档图片" />
             </el-tabs>
           </el-footer>
         </el-container>
@@ -170,6 +210,7 @@ import ConfirmButton from '@/components/ConfirmButton'
 import { listToTree, getTreeParents } from '@/utils'
 import {
   getDocuments,
+  getDocumentImages,
   removeDocument,
   addGroup,
   addMenu,
@@ -198,14 +239,16 @@ export default {
       },
 
       document: {
+        tabName: 'docs',
         timer: '',
         first: true,
-        contentChange: false,
         form: {
           label: '',
           content: ''
         },
-        loadingSave: false
+        images: [],
+        loadingSave: false,
+        loadingImageList: false
       },
 
       groupTree: [],
@@ -242,8 +285,20 @@ export default {
     }
   },
   computed: {
-    disabledSave() {
-      return !(this.document.form.id > 0)
+    token() {
+      return { 'Authorization': 'Bearer ' + this.$store.getters.token }
+    },
+    isDocTab() {
+      return this.document.tabName === 'docs'
+    },
+    isImgTab() {
+      return this.document.tabName === 'imgs'
+    },
+    hasDocument() {
+      return this.document.form.id > 0
+    },
+    uploadData() {
+      return { id: this.document.form.id }
     }
   },
   watch: {
@@ -253,10 +308,11 @@ export default {
         return
       }
 
-      if (this.document.contentChange) {
-        return
+      if (this.document.timer) {
+        clearTimeout(this.document.timer)
+        this.document.timer = ''
       }
-      this.document.contentChange = true
+
       const me = this
       this.document.timer = setTimeout(function() { me.save(me, true) }, 10000)
     }
@@ -272,8 +328,7 @@ export default {
   },
   methods: {
     async save(e, autoSave = false) {
-      // const html = this.$refs.markdownEditor.getHtml()
-      if (!(this.document.form.id > 0)) {
+      if (!this.hasDocument) {
         return
       }
 
@@ -281,8 +336,8 @@ export default {
         clearTimeout(this.document.timer)
         this.document.timer = ''
       }
+      this.document.form.html = this.$refs.markdownEditor.getHtml()
 
-      this.document.contentChange = false
       this.document.loadingSave = true
       const res = await updateContent(this.document.form)
       this.document.loadingSave = false
@@ -304,14 +359,50 @@ export default {
         })
       }
     },
+    beforeUpload(file) {
+      // file.uid
+
+      // debugger
+    },
+    onSelectImage(src) {
+      this.$refs.markdownEditor.setImg(src)
+    },
+    onSuccess(res, file) {
+      if (!(res && res.code === 1)) {
+        if (res.msg) {
+          this.$message({
+            message: res.msg,
+            type: 'error'
+          })
+        }
+        return
+      }
+      this.document.images.unshift(res.data)
+    },
+    onError(err, file) {
+      const res = err.message ? JSON.parse(err.message) : {}
+      if (!(res && res.code === 1)) {
+        if (res.msg) {
+          this.$message({
+            message: res.msg,
+            type: 'error'
+          })
+        }
+        return
+      }
+    },
     async onCurrentChange(currentRow, oldCurrentRow) {
       if (currentRow.type === 1) {
         return
       }
 
-      if (this.document.contentChange) {
+      if (this.document.timer) {
         await this.save(this, true)
       }
+
+      this.document.form = {}
+      this.document.images = []
+
       const loading = this.$loading()
       const res = await getContent({ id: currentRow.id })
       loading.close()
@@ -322,15 +413,24 @@ export default {
     },
     // 点击选项卡
     onTabClick(tab) {
-      // if (tab.name && tab.name !== this.tabName) {
-
-      // }
+      if (this.document.tabName !== tab.name) {
+        this.document.tabName = tab.name
+        if (this.document.tabName === 'imgs' && !(this.document.images.length > 0)) {
+          this.getDocumentImages()
+        }
+      }
     },
     // 获取文档列表
     async getDocuments() {
       const para = {
         // key: this.filters.label
       }
+
+      this.document.form = {
+        label: '',
+        content: ''
+      }
+
       this.listLoading = true
       const res = await getDocuments(para)
       this.listLoading = false
@@ -374,6 +474,31 @@ export default {
       })
       const tree = listToTree(list)
       this.documentTree = tree
+    },
+    // 获取文档列表
+    async getDocumentImages() {
+      if (!this.hasDocument) {
+        return
+      }
+      const para = {
+        id: this.document.form.id
+      }
+
+      this.document.loadingImageList = true
+      const res = await getDocumentImages(para)
+      this.document.loadingImageList = false
+
+      if (!res.success) {
+        if (res.msg) {
+          this.$message({
+            message: res.msg,
+            type: 'error'
+          })
+        }
+        return
+      }
+
+      this.document.images = res.data
     },
     // 权限分组方法
     onOpenAddGroup() {
@@ -528,11 +653,24 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.ad-form-query{
-    & .el-form-item--mini, & .el-form-item--small{
-        &.el-form-item{
-            margin-bottom: 5px;
-        }
-    }
+.image-container{
+  height:130px;
+  line-height: 130px;
+  width:100%;
+  cursor: pointer;
+  margin-top:5px;
+  border: 1px solid #d7dae2;
+  border-radius: 4px;
+}
+
+::v-deep .image-slot{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: #f5f7fa;
+  color: #909399;
+  font-size: 30px;
 }
 </style>

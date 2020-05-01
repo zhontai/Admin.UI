@@ -14,9 +14,6 @@ export const getVerifyCode = params => {
 export const getPassWordEncryptKey = params => {
   return request.get('/api/admin/auth/getPassWordEncryptKey', { params: params })
 }
-export const getUserByToken = params => {
-  return request.get('/api/admin/auth/getUserInfoByToken', { params: params })
-}
 export const getLoginInfo = params => {
   return request.get('/api/admin/auth/getUserInfo', { params: params })
 }
