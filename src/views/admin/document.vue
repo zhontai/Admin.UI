@@ -4,7 +4,7 @@
       <el-container>
         <el-header class="header" height="auto" style="padding:5px 10px 5px 10px;text-align:right;">
           <span style="float:left;font-size:14px;line-height: 28px;">{{ document.form.label }}</span>
-          <el-button type="primary" :disabled="!hasDocument" :loading="document.loadingSave" @click="save">保存文档</el-button>
+          <el-button type="primary" :disabled="!hasDocument" :loading="document.loadingSave" @click="save(false)">保存文档</el-button>
         </el-header>
         <el-main class="main" style="padding:0px 5px 5px 5px;">
           <div style="height:calc(100% - 2px);">
@@ -42,9 +42,9 @@
                   :headers="token"
                   :data="uploadData"
                   :show-file-list="false"
-                  :before-upload="beforeUpload"
-                  :on-success="onSuccess"
-                  :on-error="onError"
+                  :before-upload="onBeforeUpload"
+                  :on-success="onUploadSuccess"
+                  :on-error="onUploadError"
                   style="display: inline-block;"
                 >
                   <el-button type="primary">
@@ -99,8 +99,8 @@
             </div>
             <div v-show="isImgTab" v-loading="document.loadingImageList" style="height:100%;">
               <el-row :gutter="10">
-                <el-col v-for="(image, index) in document.images" :key="'doc_img_'+index" :span="12">
-                  <el-image :src="image" lazy :fit="'cover'" class="image-container" @click="onSelectImage(image)">
+                <el-col v-for="(image, index) in document.images" :key="index" :span="12">
+                  <el-image :src="image" lazy :fit="'contain'" class="image-container" @click="onSelectImage(image)">
                     <template #error>
                       <div class="image-slot">
                         <i class="el-icon-picture-outline" />
@@ -114,14 +114,14 @@
           <el-footer style="height: auto;padding: 0px;">
             <el-tabs
               ref="tabs"
-              value="docs"
+              :value="document.tabName"
               :stretch="false"
               tab-position="bottom"
               type="border-card"
               @tab-click="onTabClick"
             >
-              <el-tab-pane name="docs" label="文档管理" />
-              <el-tab-pane name="imgs" label="文档图片" />
+              <el-tab-pane :name="document.tabs.doc" label="文档管理" />
+              <el-tab-pane :name="document.tabs.img" label="文档图片" />
             </el-tabs>
           </el-footer>
         </el-container>
@@ -226,6 +226,7 @@ export default {
   name: 'Document',
   components: { MarkdownEditor, ConfirmButton },
   data() {
+    const tabs = { doc: 'docTab', img: 'imgTab' }
     return {
       documentTree: [],
       expandRowKeys: [],
@@ -239,11 +240,11 @@ export default {
       },
 
       document: {
-        tabName: 'docs',
+        tabs,
+        tabName: tabs.doc,
         timer: '',
         first: true,
         form: {
-          label: '',
           content: ''
         },
         images: [],
@@ -289,10 +290,10 @@ export default {
       return { 'Authorization': 'Bearer ' + this.$store.getters.token }
     },
     isDocTab() {
-      return this.document.tabName === 'docs'
+      return this.document.tabName === this.document.tabs.doc
     },
     isImgTab() {
-      return this.document.tabName === 'imgs'
+      return this.document.tabName === this.document.tabs.img
     },
     hasDocument() {
       return this.document.form.id > 0
@@ -305,6 +306,10 @@ export default {
     'document.form.content'(newVal, oldVal) {
       if (this.document.first) {
         this.document.first = false
+        if (this.document.timer) {
+          clearTimeout(this.document.timer)
+          this.document.timer = ''
+        }
         return
       }
 
@@ -314,7 +319,7 @@ export default {
       }
 
       const me = this
-      this.document.timer = setTimeout(function() { me.save(me, true) }, 10000)
+      this.document.timer = setTimeout(function() { me.save(true) }, 10000)
     }
   },
   mounted() {
@@ -327,7 +332,7 @@ export default {
     }
   },
   methods: {
-    async save(e, autoSave = false) {
+    async save(autoSave = false) {
       if (!this.hasDocument) {
         return
       }
@@ -336,6 +341,7 @@ export default {
         clearTimeout(this.document.timer)
         this.document.timer = ''
       }
+
       this.document.form.html = this.$refs.markdownEditor.getHtml()
 
       this.document.loadingSave = true
@@ -359,7 +365,7 @@ export default {
         })
       }
     },
-    beforeUpload(file) {
+    onBeforeUpload(file) {
       // file.uid
 
       // debugger
@@ -367,7 +373,7 @@ export default {
     onSelectImage(src) {
       this.$refs.markdownEditor.setImg(src)
     },
-    onSuccess(res, file) {
+    onUploadSuccess(res, file) {
       if (!(res && res.code === 1)) {
         if (res.msg) {
           this.$message({
@@ -379,7 +385,7 @@ export default {
       }
       this.document.images.unshift(res.data)
     },
-    onError(err, file) {
+    onUploadError(err, file) {
       const res = err.message ? JSON.parse(err.message) : {}
       if (!(res && res.code === 1)) {
         if (res.msg) {
@@ -397,10 +403,11 @@ export default {
       }
 
       if (this.document.timer) {
-        await this.save(this, true)
+        await this.save(true)
       }
 
-      this.document.form = {}
+      this.document.first = true
+      this.document.form = { content: '' }
       this.document.images = []
 
       const loading = this.$loading()
@@ -415,7 +422,7 @@ export default {
     onTabClick(tab) {
       if (this.document.tabName !== tab.name) {
         this.document.tabName = tab.name
-        if (this.document.tabName === 'imgs' && !(this.document.images.length > 0)) {
+        if (this.document.tabName === this.document.tabs.img && !(this.document.images.length > 0)) {
           this.getDocumentImages()
         }
       }
@@ -430,6 +437,7 @@ export default {
         label: '',
         content: ''
       }
+      this.document.images = []
 
       this.listLoading = true
       const res = await getDocuments(para)
@@ -475,7 +483,7 @@ export default {
       const tree = listToTree(list)
       this.documentTree = tree
     },
-    // 获取文档列表
+    // 获取文档图片列表
     async getDocumentImages() {
       if (!this.hasDocument) {
         return
@@ -500,6 +508,13 @@ export default {
 
       this.document.images = res.data
     },
+    // @row-dblclick="onRowDblClick"
+    // onRowDblClick(row, col, e) {
+    //   this.document.tabName = this.document.tabs.img
+    //   if (!(this.document.images.length > 0)) {
+    //     this.getDocumentImages()
+    //   }
+    // },
     // 权限分组方法
     onOpenAddGroup() {
       this.documentGroup.form = _.cloneDeep(this.documentGroup.addForm)
@@ -654,13 +669,15 @@ export default {
 
 <style lang="scss" scoped>
 .image-container{
-  height:130px;
-  line-height: 130px;
+  height:120px;
+  line-height: 120px;
   width:100%;
   cursor: pointer;
   margin-top:5px;
-  border: 1px solid #d7dae2;
+  // border: 1px solid #d7dae2;
+  border: 1px solid #f5f7fa;
   border-radius: 4px;
+  background: #f5f7fa;
 }
 
 ::v-deep .image-slot{
