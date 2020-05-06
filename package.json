@@ -1,6 +1,6 @@
 {
   "name": "admin.vue",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "private": true,
   "description": "中台admin前端解决方案",
   "author": "小雪转中雪",
@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@toast-ui/editor": "^2.0.1",
+    "@toast-ui/editor-plugin-code-syntax-highlight": "^1.0.0",
     "@toast-ui/editor-plugin-color-syntax": "^1.0.0",
     "@toast-ui/editor-plugin-table-merged-cell": "^1.0.0",
     "axios": "^0.19.0",

@@ -9,11 +9,35 @@
 import 'codemirror/lib/codemirror.css' // Editor's Dependency Style
 import '@toast-ui/editor/dist/toastui-editor.css' // Editor's Style
 import 'tui-color-picker/dist/tui-color-picker.css'
+import 'highlight.js/styles/vs.css'
 
 import Editor from '@toast-ui/editor'
 import '@toast-ui/editor/dist/i18n/zh-cn'
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax'
 import tableMergedCell from '@toast-ui/editor-plugin-table-merged-cell'
+
+import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight'
+// all
+// import hljs from 'highlight.js'
+// part
+import hljs from 'highlight.js/lib/highlight'
+import cs from 'highlight.js/lib/languages/cs'
+import xml from 'highlight.js/lib/languages/xml'
+import json from 'highlight.js/lib/languages/json'
+import html from 'highlight.js/lib/languages/htmlbars'
+import css from 'highlight.js/lib/languages/css'
+import scss from 'highlight.js/lib/languages/scss'
+import javascript from 'highlight.js/lib/languages/javascript'
+hljs.registerLanguage('net', cs)
+hljs.registerLanguage('html', html)
+hljs.registerLanguage('js', javascript)
+hljs.registerLanguage('css', css)
+hljs.registerLanguage('scss', scss)
+hljs.registerLanguage('json', json)
+hljs.registerLanguage('xml', xml)
+// import typescript from 'highlight.js/lib/languages/typescript'
+// hljs.registerLanguage('typescript', typescript)
+
 import defaultOptions from './default-options'
 
 export default {
@@ -91,8 +115,8 @@ export default {
   methods: {
     initEditor() {
       this.editor = new Editor({
-        el: document.querySelector('#' + this.id),
-        plugins: [colorSyntax, tableMergedCell],
+        el: document.getElementById(this.id),
+        plugins: [colorSyntax, tableMergedCell, [codeSyntaxHighlight, { hljs }]],
         ...this.editorOptions
       })
       if (this.value) {
@@ -120,16 +144,17 @@ export default {
       return this.editor.getHtml()
     },
     setImg(src) {
-      const editor = this.editor.getCodeMirror()
-      const editorHtml = this.editor.getCurrentModeEditor()
       const isMarkdownMode = this.editor.isMarkdownMode()
       if (isMarkdownMode) {
-        editor.replaceSelection(`![img](${src})`)
+        this.editor.getCodeMirror().replaceSelection(`![img](${src})`)
       } else {
-        const range = editorHtml.getRange()
+        const range = this.editor.getRange()
+        if (range && range.startContainer && (range.startContainer.className.indexOf('el-main') > -1)) {
+          return
+        }
         const img = document.createElement('img')
-        img.src = `${src}`
-        img.alt = 'img'
+        img.src = src
+        img.alt = ''
         range.insertNode(img)
       }
     }

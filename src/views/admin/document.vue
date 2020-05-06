@@ -1,5 +1,5 @@
 <template>
-  <section style="height:100%;">
+  <section ref="page" style="height:100%;">
     <el-container style="height:100%;">
       <el-container>
         <el-header class="header" height="auto" style="padding:5px 10px 5px 10px;text-align:right;">
@@ -57,7 +57,7 @@
               </el-button-group>
             </div>
           </el-header>
-          <el-main class="main" :style="isImgTab?'padding:5px 10px 10px 10px':'padding:0px 5px 5px 5px;'">
+          <el-main ref="tabContainer" class="main" :style="isImgTab?'padding:5px 10px 10px 10px':'padding:0px 5px 5px 5px;'">
             <div v-show="isDocTab" style="height:100%;">
               <el-table
                 v-loading="listLoading"
@@ -98,15 +98,44 @@
               </el-table>
             </div>
             <div v-show="isImgTab" v-loading="document.loadingImageList" style="height:100%;">
-              <el-row :gutter="10">
-                <el-col v-for="(image, index) in document.images" :key="index" :span="12">
-                  <el-image :src="image" lazy :fit="'contain'" class="image-container" @click="onSelectImage(image)">
+              <el-row :gutter="10" class="mc-upload-list">
+                <el-col v-for="img in document.uploadImages" :key="img.uid" :span="12">
+                  <el-image v-if="img.src" :src="img.src" lazy :fit="'scale-down'" class="image-container" @click="onSelectImage(img.src)">
                     <template #error>
                       <div class="image-slot">
                         <i class="el-icon-picture-outline" />
                       </div>
                     </template>
                   </el-image>
+                  <div
+                    v-else
+                    v-loading="img.loading"
+                    element-loading-spinner="el-icon-loading"
+                    element-loading-background="rgba(0, 0, 0, 0.6)"
+                    element-loading-text="上传中"
+                    style="height: 120px;margin-top: 5px;"
+                  >
+                    <el-image :fit="'scale-down'" class="image-container">
+                      <template #error>
+                        <div class="image-slot">
+                          <i class="el-icon-picture-outline" />
+                        </div>
+                      </template>
+                    </el-image>
+                  </div>
+                </el-col>
+                <el-col v-for="src in document.images" :key="src" :span="12" class="mc-upload-list__item">
+                  <el-image :src="src" lazy :fit="'scale-down'" class="image-container" @click="onSelectImage(src)">
+                    <template #error>
+                      <div class="image-slot">
+                        <i class="el-icon-picture-outline" />
+                      </div>
+                    </template>
+                  </el-image>
+                  <span class="mc-upload-list__item-actions">
+                    <span class="cm-upload-list__item-preview" @click="onOpenViewer(src)"><i class="el-icon-zoom-in" /></span>
+                    <span class="cm-upload-list__item-delete" @click="onDeleteImage(src)"><i class="el-icon-delete" /></span>
+                  </span>
                 </el-col>
               </el-row>
             </div>
@@ -201,10 +230,14 @@
         </div>
       </template>
     </el-dialog>
+
+    <!--图片查看器-->
+    <image-viewer v-if="showViewer" :z-index="2000" :initial-index="imageIndex" :on-close="onCloseViewer" :url-list="document.images" />
   </section>
 </template>
 
 <script>
+import ImageViewer from 'element-ui/packages/image/src/image-viewer'
 import MarkdownEditor from '@/components/MarkdownEditor'
 import ConfirmButton from '@/components/ConfirmButton'
 import { listToTree, getTreeParents } from '@/utils'
@@ -219,12 +252,15 @@ import {
   updateContent,
   getGroup,
   getMenu,
-  getContent
+  getContent,
+  deleteImage
 } from '@/api/admin/document'
+
+let prevOverflow = ''
 
 export default {
   name: 'Document',
-  components: { MarkdownEditor, ConfirmButton },
+  components: { ImageViewer, MarkdownEditor, ConfirmButton },
   data() {
     const tabs = { doc: 'docTab', img: 'imgTab' }
     return {
@@ -239,6 +275,8 @@ export default {
         name: [{ required: true, message: '请输入命名', trigger: ['blur'] }]
       },
 
+      showViewer: false,
+      imageSrc: '',
       document: {
         tabs,
         tabName: tabs.doc,
@@ -248,8 +286,11 @@ export default {
           content: ''
         },
         images: [],
+        uploadImages: [],
         loadingSave: false,
-        loadingImageList: false
+        loadingImageList: false,
+        imgScrollTop: 0,
+        docScrollTop: 0
       },
 
       groupTree: [],
@@ -300,6 +341,14 @@ export default {
     },
     uploadData() {
       return { id: this.document.form.id }
+    },
+    imageIndex() {
+      let previewIndex = 0
+      const srcIndex = this.document.images.indexOf(this.imageSrc)
+      if (srcIndex >= 0) {
+        previewIndex = srcIndex
+      }
+      return previewIndex
     }
   },
   watch: {
@@ -320,6 +369,23 @@ export default {
 
       const me = this
       this.document.timer = setTimeout(function() { me.save(true) }, 10000)
+    },
+    'document.tabName'(newVal, oldVal) {
+      const $el = this.$refs.tabContainer?.$el
+      if ($el) {
+        const scrollTop = $el.scrollTop
+        let toScrollTop = 0
+        if (newVal === this.document.tabs.doc) {
+          toScrollTop = this.document.docScrollTop
+          this.document.imgScrollTop = scrollTop > 0 ? scrollTop : 0
+        } else if (newVal === this.document.tabs.img) {
+          toScrollTop = this.document.imgScrollTop
+          this.document.docScrollTop = scrollTop > 0 ? scrollTop : 0
+        }
+        this.$nextTick(function() {
+          $el.scrollTop = toScrollTop
+        })
+      }
     }
   },
   mounted() {
@@ -366,14 +432,16 @@ export default {
       }
     },
     onBeforeUpload(file) {
-      // file.uid
-
-      // debugger
+      this.document.uploadImages.unshift({
+        loading: true,
+        src: '',
+        uid: file.uid
+      })
     },
     onSelectImage(src) {
       this.$refs.markdownEditor.setImg(src)
     },
-    onUploadSuccess(res, file) {
+    onUploadSuccess(res, file, fileList) {
       if (!(res && res.code === 1)) {
         if (res.msg) {
           this.$message({
@@ -383,7 +451,10 @@ export default {
         }
         return
       }
-      this.document.images.unshift(res.data)
+
+      const img = this.document.uploadImages.find(a => a.uid === file.uid)
+      img.src = res.data
+      img.loading = false
     },
     onUploadError(err, file) {
       const res = err.message ? JSON.parse(err.message) : {}
@@ -394,8 +465,9 @@ export default {
             type: 'error'
           })
         }
-        return
       }
+      const img = this.document.uploadImages.find(a => a.uid === file.uid)
+      img.loading = false
     },
     async onCurrentChange(currentRow, oldCurrentRow) {
       if (currentRow.type === 1) {
@@ -410,7 +482,10 @@ export default {
       this.document.form = { content: '' }
       this.document.images = []
 
-      const loading = this.$loading()
+      const loading = this.$loading({
+        target: this.$refs.page,
+        fullscreen: false
+      })
       const res = await getContent({ id: currentRow.id })
       loading.close()
       if (res && res.success) {
@@ -505,8 +580,45 @@ export default {
         }
         return
       }
-
+      this.document.uploadImages = []
       this.document.images = res.data
+    },
+    // 删除图片
+    async onDeleteImage(src) {
+      const para = { documentId: this.document.form.id, url: src }
+      const loading = this.$loading()
+      const res = await deleteImage(para)
+      loading.close()
+
+      if (!res.success) {
+        this.$message({
+          message: res.msg,
+          type: 'error'
+        })
+        return
+      }
+
+      this.$message({
+        message: this.$t('admin.deleteOk'),
+        type: 'success'
+      })
+
+      const index = this.document.images.findIndex(a => a === src)
+      this.document.images.splice(index, 1)
+    },
+    // 打开图片预览
+    onOpenViewer(src) {
+      this.imageSrc = src
+
+      // prevent body scroll
+      prevOverflow = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+      this.showViewer = true
+    },
+    // 关闭图片预览
+    onCloseViewer() {
+      document.body.style.overflow = prevOverflow
+      this.showViewer = false
     },
     // @row-dblclick="onRowDblClick"
     // onRowDblClick(row, col, e) {
@@ -675,9 +787,10 @@ export default {
   cursor: pointer;
   margin-top:5px;
   // border: 1px solid #d7dae2;
-  border: 1px solid #f5f7fa;
-  border-radius: 4px;
   background: #f5f7fa;
+  &:hover{
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  }
 }
 
 ::v-deep .image-slot{
@@ -689,5 +802,39 @@ export default {
   background: #f5f7fa;
   color: #909399;
   font-size: 30px;
+}
+
+.mc-upload-list{
+  .mc-upload-list__item{
+    position: relative;
+    .mc-upload-list__item-actions{
+      position: absolute;
+      bottom: 0;
+      left: 5px;
+      right: 5px;
+      color: #fff;
+      background-color: rgba(0,0,0,.5);
+      text-align: right;
+      font-size: 18px;
+      padding: 3px 10px;
+      opacity: 0;
+      transition: opacity .3s;
+      span{
+        cursor: pointer;
+        display: inline-block;
+        &+span{
+          margin-left:15px;
+        }
+        &:hover{
+          color: #409eff;
+        }
+      }
+    }
+    &:hover{
+      .mc-upload-list__item-actions{
+        opacity: 1;
+      }
+    }
+  }
 }
 </style>

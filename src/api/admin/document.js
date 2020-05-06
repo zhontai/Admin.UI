@@ -34,3 +34,6 @@ export const updateContent = params => {
 export const removeDocument = params => {
   return request.delete('/api/admin/document/softdelete', { params: params })
 }
+export const deleteImage = params => {
+  return request.delete('/api/admin/document/deleteimage', { params: params })
+}

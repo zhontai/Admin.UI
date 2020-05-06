@@ -1,6 +1,18 @@
 <template>
   <section style="padding:20px 80px 0px 8px;">
     <el-timeline>
+      <el-timeline-item timestamp="版本 1.1.2" placement="top">
+        <el-card>
+          <h4>新增 文档管理 图片删除和预览功能</h4>
+          <h4>新增 文档管理 支持代码块vs高亮</h4>
+          <h4>优化 文档管理 文档和图片选项卡切换后还原滚动位置</h4>
+          <h4>优化 文档管理 上传图片增加上传提示</h4>
+          <h4>优化 文档管理 图片管理图片等比例显示</h4>
+          <h4>修复 文档管理 切换页面回来直接插入图片错乱问题</h4>
+          <h4>修复 文档管理 本地上传图片使用雪花Id生成文件名出现重复的问题</h4>
+          <p>小雪转中雪 提交于 2020-5-6</p>
+        </el-card>
+      </el-timeline-item>
       <el-timeline-item timestamp="版本 1.1.1" placement="top">
         <el-card>
           <h4>新增 文档管理-文档图片上传功能，支持多图上传和懒加载</h4>
