@@ -28,9 +28,9 @@ import html from 'highlight.js/lib/languages/htmlbars'
 import css from 'highlight.js/lib/languages/css'
 import scss from 'highlight.js/lib/languages/scss'
 import javascript from 'highlight.js/lib/languages/javascript'
-hljs.registerLanguage('net', cs)
+hljs.registerLanguage('cs', cs)
 hljs.registerLanguage('html', html)
-hljs.registerLanguage('js', javascript)
+hljs.registerLanguage('javascript', javascript)
 hljs.registerLanguage('css', css)
 hljs.registerLanguage('scss', scss)
 hljs.registerLanguage('json', json)

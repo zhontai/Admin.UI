@@ -3,7 +3,7 @@ import CryptoJS from 'crypto-js'
 /**
  * 加密
  * @param {string} message 需要加密的字符串
- * @param {string} key 秘钥
+ * @param {string} key 密钥
  * @return {string}
  */
 export function encryptByDES(message, key) {
@@ -18,7 +18,7 @@ export function encryptByDES(message, key) {
 /**
  * 解密
  * @param {string} cipherText 密文
- * @param {string} key 秘钥
+ * @param {string} key 密钥
  * @return {string}
  */
 export function decryptByDES(cipherText, key) {

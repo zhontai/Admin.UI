@@ -31,7 +31,7 @@ const constantRoutes = [
 const createRouter = () =>
   new Router({
     mode: 'history', // require service support
-    scrollBehavior: () => ({ y: 100 }),
+    // scrollBehavior: () => ({ y: 100 }),
     routes: constantRoutes
   })
 
@@ -72,6 +72,12 @@ function generateRoutes(menus = []) {
         Message.error(`导入组件${m.viewPath}.vue失败`)
       }
     }
+  })
+
+  routes.children.push({
+    path: '',
+    // component: _import('/admin/404'),
+    hidden: true
   })
 
   routes.children.push({

@@ -1,6 +1,21 @@
 <template>
   <section style="padding:20px 80px 0px 8px;">
     <el-timeline>
+      <el-timeline-item timestamp="版本 1.2.0" placement="top">
+        <el-card>
+          <h4>修复 文档管理-刷新文档不清除当前选中行</h4>
+          <h4>修复 文档管理-上传图片后无法预览和删除</h4>
+          <h4>修复 切换用户登录头像为空不刷新</h4>
+          <h4>修复 用户配置无首页时，登录后显示页面不存在</h4>
+          <h4>优化 文档管理自动保存</h4>
+          <h4>优化 后台实体接口使用TKey类型约束</h4>
+          <h4>优化 将XML文件直接生成到bin\Debug\netcoreapp3.1下</h4>
+          <h4>调整 将实体层基类移动到通用层BaseModel文件夹</h4>
+          <h4>调整 删除Img接口，将上传头像移动到用户接口</h4>
+          <h4>调整 UtilConvert命名空间由Admin.Core更改为Admin.Core.Common.Helpers</h4>
+          <p>小雪转中雪 提交于 2020-5-9</p>
+        </el-card>
+      </el-timeline-item>
       <el-timeline-item timestamp="版本 1.1.2" placement="top">
         <el-card>
           <h4>新增 文档管理 图片删除和预览功能</h4>

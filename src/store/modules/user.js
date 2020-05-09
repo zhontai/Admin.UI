@@ -21,6 +21,8 @@ const mutations = {
   setAvatar: (state, avatar) => {
     if (avatar) {
       state.avatar = process.env.VUE_APP_AVATAR_URL + avatar
+    } else {
+      state.avatar = require('@/assets/avatar.png')
     }
   },
   setMenus: (state, menus) => {

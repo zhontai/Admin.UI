@@ -25,7 +25,7 @@
                 <el-upload
                   v-loading="avatarLoading"
                   class="avatar-uploader"
-                  action="/api/admin/img/avatarupload"
+                  action="/api/admin/user/avatarupload"
                   :headers="token"
                   :show-file-list="false"
                   :before-upload="()=>{avatarLoading = true}"
@@ -52,6 +52,7 @@
             <el-col :sm="12" :xs="24">
               <el-form-item>
                 <confirm-button
+                  :disabled="disabled"
                   :validate="editFormvalidate"
                   :placement="'top-end'"
                   :loading="editLoading"
@@ -106,6 +107,7 @@
           </el-row>
           <el-form-item>
             <confirm-button
+              :disabled="disabled"
               :validate="editPwdFormvalidate"
               :placement="'top-end'"
               :loading="editPwdLoading"
@@ -195,6 +197,9 @@ export default {
     },
     token() {
       return { 'Authorization': 'Bearer ' + this.$store.getters.token }
+    },
+    disabled() {
+      return !(this.editForm.id > 0)
     }
   },
   created() {

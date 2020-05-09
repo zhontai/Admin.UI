@@ -1,5 +1,5 @@
 <template>
-  <section ref="page" style="height:100%;">
+  <section v-loading="pageLoading" style="height:100%;">
     <el-container style="height:100%;">
       <el-container>
         <el-header class="header" height="auto" style="padding:5px 10px 5px 10px;text-align:right;">
@@ -40,7 +40,7 @@
                   action="/api/admin/document/uploadimage"
                   multiple
                   :headers="token"
-                  :data="uploadData"
+                  :data="{id:document.form.id}"
                   :show-file-list="false"
                   :before-upload="onBeforeUpload"
                   :on-success="onUploadSuccess"
@@ -60,10 +60,12 @@
           <el-main ref="tabContainer" class="main" :style="isImgTab?'padding:5px 10px 10px 10px':'padding:0px 5px 5px 5px;'">
             <div v-show="isDocTab" style="height:100%;">
               <el-table
+                ref="treeTable"
                 v-loading="listLoading"
                 highlight-current-row
                 :data="documentTree"
                 row-key="id"
+                current-row-key="id"
                 :show-header="false"
                 :default-expand-all="false"
                 :expand-row-keys="expandRowKeys"
@@ -99,7 +101,7 @@
             </div>
             <div v-show="isImgTab" v-loading="document.loadingImageList" style="height:100%;">
               <el-row :gutter="10" class="mc-upload-list">
-                <el-col v-for="img in document.uploadImages" :key="img.uid" :span="12">
+                <el-col v-for="img in document.images" :key="(img.uid?img.uid:img.src)" :span="12" class="mc-upload-list__item">
                   <el-image v-if="img.src" :src="img.src" lazy :fit="'scale-down'" class="image-container" @click="onSelectImage(img.src)">
                     <template #error>
                       <div class="image-slot">
@@ -123,18 +125,9 @@
                       </template>
                     </el-image>
                   </div>
-                </el-col>
-                <el-col v-for="src in document.images" :key="src" :span="12" class="mc-upload-list__item">
-                  <el-image :src="src" lazy :fit="'scale-down'" class="image-container" @click="onSelectImage(src)">
-                    <template #error>
-                      <div class="image-slot">
-                        <i class="el-icon-picture-outline" />
-                      </div>
-                    </template>
-                  </el-image>
                   <span class="mc-upload-list__item-actions">
-                    <span class="cm-upload-list__item-preview" @click="onOpenViewer(src)"><i class="el-icon-zoom-in" /></span>
-                    <span class="cm-upload-list__item-delete" @click="onDeleteImage(src)"><i class="el-icon-delete" /></span>
+                    <span class="cm-upload-list__item-preview" @click="onOpenViewer(img.src)"><i class="el-icon-zoom-in" /></span>
+                    <span class="cm-upload-list__item-delete" @click="onDeleteImage(img.src)"><i class="el-icon-delete" /></span>
                   </span>
                 </el-col>
               </el-row>
@@ -232,7 +225,13 @@
     </el-dialog>
 
     <!--图片查看器-->
-    <image-viewer v-if="showViewer" :z-index="2000" :initial-index="imageIndex" :on-close="onCloseViewer" :url-list="document.images" />
+    <image-viewer
+      v-if="showViewer"
+      :z-index="2000"
+      :initial-index="imageIndex"
+      :on-close="onCloseViewer"
+      :url-list="imageUrls"
+    />
   </section>
 </template>
 
@@ -266,6 +265,7 @@ export default {
     return {
       documentTree: [],
       expandRowKeys: [],
+      pageLoading: false,
       listLoading: false,
 
       formRules: {
@@ -281,12 +281,10 @@ export default {
         tabs,
         tabName: tabs.doc,
         timer: '',
-        first: true,
         form: {
           content: ''
         },
         images: [],
-        uploadImages: [],
         loadingSave: false,
         loadingImageList: false,
         imgScrollTop: 0,
@@ -339,33 +337,27 @@ export default {
     hasDocument() {
       return this.document.form.id > 0
     },
-    uploadData() {
-      return { id: this.document.form.id }
-    },
     imageIndex() {
       let previewIndex = 0
-      const srcIndex = this.document.images.indexOf(this.imageSrc)
+      const srcIndex = this.document.images.findIndex(a => a.src === this.imageSrc)
       if (srcIndex >= 0) {
         previewIndex = srcIndex
       }
       return previewIndex
+    },
+    imageUrls() {
+      return this.document.images.map(a => a.src)
     }
   },
   watch: {
     'document.form.content'(newVal, oldVal) {
-      if (this.document.first) {
-        this.document.first = false
-        if (this.document.timer) {
-          clearTimeout(this.document.timer)
-          this.document.timer = ''
-        }
+      if (!(this.document.form.id > 0) || this.document.form._first) {
+        this.document.form._first = false
+        this.clearTimer()
         return
       }
 
-      if (this.document.timer) {
-        clearTimeout(this.document.timer)
-        this.document.timer = ''
-      }
+      this.clearTimer()
 
       const me = this
       this.document.timer = setTimeout(function() { me.save(true) }, 10000)
@@ -392,12 +384,17 @@ export default {
     this.getDocuments()
   },
   beforeDestroy() {
-    if (this.document.timer) {
-      clearTimeout(this.document.timer)
-      this.document.timer = ''
-    }
+    this.clearTimer()
   },
   methods: {
+    // 清除自动保存任务
+    clearTimer() {
+      if (this.document.timer) {
+        clearTimeout(this.document.timer)
+        this.document.timer = ''
+      }
+    },
+    // 保存文档
     async save(autoSave = false) {
       if (!this.hasDocument) {
         return
@@ -431,16 +428,19 @@ export default {
         })
       }
     },
+    // 上传前
     onBeforeUpload(file) {
-      this.document.uploadImages.unshift({
+      this.document.images.unshift({
         loading: true,
         src: '',
         uid: file.uid
       })
     },
+    // 选择图片
     onSelectImage(src) {
       this.$refs.markdownEditor.setImg(src)
     },
+    // 上传成功
     onUploadSuccess(res, file, fileList) {
       if (!(res && res.code === 1)) {
         if (res.msg) {
@@ -452,10 +452,11 @@ export default {
         return
       }
 
-      const img = this.document.uploadImages.find(a => a.uid === file.uid)
+      const img = this.document.images.find(a => a.uid === file.uid)
       img.src = res.data
       img.loading = false
     },
+    // 上传失败
     onUploadError(err, file) {
       const res = err.message ? JSON.parse(err.message) : {}
       if (!(res && res.code === 1)) {
@@ -466,10 +467,21 @@ export default {
           })
         }
       }
-      const img = this.document.uploadImages.find(a => a.uid === file.uid)
+      const img = this.document.images.find(a => a.uid === file.uid)
       img.loading = false
     },
+    // 清空数据
+    clearCurrentData() {
+      this.document.form = { content: '' }
+      this.document.images = []
+    },
+    // 行切换
     async onCurrentChange(currentRow, oldCurrentRow) {
+      if (!currentRow) {
+        this.clearCurrentData()
+        return
+      }
+
       if (currentRow.type === 1) {
         return
       }
@@ -478,19 +490,13 @@ export default {
         await this.save(true)
       }
 
-      this.document.first = true
-      this.document.form = { content: '' }
-      this.document.images = []
+      this.clearCurrentData()
 
-      const loading = this.$loading({
-        target: this.$refs.page,
-        fullscreen: false
-      })
+      this.pageLoading = true
       const res = await getContent({ id: currentRow.id })
-      loading.close()
+      this.pageLoading = false
       if (res && res.success) {
-        this.document.first = true
-        this.document.form = { ...res.data }
+        this.document.form = { ...res.data, _first: res.data.content !== '' }
       }
     },
     // 点击选项卡
@@ -508,11 +514,7 @@ export default {
         // key: this.filters.label
       }
 
-      this.document.form = {
-        label: '',
-        content: ''
-      }
-      this.document.images = []
+      this.$refs.treeTable.setCurrentRow()
 
       this.listLoading = true
       const res = await getDocuments(para)
@@ -580,15 +582,20 @@ export default {
         }
         return
       }
-      this.document.uploadImages = []
-      this.document.images = res.data
+      this.document.images = res.data?.map(s => {
+        return { src: s }
+      })
     },
     // 删除图片
     async onDeleteImage(src) {
+      if (!src) {
+        return
+      }
+
       const para = { documentId: this.document.form.id, url: src }
-      const loading = this.$loading()
+      this.pageLoading = true
       const res = await deleteImage(para)
-      loading.close()
+      this.pageLoading = false
 
       if (!res.success) {
         this.$message({
@@ -603,11 +610,15 @@ export default {
         type: 'success'
       })
 
-      const index = this.document.images.findIndex(a => a === src)
+      const index = this.document.images.findIndex(a => a.src === src)
       this.document.images.splice(index, 1)
     },
     // 打开图片预览
     onOpenViewer(src) {
+      if (!src) {
+        return
+      }
+
       this.imageSrc = src
 
       // prevent body scroll
