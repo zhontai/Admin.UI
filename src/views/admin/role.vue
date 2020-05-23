@@ -1,5 +1,5 @@
 <template>
-  <container>
+  <my-container>
     <!--查询-->
     <template #header>
       <el-form class="ad-form-query" :inline="true" :model="filter" @submit.native.prevent>
@@ -22,7 +22,7 @@
           <el-button type="primary" @click="onAdd">新增</el-button>
         </el-form-item>
         <el-form-item>
-          <confirm-button
+          <my-confirm-button
             :disabled="sels.length === 0"
             :type="'delete'"
             :placement="'bottom-end'"
@@ -35,7 +35,7 @@
               <p>确定要批量删除吗？</p>
             </template>
             批量删除
-          </confirm-button>
+          </my-confirm-button>
         </el-form-item>
       </el-form>
     </template>
@@ -67,7 +67,7 @@
       <el-table-column label="操作" width="180">
         <template v-slot="{ $index, row }">
           <el-button @click="onEdit($index, row)">编辑</el-button>
-          <confirm-button
+          <my-confirm-button
             type="delete"
             :loading="row._loading"
             :validate="deleteValidate"
@@ -80,7 +80,7 @@
 
     <!--分页-->
     <template #footer>
-      <pagination
+      <my-pagination
         ref="pager"
         :page.sync="pager.currentPage"
         :size.sync="pager.pageSize"
@@ -145,7 +145,7 @@
       </section>
       <div class="drawer-footer">
         <el-button @click.native="addFormVisible = false">取消</el-button>
-        <confirm-button type="submit" :validate="addFormValidate" :loading="addLoading" @click="onAddSubmit" />
+        <my-confirm-button type="submit" :validate="addFormValidate" :loading="addLoading" @click="onAddSubmit" />
       </div>
     </el-drawer>
 
@@ -186,22 +186,22 @@
       </section>
       <div class="drawer-footer">
         <el-button @click.native="editFormVisible = false">取消</el-button>
-        <confirm-button type="submit" :validate="editFormValidate" :loading="editLoading" @click="onEditSubmit" />
+        <my-confirm-button type="submit" :validate="editFormValidate" :loading="editLoading" @click="onEditSubmit" />
       </div>
     </el-drawer>
-  </container>
+  </my-container>
 </template>
 
 <script>
 import { formatTime } from '@/utils'
 import { getRoleListPage, removeRole, editRole, addRole, batchRemoveRole, getRole } from '@/api/admin/role'
-import Container from '@/components/Container'
-import ConfirmButton from '@/components/ConfirmButton'
-import Pagination from '@/components/Pagination'
+import MyContainer from '@/components/my-container'
+import MyConfirmButton from '@/components/my-confirm-button'
+import MyPagination from '@/components/my-pagination'
 
 export default {
   name: 'Roles',
-  components: { Container, ConfirmButton, Pagination },
+  components: { MyContainer, MyConfirmButton, MyPagination },
   data() {
     return {
       filter: {
@@ -267,13 +267,7 @@ export default {
       const res = await getRoleListPage(para)
       this.listLoading = false
 
-      if (!res.success) {
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
+      if (!res?.success) {
         return
       }
 
@@ -321,20 +315,17 @@ export default {
       const res = await editRole(para)
       this.editLoading = false
 
-      if (res.success) {
-        this.$message({
-          message: this.$t('admin.updateOk'),
-          type: 'success'
-        })
-        this.$refs['editForm'].resetFields()
-        this.editFormVisible = false
-        this.getRoles()
-      } else {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
+        return
       }
+
+      this.$message({
+        message: this.$t('admin.updateOk'),
+        type: 'success'
+      })
+      this.$refs['editForm'].resetFields()
+      this.editFormVisible = false
+      this.getRoles()
     },
     // 新增验证
     addFormValidate: function() {
@@ -352,20 +343,17 @@ export default {
       const res = await addRole(para)
       this.addLoading = false
 
-      if (res.success) {
-        this.$message({
-          message: this.$t('admin.addOk'),
-          type: 'success'
-        })
-        this.$refs['addForm'].resetFields()
-        this.addFormVisible = false
-        this.getRoles()
-      } else {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
+        return
       }
+
+      this.$message({
+        message: this.$t('admin.addOk'),
+        type: 'success'
+      })
+      this.$refs['addForm'].resetFields()
+      this.addFormVisible = false
+      this.getRoles()
     },
     // 删除验证
     deleteValidate(row) {
@@ -387,13 +375,10 @@ export default {
       const res = await removeRole(para)
       row._loading = false
 
-      if (!res.success) {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
         return
       }
+
       this.$message({
         message: this.$t('admin.deleteOk'),
         type: 'success'
@@ -426,11 +411,7 @@ export default {
       const res = await batchRemoveRole(para.ids)
       this.deleteLoading = false
 
-      if (!res.success) {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
         return
       }
       this.$message({

@@ -1,19 +1,21 @@
 import request from '@/utils/request'
+import scope from './scope'
+const apiPrefix = `${process.env.VUE_APP_BASE_API}/${scope}/auth/`
 
 // 授权
 
 /**
  * 登录
  */
-export const login = params => {
-  return request.post('/api/admin/auth/login', params)
+export const login = (params, config = {}) => {
+  return request.post(apiPrefix + 'login', params, config)
 }
-export const getVerifyCode = params => {
-  return request.get('/api/admin/auth/getverifycode', { params: params })
+export const getVerifyCode = (params, config = {}) => {
+  return request.get(apiPrefix + 'getverifycode', { params: params }, config)
 }
-export const getPassWordEncryptKey = params => {
-  return request.get('/api/admin/auth/getPassWordEncryptKey', { params: params })
+export const getPassWordEncryptKey = (params, config = {}) => {
+  return request.get(apiPrefix + 'getPassWordEncryptKey', { params: params }, config)
 }
-export const getLoginInfo = params => {
-  return request.get('/api/admin/auth/getUserInfo', { params: params })
+export const getLoginInfo = (params, config = {}) => {
+  return request.get(apiPrefix + 'getUserInfo', { params: params }, config)
 }

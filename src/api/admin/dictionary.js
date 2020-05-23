@@ -1,18 +1,20 @@
 import request from '@/utils/request'
+import scope from './scope'
+const apiPrefix = `${process.env.VUE_APP_BASE_API}/${scope}/dictionary/`
 
 // 数据字典管理
-export const getDictionary = params => {
-  return request.get('/api/admin/dictionary/get', { params: params })
+export const getDictionary = (params, config = {}) => {
+  return request.get(apiPrefix + 'get', { params: params }, config)
 }
-export const getDictionaryListPage = params => {
-  return request.post('/api/admin/dictionary/getpage', params)
+export const getDictionaryListPage = (params, config = {}) => {
+  return request.post(apiPrefix + 'getpage', params, config)
 }
-export const removeDictionary = params => {
-  return request.delete('/api/admin/dictionary/softdelete', { params: params })
+export const removeDictionary = (params, config = {}) => {
+  return request.delete(apiPrefix + 'softdelete', { params: params }, config)
 }
-export const editDictionary = params => {
-  return request.put('/api/admin/dictionary/update', params)
+export const editDictionary = (params, config = {}) => {
+  return request.put(apiPrefix + 'update', params, config)
 }
-export const addDictionary = params => {
-  return request.post('/api/admin/dictionary/add', params)
+export const addDictionary = (params, config = {}) => {
+  return request.post(apiPrefix + 'add', params, config)
 }

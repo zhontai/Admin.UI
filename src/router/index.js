@@ -74,9 +74,9 @@ function generateRoutes(menus = []) {
     }
   })
 
+  // 修复无首页组件不显示404
   routes.children.push({
     path: '',
-    // component: _import('/admin/404'),
     hidden: true
   })
 
@@ -108,7 +108,7 @@ function getPageTitle(pageTitle) {
   return title
 }
 
-let count = 0
+let first = true
 // 路由全局前置守卫
 router.beforeEach(async(to, from, next) => {
   document.title = getPageTitle(to.meta.title)
@@ -125,8 +125,8 @@ router.beforeEach(async(to, from, next) => {
         next()
       } else {
         // 仅执行一次
-        if (count === 0) {
-          count = 1
+        if (first) {
+          first = false
           const res = await store.dispatch('user/getLoginInfo', null, { root: true })
           if (res && res.success) {
             next({ ...to, replace: true })

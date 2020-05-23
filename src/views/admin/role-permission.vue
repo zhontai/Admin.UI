@@ -31,7 +31,7 @@
           <template #header>
             <div class="clearfix">
               <span>权限</span>
-              <confirm-button
+              <my-confirm-button
                 :validate="saveValidate"
                 :loading="loadingSave"
                 :disabled="disabledSave"
@@ -45,7 +45,7 @@
                   <p>确定要保存吗？</p>
                 </template>
                 保存
-              </confirm-button>
+              </my-confirm-button>
               <el-button
                 :loading="loadingPermissions"
                 type="text"
@@ -62,15 +62,15 @@
             row-key="id"
             highlight-current-row
             style="width: 100%;"
-            @select-all="selectAll"
-            @select="select"
+            @select-all="onSelectAll"
+            @select="onSelect"
           >
             <el-table-column type="selection" width="50" />
             <el-table-column prop="label" label="导航菜单" width="200" />
             <el-table-column label="菜单接口" width>
               <template v-slot="{ $index, row }">
                 <el-checkbox-group v-if="row.apis && row.apis.length > 0" v-model="chekedApis">
-                  <el-checkbox v-for="api in row.apis" :key="api.id" :label="api.id">{{ api.label }}</el-checkbox>
+                  <el-checkbox v-for="api in row.apis" :key="api.id" :label="api.id" @change="(value)=>onChange(value, row.id)">{{ api.label }}</el-checkbox>
                 </el-checkbox-group>
               </template>
             </el-table-column>
@@ -82,19 +82,19 @@
 </template>
 
 <script>
-import { treeToList, listToTree } from '@/utils'
+import { treeToList, listToTree, getTreeParentsWithSelf } from '@/utils'
 import { getRoleListPage } from '@/api/admin/role'
 import {
   getPermissions,
   getPermissionIds,
   addRolePermission
 } from '@/api/admin/permission'
-import ConfirmButton from '@/components/ConfirmButton'
+import MyConfirmButton from '@/components/my-confirm-button'
 
 export default {
   name: 'Assign',
   components: {
-    ConfirmButton
+    MyConfirmButton
   },
   data() {
     return {
@@ -127,12 +127,12 @@ export default {
       this.loadingRoles = true
       const res = await getRoleListPage()
       this.loadingRoles = false
-      this.roles = res.data.list
+      this.roles = res.data?.list
     },
     // 获取权限树
     async getPermissions() {
       this.loadingPermissions = true
-      this.selectAll([])
+      this.onSelectAll([])
 
       const para = {}
       const res = await getPermissions(para)
@@ -158,14 +158,13 @@ export default {
         const checked = permissionIds.includes(row.id)
         this.$refs.multipleTable.toggleRowSelection(row, checked)
       })
-      this.checkedPermissions = this.$refs.multipleTable.selection
-
-      const menuIds = this.checkedPermissions.map(s => {
+      this.checkedPermissions = this.$refs.multipleTable.selection.map(s => {
         return s.id
       })
+
       const apiIds = []
       permissionIds.forEach(permissionId => {
-        if (!menuIds.includes(permissionId)) {
+        if (!this.checkedPermissions.includes(permissionId)) {
           apiIds.push(permissionId)
         }
       })
@@ -194,9 +193,7 @@ export default {
     },
     // 保存权限
     async save() {
-      const permissionIds = this.checkedPermissions.map(s => {
-        return s.id
-      })
+      const permissionIds = [...this.checkedPermissions]
       if (this.chekedApis.length > 0) {
         permissionIds.push(...this.chekedApis)
       }
@@ -205,21 +202,19 @@ export default {
       this.loadingSave = true
       const res = await addRolePermission(para)
       this.loadingSave = false
-      if (res.success) {
-        this.$message({
-          message: this.$t('admin.saveOk'),
-          type: 'success'
-        })
-      } else {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+
+      if (!res?.success) {
+        return
       }
+
+      this.$message({
+        message: this.$t('admin.saveOk'),
+        type: 'success'
+      })
     },
     roleSelect(id) {
       this.roleId = id
-      this.selectAll([])
+      this.onSelectAll([])
       this.getRolePermission()
     },
     selectApis(checked, row) {
@@ -238,7 +233,7 @@ export default {
         })
       }
     },
-    selectAll: function(selection) {
+    onSelectAll(selection) {
       const selections = treeToList(selection)
       const rows = treeToList(this.permissionTree)
       const checked = selections.length === rows.length
@@ -247,9 +242,11 @@ export default {
         this.selectApis(checked, row)
       })
 
-      this.checkedPermissions = this.$refs.multipleTable.selection
+      this.checkedPermissions = this.$refs.multipleTable.selection.map(s => {
+        return s.id
+      })
     },
-    select: function(selection, row) {
+    onSelect(selection, row) {
       const checked = selection.some(s => s.id === row.id)
       if (row.children && row.children.length > 0) {
         const rows = treeToList(row.children)
@@ -261,7 +258,32 @@ export default {
         this.selectApis(checked, row)
       }
 
-      this.checkedPermissions = this.$refs.multipleTable.selection
+      const parents = getTreeParentsWithSelf(this.permissionTree, row.id)
+      parents.forEach(parent => {
+        const checked = this.checkedPermissions.includes(parent.id)
+        if (!checked) {
+          this.$refs.multipleTable.toggleRowSelection(parent, true)
+        }
+      })
+
+      this.checkedPermissions = this.$refs.multipleTable.selection.map(s => {
+        return s.id
+      })
+    },
+    onChange(value, id) {
+      if (value) {
+        const parents = getTreeParentsWithSelf(this.permissionTree, id)
+        parents.forEach(parent => {
+          const checked = this.checkedPermissions.includes(parent.id)
+          if (!checked) {
+            this.$refs.multipleTable.toggleRowSelection(parent, true)
+          }
+        })
+
+        this.checkedPermissions = this.$refs.multipleTable.selection.map(s => {
+          return s.id
+        })
+      }
     }
   }
 }

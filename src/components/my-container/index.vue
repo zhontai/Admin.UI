@@ -1,6 +1,6 @@
 <template>
   <section style="height:100%;">
-    <el-container style="height:100%;">
+    <el-container style="height:100%;position:relative;">
       <el-header height="auto" style="padding:10px 0px 0px 10px;">
         <slot name="header" />
       </el-header>
@@ -18,18 +18,18 @@
 /**
  * container 容器组件
  * 使用说明
-<container>
+<my-container>
   <template #header>
     <el-form />
   </template>
   <el-table />
   <template #footer>
-    <pagination />
+    <my-pagination />
   </template>
-</container>
+</my-container>
  */
 
 export default {
-  name: 'Container'
+  name: 'MyContainer'
 }
 </script>

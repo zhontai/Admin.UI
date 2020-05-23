@@ -16,7 +16,7 @@
           class="aside-menu-vertical"
           @select="onSelectMenu"
         >
-          <menu-item v-for="menu in menuTree" :key="menu.id" :item="menu" />
+          <my-menu-item v-for="menu in menuTree" :key="menu.id" :item="menu" />
         </el-menu>
       </el-scrollbar>
     </el-aside>
@@ -102,7 +102,7 @@
           :tab-position="tabPosition"
           @tab-click="onTabClick"
           @tab-remove="onRemoveTab"
-          @contextmenu.prevent.native="onOpenRightMenu($event)"
+          @contextmenu.prevent.native="onOpenRightMenu"
         >
           <el-tab-pane
             v-for="tab in tabsList"
@@ -184,7 +184,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import MenuItem from './components/MenuItem'
+import MyMenuItem from './components/my-menu-item'
 import { listToTree, getTreeParents } from '@/utils'
 import Sortable from 'sortablejs'
 import { isExternalLink } from '@/utils/validate'
@@ -192,7 +192,7 @@ import { isExternalLink } from '@/utils/validate'
 export default {
   name: 'AppMain',
   components: {
-    MenuItem
+    MyMenuItem
   },
   data() {
     return {
@@ -398,33 +398,21 @@ export default {
     },
     // tab打开右键菜单
     onOpenRightMenu(e) {
-      const $target = e.target
-      const $tab = $target.closest('[role="tab"]')
+      const $tab = e.target.closest('.el-tabs__item')
       if ($tab) {
         const id = $tab.getAttribute('id')
-        const ids = id.split('tab-')
-        const path = ids[ids.length - 1]
+        const path = id.replace(/^tab-/, '')
         this.rightMenu.selectedTab = this.tabsList.find(
           t => t.fullPath === path
         )
 
-        const menuMinWidth = 145
-        const offsetLeft = this.$el.getBoundingClientRect().left // container margin left
-        const offsetWidth = this.$el.offsetWidth // container width
-        const maxLeft = offsetWidth - menuMinWidth // left boundary
-        const left = e.clientX - offsetLeft + 15 // 15: margin right
         this.rightMenu.visible = true
+        this.rightMenu.left = e.x
         this.$nextTick(() => {
-          if (left > maxLeft) {
-            this.rightMenu.left = maxLeft
-          } else {
-            this.rightMenu.left = left
-          }
-
           if (this.tabPosition === 'bottom') {
-            this.rightMenu.top = e.clientY - this.$refs.rightMenu.offsetHeight
+            this.rightMenu.top = e.y - this.$refs.rightMenu.offsetHeight
           } else if (this.tabPosition === 'top') {
-            this.rightMenu.top = e.clientY
+            this.rightMenu.top = e.y
           }
         })
       }

@@ -3,3 +3,4 @@ src/assets
 public
 dist
 node_modules
+src/components/ElementUI

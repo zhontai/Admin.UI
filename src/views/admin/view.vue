@@ -16,7 +16,7 @@
         <el-button type="primary" @click="onAdd">新增</el-button>
       </el-form-item>
       <el-form-item>
-        <confirm-button
+        <my-confirm-button
           :icon="'el-icon-refresh'"
           :placement="'bottom-end'"
           :loading="syncLoading"
@@ -27,10 +27,10 @@
             <p>确定要同步视图吗？</p>
           </template>
           同步视图
-        </confirm-button>
+        </my-confirm-button>
       </el-form-item>
       <el-form-item>
-        <confirm-button
+        <my-confirm-button
           :disabled="sels.length === 0"
           :type="'delete'"
           :placement="'bottom-end'"
@@ -42,7 +42,7 @@
             <p>确定要批量删除吗？</p>
           </template>
           批量删除
-        </confirm-button>
+        </my-confirm-button>
       </el-form-item>
     </el-form>
 
@@ -76,7 +76,7 @@
       <el-table-column label="操作" width="180">
         <template v-slot="{ $index, row }">
           <el-button @click="onEdit($index, row)">编辑</el-button>
-          <confirm-button type="delete" :loading="row._loading" @click="onDelete($index, row)" />
+          <my-confirm-button type="delete" :loading="row._loading" @click="onDelete($index, row)" />
         </template>
       </el-table-column>
     </el-table>
@@ -117,7 +117,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click.native="addFormVisible = false">取消</el-button>
-          <confirm-button type="submit" :validate="addFormValidate" :loading="addLoading" @click="onAddSubmit" />
+          <my-confirm-button type="submit" :validate="addFormValidate" :loading="addLoading" @click="onAddSubmit" />
         </div>
       </template>
     </el-dialog>
@@ -158,7 +158,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click.native="editFormVisible = false">取消</el-button>
-          <confirm-button type="submit" :validate="editFormValidate" :loading="editLoading" @click="onEditSubmit" />
+          <my-confirm-button type="submit" :validate="editFormValidate" :loading="editLoading" @click="onEditSubmit" />
         </div>
       </template>
     </el-dialog>
@@ -176,12 +176,12 @@ import {
   batchRemoveView,
   getView
 } from '@/api/admin/view'
-import ConfirmButton from '@/components/ConfirmButton'
+import MyConfirmButton from '@/components/my-confirm-button'
 
 export default {
   name: 'V',
   components: {
-    ConfirmButton
+    MyConfirmButton
   },
   data() {
     return {
@@ -249,13 +249,7 @@ export default {
       const res = await getViewList(para)
       this.listLoading = false
 
-      if (!res.success) {
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
+      if (!res?.success) {
         return
       }
 
@@ -330,20 +324,18 @@ export default {
 
       const res = await editView(para)
       this.editLoading = false
-      if (res.success) {
-        this.$message({
-          message: this.$t('admin.updateOk'),
-          type: 'success'
-        })
-        this.$refs['editForm'].resetFields()
-        this.editFormVisible = false
-        this.onGetList()
-      } else {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+
+      if (!res?.success) {
+        return
       }
+
+      this.$message({
+        message: this.$t('admin.updateOk'),
+        type: 'success'
+      })
+      this.$refs['editForm'].resetFields()
+      this.editFormVisible = false
+      this.onGetList()
     },
     // 新增
     addFormValidate: function() {
@@ -361,20 +353,16 @@ export default {
       const res = await addView(para)
       this.addLoading = false
 
-      if (res.success) {
-        this.$message({
-          message: this.$t('admin.addOk'),
-          type: 'success'
-        })
-        this.$refs['addForm'].resetFields()
-        this.addFormVisible = false
-        this.onGetList()
-      } else {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
+        return
       }
+      this.$message({
+        message: this.$t('admin.addOk'),
+        type: 'success'
+      })
+      this.$refs['addForm'].resetFields()
+      this.addFormVisible = false
+      this.onGetList()
     },
     // 删除
     async onDelete(index, row) {
@@ -384,11 +372,7 @@ export default {
 
       row._loading = false
 
-      if (!res.success) {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
         return
       }
       this.$message({
@@ -408,17 +392,14 @@ export default {
       const res = await batchRemoveView(para.ids)
       this.deleteLoading = false
 
-      if (res.success) {
-        this.$message({
-          message: this.$t('admin.batchDeleteOk'),
-          type: 'success'
-        })
-      } else {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
+        return
       }
+
+      this.$message({
+        message: this.$t('admin.batchDeleteOk'),
+        type: 'success'
+      })
 
       this.onGetList()
     },
@@ -433,27 +414,20 @@ export default {
         return
       }
 
-      this.syncLoading = true
-
       const views = []
-
-      const r = await syncView({ views })
-
-      if (r) {
-        if (r.success) {
-          this.$message({
-            message: this.$t('view.sync'),
-            type: 'success'
-          })
-          this.onGetList()
-        } else {
-          this.$message({
-            message: r.msg,
-            type: 'error'
-          })
-        }
-      }
+      this.syncLoading = true
+      const syncRes = await syncView({ views })
       this.syncLoading = false
+
+      if (!syncRes?.success) {
+        return
+      }
+
+      this.$message({
+        message: this.$t('view.sync'),
+        type: 'success'
+      })
+      this.onGetList()
     },
     // 生成前端view
     onGenerate() {

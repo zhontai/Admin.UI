@@ -1,5 +1,5 @@
 <template>
-  <container>
+  <my-container>
     <template #header>
       <el-form class="ad-form-query" :inline="true" :model="filter" @submit.native.prevent>
         <el-form-item>
@@ -55,7 +55,7 @@
     </el-table>
 
     <template #footer>
-      <pagination
+      <my-pagination
         ref="pager"
         :page.sync="pager.currentPage"
         :size.sync="pager.pageSize"
@@ -63,18 +63,18 @@
         @get-page="getList"
       />
     </template>
-  </container>
+  </my-container>
 </template>
 
 <script>
 import { formatTime } from '@/utils'
 import { getLoginLogPage } from '@/api/admin/login-log'
-import Container from '@/components/Container'
-import Pagination from '@/components/Pagination'
+import MyContainer from '@/components/my-container'
+import MyPagination from '@/components/my-pagination'
 
 export default {
   name: 'LoginLog',
-  components: { Container, Pagination },
+  components: { MyContainer, MyPagination },
   data() {
     return {
       filter: {
@@ -104,13 +104,7 @@ export default {
       const res = await getLoginLogPage(para)
       this.listLoading = false
 
-      if (!res.success) {
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
+      if (!res?.success) {
         return
       }
 

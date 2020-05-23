@@ -1,48 +1,50 @@
 import request from '@/utils/request'
+import scope from './scope'
+const apiPrefix = `${process.env.VUE_APP_BASE_API}/${scope}/permission/`
 
 // 权限管理
-export const getPermissionList = params => {
-  return request.get('/api/admin/permission/getlist', { params: params })
+export const getPermissionList = (params, config = {}) => {
+  return request.get(apiPrefix + 'getlist', { params: params }, config)
 }
-export const removePermission = params => {
-  return request.delete('/api/admin/permission/softdelete', { params: params })
+export const removePermission = (params, config = {}) => {
+  return request.delete(apiPrefix + 'softdelete', { params: params }, config)
 }
-export const getPermissions = params => {
-  return request.get('/api/admin/permission/getpermissionlist', { params: params })
+export const getPermissions = (params, config = {}) => {
+  return request.get(apiPrefix + 'getpermissionlist', { params: params }, config)
 }
-export const getPermissionIds = params => {
-  return request.get('/api/admin/permission/GetRolePermissionList', { params: params })
+export const getPermissionIds = (params, config = {}) => {
+  return request.get(apiPrefix + 'GetRolePermissionList', { params: params }, config)
 }
-export const addRolePermission = params => {
-  return request.post('/api/admin/permission/Assign', params)
-}
-
-export const addGroup = params => {
-  return request.post('/api/admin/permission/addGroup', params)
-}
-export const addMenu = params => {
-  return request.post('/api/admin/permission/addMenu', params)
-}
-export const addApi = params => {
-  return request.post('/api/admin/permission/addApi', params)
+export const addRolePermission = (params, config = {}) => {
+  return request.post(apiPrefix + 'Assign', params, config)
 }
 
-export const updateGroup = params => {
-  return request.put('/api/admin/permission/updateGroup', params)
+export const addGroup = (params, config = {}) => {
+  return request.post(apiPrefix + 'addGroup', params, config)
 }
-export const updateMenu = params => {
-  return request.put('/api/admin/permission/updateMenu', params)
+export const addMenu = (params, config = {}) => {
+  return request.post(apiPrefix + 'addMenu', params, config)
 }
-export const updateApi = params => {
-  return request.put('/api/admin/permission/updateApi', params)
+export const addApi = (params, config = {}) => {
+  return request.post(apiPrefix + 'addApi', params, config)
 }
 
-export const getGroup = params => {
-  return request.get('/api/admin/permission/getGroup', { params: params })
+export const updateGroup = (params, config = {}) => {
+  return request.put(apiPrefix + 'updateGroup', params, config)
 }
-export const getMenu = params => {
-  return request.get('/api/admin/permission/getMenu', { params: params })
+export const updateMenu = (params, config = {}) => {
+  return request.put(apiPrefix + 'updateMenu', params, config)
 }
-export const getApi = params => {
-  return request.get('/api/admin/permission/getApi', { params: params })
+export const updateApi = (params, config = {}) => {
+  return request.put(apiPrefix + 'updateApi', params, config)
+}
+
+export const getGroup = (params, config = {}) => {
+  return request.get(apiPrefix + 'getGroup', { params: params }, config)
+}
+export const getMenu = (params, config = {}) => {
+  return request.get(apiPrefix + 'getMenu', { params: params }, config)
+}
+export const getApi = (params, config = {}) => {
+  return request.get(apiPrefix + 'getApi', { params: params }, config)
 }

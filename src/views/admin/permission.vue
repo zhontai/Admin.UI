@@ -91,7 +91,7 @@
           <!-- <el-button type="primary" icon="el-icon-edit" circle></el-button>
           <el-button type="danger" icon="el-icon-delete" circle style="margin-left:10px;"></el-button>-->
           <el-button icon="el-icon-edit" @click="onEdit($index, row)">编辑</el-button>
-          <confirm-button
+          <my-confirm-button
             type="delete"
             :loading="row._loading"
             :icon="'el-icon-delete'"
@@ -142,7 +142,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click.native="permissionGroup.visible = false">取消</el-button>
-          <confirm-button type="submit" :validate="validateGroup" :loading="permissionGroup.loading" @click="onSubmitGroup" />
+          <my-confirm-button type="submit" :validate="validateGroup" :loading="permissionGroup.loading" @click="onSubmitGroup" />
         </div>
       </template>
     </el-dialog>
@@ -216,7 +216,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click.native="permissionMenu.visible = false">取消</el-button>
-          <confirm-button type="submit" :validate="validateMenu" :loading="permissionMenu.loading" @click="onSubmitMenu" />
+          <my-confirm-button type="submit" :validate="validateMenu" :loading="permissionMenu.loading" @click="onSubmitMenu" />
         </div>
       </template>
     </el-dialog>
@@ -274,7 +274,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click.native="permissionApi.visible = false">取消</el-button>
-          <confirm-button type="submit" :validate="validateApi" :loading="permissionApi.loading" @click="onSubmitApi" />
+          <my-confirm-button type="submit" :validate="validateApi" :loading="permissionApi.loading" @click="onSubmitApi" />
         </div>
       </template>
     </el-dialog>
@@ -298,12 +298,12 @@ import {
   getMenu,
   getApi
 } from '@/api/admin/permission'
-import ConfirmButton from '@/components/ConfirmButton'
+import MyConfirmButton from '@/components/my-confirm-button'
 
 export default {
   name: 'Permission',
   components: {
-    ConfirmButton
+    MyConfirmButton
   },
   data() {
     return {
@@ -434,7 +434,7 @@ export default {
     await this.getPermissions()
   },
   methods: {
-    formatCreateTime: function(row, column, time) {
+    formatCreateTime(row, column, time) {
       return formatTime(time, 'yyyy-MM-dd hh:mm')
     },
     async getApiList() {
@@ -460,13 +460,7 @@ export default {
       const res = await getPermissionList(para)
       this.listLoading = false
 
-      if (!res.success) {
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
+      if (!res?.success) {
         return
       }
 
@@ -505,14 +499,9 @@ export default {
       row._loading = true
       const para = { id: row.id }
       const res = await removePermission(para)
-
       row._loading = false
 
-      if (!res.success) {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
         return
       }
       this.$message({
@@ -577,7 +566,7 @@ export default {
       this.$refs.permissionGroupForm.resetFields()
       ++this.permissionGroup.key
     },
-    validateGroup: function() {
+    validateGroup() {
       let isValid = false
       this.$refs.permissionGroupForm.validate(valid => {
         isValid = valid
@@ -596,16 +585,9 @@ export default {
       } else {
         res = await addGroup(para)
       }
-
       this.permissionGroup.loading = false
 
-      if (!(res && res.success === true)) {
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
+      if (!res?.success) {
         return
       }
 
@@ -633,7 +615,7 @@ export default {
       this.$refs.menuForm.resetFields()
       ++this.permissionMenu.key
     },
-    validateMenu: function() {
+    validateMenu() {
       let isValid = false
       this.$refs.menuForm.validate(valid => {
         isValid = valid
@@ -654,13 +636,7 @@ export default {
       }
       this.permissionMenu.loading = false
 
-      if (!(res && res.success === true)) {
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
+      if (!res?.success) {
         return
       }
 
@@ -688,7 +664,7 @@ export default {
       this.$refs.apiForm.resetFields()
       ++this.permissionApi.key
     },
-    validateApi: function() {
+    validateApi() {
       let isValid = false
       this.$refs.apiForm.validate(valid => {
         isValid = valid
@@ -709,13 +685,7 @@ export default {
       }
       this.permissionApi.loading = false
 
-      if (!(res && res.success === true)) {
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
+      if (!res?.success) {
         return
       }
 
@@ -746,7 +716,7 @@ export default {
       }
     },
 
-    onSelectAll: function(selection) {
+    onSelectAll(selection) {
       const selections = treeToList(selection)
       const rows = treeToList(this.permissionTree)
       const checked = selections.length === rows.length
@@ -756,7 +726,7 @@ export default {
 
       this.sels = this.$refs.multipleTable.selection
     },
-    onSelect: function(selection, row) {
+    onSelect(selection, row) {
       const checked = selection.some(s => s.id === row.id)
       if (row.children && row.children.length > 0) {
         const rows = treeToList(row.children)

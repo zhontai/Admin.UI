@@ -8,7 +8,7 @@
         </el-header>
         <el-main class="main" style="padding:0px 5px 5px 5px;">
           <div style="height:calc(100% - 2px);">
-            <markdown-editor ref="markdownEditor" v-model="document.form.content" :height="'100%'" />
+            <my-markdown-editor ref="markdownEditor" v-model="document.form.content" :height="'100%'" />
           </div>
         </el-main>
       </el-container>
@@ -82,7 +82,7 @@
                 <el-table-column label="操作" align="right">
                   <template v-slot="{ $index, row }">
                     <el-button type="text" icon="el-icon-edit" @click="onEdit($index, row)" />
-                    <confirm-button
+                    <my-confirm-button
                       type="text"
                       :loading="row._loading"
                       :icon="'el-icon-delete'"
@@ -91,7 +91,7 @@
                       <template #content>
                         <p>确定要删除吗？</p>
                       </template>
-                    </confirm-button>
+                    </my-confirm-button>
                   </template>
                 </el-table-column>
                 <template #empty>
@@ -182,7 +182,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click.native="documentGroup.visible = false">取消</el-button>
-          <confirm-button type="submit" :validate="validateGroup" :loading="documentGroup.loading" @click="onSubmitGroup" />
+          <my-confirm-button type="submit" :validate="validateGroup" :loading="documentGroup.loading" @click="onSubmitGroup" />
         </div>
       </template>
     </el-dialog>
@@ -219,7 +219,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click.native="documentMenu.visible = false">取消</el-button>
-          <confirm-button type="submit" :validate="validateMenu" :loading="documentMenu.loading" @click="onSubmitMenu" />
+          <my-confirm-button type="submit" :validate="validateMenu" :loading="documentMenu.loading" @click="onSubmitMenu" />
         </div>
       </template>
     </el-dialog>
@@ -237,8 +237,8 @@
 
 <script>
 import ImageViewer from 'element-ui/packages/image/src/image-viewer'
-import MarkdownEditor from '@/components/MarkdownEditor'
-import ConfirmButton from '@/components/ConfirmButton'
+import MyMarkdownEditor from '@/components/my-markdown-editor'
+import MyConfirmButton from '@/components/my-confirm-button'
 import { listToTree, getTreeParents } from '@/utils'
 import {
   getDocuments,
@@ -258,8 +258,8 @@ import {
 let prevOverflow = ''
 
 export default {
-  name: 'Document',
-  components: { ImageViewer, MarkdownEditor, ConfirmButton },
+  name: 'Doc',
+  components: { ImageViewer, MyMarkdownEditor, MyConfirmButton },
   data() {
     const tabs = { doc: 'docTab', img: 'imgTab' }
     return {
@@ -408,15 +408,9 @@ export default {
       this.document.form.html = this.$refs.markdownEditor.getHtml()
 
       this.document.loadingSave = true
-      const res = await updateContent(this.document.form)
+      const res = await updateContent(this.document.form, { noErrorMsg: autoSave })
       this.document.loadingSave = false
-      if (!(res && res.success === true)) {
-        if (res.msg && !autoSave) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
+      if (!res?.success) {
         return
       }
 
@@ -442,24 +436,18 @@ export default {
     },
     // 上传成功
     onUploadSuccess(res, file, fileList) {
-      if (!(res && res.code === 1)) {
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
+      const img = this.document.images.find(a => a.uid === file.uid)
+      img.loading = false
+
+      if (!res?.code === 1) {
         return
       }
-
-      const img = this.document.images.find(a => a.uid === file.uid)
       img.src = res.data
-      img.loading = false
     },
     // 上传失败
     onUploadError(err, file) {
       const res = err.message ? JSON.parse(err.message) : {}
-      if (!(res && res.code === 1)) {
+      if (!(res?.code === 1)) {
         if (res.msg) {
           this.$message({
             message: res.msg,
@@ -520,13 +508,7 @@ export default {
       const res = await getDocuments(para)
       this.listLoading = false
 
-      if (!res.success) {
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
+      if (!res?.success) {
         return
       }
 
@@ -573,13 +555,7 @@ export default {
       const res = await getDocumentImages(para)
       this.document.loadingImageList = false
 
-      if (!res.success) {
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
+      if (!res?.success) {
         return
       }
       this.document.images = res.data?.map(s => {
@@ -597,11 +573,7 @@ export default {
       const res = await deleteImage(para)
       this.pageLoading = false
 
-      if (!res.success) {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
         return
       }
 
@@ -669,13 +641,7 @@ export default {
 
       this.documentGroup.loading = false
 
-      if (!(res && res.success === true)) {
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
+      if (!res?.success) {
         return
       }
 
@@ -718,13 +684,7 @@ export default {
       }
       this.documentMenu.loading = false
 
-      if (!(res && res.success === true)) {
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
+      if (!res?.success) {
         return
       }
 
@@ -770,14 +730,9 @@ export default {
       row._loading = true
       const para = { id: row.id }
       const res = await removeDocument(para)
-
       row._loading = false
 
-      if (!res.success) {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
         return
       }
       this.$message({

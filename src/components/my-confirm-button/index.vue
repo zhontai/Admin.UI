@@ -1,25 +1,25 @@
 <!--
 一般提交
-<confirm-button @click="syncApi" :icon="'el-icon-refresh'" style="margin:0px;">
+<my-confirm-button @click="syncApi" :icon="'el-icon-refresh'" style="margin:0px;">
     <template #content>
       <p>确定要同步Api吗？</p>
     </template>
     同步Api
-</confirm-button>
+</my-confirm-button>
 
 行删除
-<confirm-button type="delete" @click="handleDel($index, row)" :loading="row._loading"/>
+<my-confirm-button type="delete" @click="handleDel($index, row)" :loading="row._loading"/>
 
 表单验证
-<confirm-button type="submit" @click="editSubmit" :validate="editFormvalidate" :loading="editLoading"/>
+<my-confirm-button type="submit" @click="editSubmit" :validate="editFormvalidate" :loading="editLoading"/>
 
 设置位置
-<confirm-button @click="submit" :validate="editFormvalidate" :placement="'top-start'" :loading="editLoading">
+<my-confirm-button @click="submit" :validate="editFormvalidate" :placement="'top-start'" :loading="editLoading">
     <template #content>
       <p>确定要更新基本信息吗？</p>
     </template>
     更新基本信息
-</confirm-button>
+</my-confirm-button>
 -->
 <template>
   <span style="margin-left:10px;line-height: 1;display: inline-block;">
@@ -60,7 +60,7 @@
 
 <script>
 export default {
-  name: 'ConfirmButton',
+  name: 'MyConfirmButton',
   props: {
     title: {
       type: String,

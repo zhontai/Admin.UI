@@ -16,7 +16,7 @@
         <el-button type="primary" @click="onAdd">新增</el-button>
       </el-form-item>
       <el-form-item>
-        <confirm-button
+        <my-confirm-button
           :icon="'el-icon-refresh'"
           :placement="'bottom-end'"
           :loading="syncLoading"
@@ -27,13 +27,13 @@
             <p>确定要同步Api吗？</p>
           </template>
           同步Api
-        </confirm-button>
+        </my-confirm-button>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-s-operation" @click="onGenerate">生成前端Api</el-button>
       </el-form-item>
       <el-form-item>
-        <confirm-button
+        <my-confirm-button
           :disabled="sels.length === 0"
           :type="'delete'"
           :placement="'bottom-end'"
@@ -45,7 +45,7 @@
             <p>确定要批量删除吗？</p>
           </template>
           批量删除
-        </confirm-button>
+        </my-confirm-button>
       </el-form-item>
     </el-form>
 
@@ -83,7 +83,7 @@
       <el-table-column label="操作" width="180">
         <template v-slot="{ $index, row }">
           <el-button @click="onEdit($index, row)">编辑</el-button>
-          <confirm-button type="delete" :loading="row._loading" @click="onDelete($index, row)" />
+          <my-confirm-button type="delete" :loading="row._loading" @click="onDelete($index, row)" />
         </template>
       </el-table-column>
     </el-table>
@@ -133,7 +133,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click.native="addFormVisible = false">取消</el-button>
-          <confirm-button type="submit" :validate="addFormValidate" :loading="addLoading" @click="onAddSubmit" />
+          <my-confirm-button type="submit" :validate="addFormValidate" :loading="addLoading" @click="onAddSubmit" />
         </div>
       </template>
     </el-dialog>
@@ -183,7 +183,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click.native="editFormVisible = false">取消</el-button>
-          <confirm-button type="submit" :validate="editFormValidate" :loading="editLoading" @click="onEditSubmit" />
+          <my-confirm-button type="submit" :validate="editFormValidate" :loading="editLoading" @click="onEditSubmit" />
         </div>
       </template>
     </el-dialog>
@@ -202,12 +202,12 @@ import {
   batchRemoveApi,
   getApi
 } from '@/api/admin/api'
-import ConfirmButton from '@/components/ConfirmButton'
+import MyConfirmButton from '@/components/my-confirm-button'
 
 export default {
   name: 'Api',
   components: {
-    ConfirmButton
+    MyConfirmButton
   },
   data() {
     return {
@@ -280,13 +280,7 @@ export default {
       const res = await getApiList(para)
       this.listLoading = false
 
-      if (!res.success) {
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
+      if (!res?.success) {
         return
       }
 
@@ -357,20 +351,16 @@ export default {
 
       const res = await editApi(para)
       this.editLoading = false
-      if (res.success) {
-        this.$message({
-          message: this.$t('admin.updateOk'),
-          type: 'success'
-        })
-        this.$refs['editForm'].resetFields()
-        this.editFormVisible = false
-        this.onGetList()
-      } else {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
+        return
       }
+      this.$message({
+        message: this.$t('admin.updateOk'),
+        type: 'success'
+      })
+      this.$refs['editForm'].resetFields()
+      this.editFormVisible = false
+      this.onGetList()
     },
     // 新增
     addFormValidate: function() {
@@ -388,20 +378,16 @@ export default {
       const res = await addApi(para)
       this.addLoading = false
 
-      if (res.success) {
-        this.$message({
-          message: this.$t('admin.addOk'),
-          type: 'success'
-        })
-        this.$refs['addForm'].resetFields()
-        this.addFormVisible = false
-        this.onGetList()
-      } else {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
+        return
       }
+      this.$message({
+        message: this.$t('admin.addOk'),
+        type: 'success'
+      })
+      this.$refs['addForm'].resetFields()
+      this.addFormVisible = false
+      this.onGetList()
     },
     // 删除
     async onDelete(index, row) {
@@ -411,11 +397,7 @@ export default {
 
       row._loading = false
 
-      if (!res.success) {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
         return
       }
       this.$message({
@@ -435,73 +417,66 @@ export default {
       const res = await batchRemoveApi(para.ids)
       this.deleteLoading = false
 
-      if (res.success) {
-        this.$message({
-          message: this.$t('admin.batchDeleteOk'),
-          type: 'success'
-        })
-      } else {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
+        return
       }
+      this.$message({
+        message: this.$t('admin.batchDeleteOk'),
+        type: 'success'
+      })
 
       this.onGetList()
     },
     // 同步api
     async onSync() {
       this.syncLoading = true
-
       const res = await getV2SwaggerJson()
-      if (res) {
-        const tags = res.tags
-        const paths = res.paths
 
-        const apis = []
-        // tags
-        if (tags && tags.length > 0) {
-          tags.forEach(t => {
-            apis[apis.length] = {
-              label: t.description,
-              path: t.name
-            }
-          })
-        }
-        // paths
-        if (paths) {
-          for (const [key, value] of Object.entries(paths)) {
-            const keys = Object.keys(value)
-            const values = Object.values(value)
-            const v = values && values.length > 0 ? values[0] : {}
-            const parentPath = v.tags && v.tags.length > 0 ? v.tags[0] : ''
-            apis[apis.length] = {
-              label: v.summary,
-              path: key,
-              parentPath,
-              httpMethods: keys.join(',')
-            }
+      if (!res) {
+        this.syncLoading = false
+        return
+      }
+
+      const tags = res.tags
+      const paths = res.paths
+
+      const apis = []
+      // tags
+      if (tags && tags.length > 0) {
+        tags.forEach(t => {
+          apis[apis.length] = {
+            label: t.description,
+            path: t.name
           }
-        }
-
-        const r = await syncApi({ apis })
-
-        if (r) {
-          if (r.success) {
-            this.$message({
-              message: this.$t('api.sync'),
-              type: 'success'
-            })
-            this.onGetList()
-          } else {
-            this.$message({
-              message: r.msg,
-              type: 'error'
-            })
+        })
+      }
+      // paths
+      if (paths) {
+        for (const [key, value] of Object.entries(paths)) {
+          const keys = Object.keys(value)
+          const values = Object.values(value)
+          const v = values && values.length > 0 ? values[0] : {}
+          const parentPath = v.tags && v.tags.length > 0 ? v.tags[0] : ''
+          apis[apis.length] = {
+            label: v.summary,
+            path: key,
+            parentPath,
+            httpMethods: keys.join(',')
           }
         }
       }
+
+      const syncRes = await syncApi({ apis })
       this.syncLoading = false
+
+      if (!syncRes?.success) {
+        return
+      }
+      this.$message({
+        message: this.$t('api.sync'),
+        type: 'success'
+      })
+      this.onGetList()
     },
     // 生成前端api
     onGenerate() {

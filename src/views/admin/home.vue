@@ -1,6 +1,22 @@
 <template>
   <section style="padding:20px 80px 0px 8px;">
     <el-timeline>
+      <el-timeline-item timestamp="版本 1.3.0" placement="top">
+        <el-card>
+          <h4>升级 element-ui到 2.13.2 版本</h4>
+          <h4>新增 高级查询组件：my-search-filter，高级查询窗口组件：my-search-window</h4>
+          <h4>新增 api增加范围scope管理</h4>
+          <h4>新增 HtmlHelper帮助类</h4>
+          <!-- <h4>新增 用户refresh_token获取新的access_token</h4> -->
+          <h4>新增 角色权限-选择菜单或接口反向勾选所属菜单</h4>
+          <h4>新增 utils.getListParents增加includeSelf参数返回自身，增加getTreeParentsWithSelf方法。</h4>
+          <h4>优化 所有错误消息在响应拦截处理，可手动关闭错误提示</h4>
+          <h4>优化 utils.getTreeParents传入不存在id返回空数组</h4>
+          <h4>优化 事物拦截，判断逻辑更简单</h4>
+          <h4>调整 components组件名称按照my-component命名</h4>
+          <p>小雪转中雪 提交于 2020-5-23</p>
+        </el-card>
+      </el-timeline-item>
       <el-timeline-item timestamp="版本 1.2.0" placement="top">
         <el-card>
           <h4>修复 文档管理-刷新文档不清除当前选中行</h4>

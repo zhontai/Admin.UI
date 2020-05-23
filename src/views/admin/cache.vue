@@ -13,7 +13,7 @@
       <el-table-column prop="description" label="缓存名" width />
       <el-table-column label="操作" width="180">
         <template v-slot="{ $index, row }">
-          <confirm-button
+          <my-confirm-button
             type="delete"
             :loading="row._loading"
             :icon="'el-icon-delete'"
@@ -24,7 +24,7 @@
               <p>确定要清除该缓存吗？</p>
             </template>
             清除
-          </confirm-button>
+          </my-confirm-button>
         </template>
       </el-table-column>
     </el-table>
@@ -33,11 +33,11 @@
 
 <script>
 import { getCacheList, clearCache } from '@/api/admin/cache'
-import ConfirmButton from '@/components/ConfirmButton'
+import MyConfirmButton from '@/components/my-confirm-button'
 export default {
   name: 'Cache',
   components: {
-    ConfirmButton
+    MyConfirmButton
   },
   data() {
     return {
@@ -58,13 +58,7 @@ export default {
       const res = await getCacheList()
       this.listLoading = false
 
-      if (!res.success) {
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
+      if (!res?.success) {
         return
       }
 
@@ -81,11 +75,7 @@ export default {
       const res = await clearCache(para)
       row._loading = false
 
-      if (!res.success) {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
         return
       }
       this.$message({

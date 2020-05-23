@@ -1,10 +1,13 @@
 import axios from 'axios'
 import store from '@/store'
+import Vue from 'vue'
+
 const requestAxios = axios.create({
   baseURL: '', // url = base url + request url
   timeout: 20000 // 请求延时
 })
 
+// 拦截请求
 requestAxios.interceptors.request.use(
   config => {
     const token = store.getters.token
@@ -19,24 +22,39 @@ requestAxios.interceptors.request.use(
   }
 )
 
-// http response 拦截器
+// 拦截响应
 requestAxios.interceptors.response.use(
   response => {
-    const res = response.data
-    res.success = res.code === 1
-    return res
+    const { config, data } = response
+    data.success = data.code === 1
+    if (!data.success && !config.noErrorMsg && data.msg) {
+      const duration = config.msgDuration >= 0 ? config.msgDuration : 3000
+      Vue.prototype.$message.error({
+        message: data.msg,
+        duration: duration
+      })
+    }
+    return data
   },
   async error => {
-    let res = { success: false, code: 0, msg: '' }
-    if (error.response) {
-      var data = error.response.data
+    console.log(error)
+    const res = { success: false, code: 0, msg: '' }
+    if (error?.response) {
+      const { config, data, status } = error.response
+      if (_.isNumber(status)) {
+        res.code = status
+      }
       if (_.isPlainObject(data)) {
-        res = { success: false, code: 0, ...error.response.data }
+        _.merge(res, data)
       } else if (_.isString(data)) {
-        if (_.isNumber(error.response.status)) {
-          res.code = error.response.status
-        }
         res.msg = data || error.response.statusText
+      }
+      if (!config.noErrorMsg && res.msg) {
+        const duration = config.msgDuration >= 0 ? config.msgDuration : 3000
+        Vue.prototype.$message.error({
+          message: res.msg,
+          duration: duration
+        })
       }
     }
     return res

@@ -1,39 +1,41 @@
 import request from '@/utils/request'
+import scope from './scope'
+const apiPrefix = `${process.env.VUE_APP_BASE_API}/${scope}/document/`
 
 // 文档管理
-export const getDocuments = params => {
-  return request.get('/api/admin/document/getlist', { params: params })
+export const getDocuments = (params, config = {}) => {
+  return request.get(apiPrefix + 'getlist', { params: params }, config)
 }
-export const getDocumentImages = params => {
-  return request.get('/api/admin/document/getimagelist', { params: params })
+export const getDocumentImages = (params, config = {}) => {
+  return request.get(apiPrefix + 'getimagelist', { params: params }, config)
 }
-export const getGroup = params => {
-  return request.get('/api/admin/document/getGroup', { params: params })
+export const getGroup = (params, config = {}) => {
+  return request.get(apiPrefix + 'getGroup', { params: params }, config)
 }
-export const getMenu = params => {
-  return request.get('/api/admin/document/getMenu', { params: params })
+export const getMenu = (params, config = {}) => {
+  return request.get(apiPrefix + 'getMenu', { params: params }, config)
 }
-export const getContent = params => {
-  return request.get('/api/admin/document/getContent', { params: params })
+export const getContent = (params, config = {}) => {
+  return request.get(apiPrefix + 'getContent', { params: params }, config)
 }
-export const addGroup = params => {
-  return request.post('/api/admin/document/addGroup', params)
+export const addGroup = (params, config = {}) => {
+  return request.post(apiPrefix + 'addGroup', params, config)
 }
-export const addMenu = params => {
-  return request.post('/api/admin/document/addMenu', params)
+export const addMenu = (params, config = {}) => {
+  return request.post(apiPrefix + 'addMenu', params, config)
 }
-export const updateGroup = params => {
-  return request.put('/api/admin/document/updateGroup', params)
+export const updateGroup = (params, config = {}) => {
+  return request.put(apiPrefix + 'updateGroup', params, config)
 }
-export const updateMenu = params => {
-  return request.put('/api/admin/document/updateMenu', params)
+export const updateMenu = (params, config = {}) => {
+  return request.put(apiPrefix + 'updateMenu', params, config)
 }
-export const updateContent = params => {
-  return request.put('/api/admin/document/updateContent', params)
+export const updateContent = (params, config = {}) => {
+  return request.put(apiPrefix + 'updateContent', params, config)
 }
-export const removeDocument = params => {
-  return request.delete('/api/admin/document/softdelete', { params: params })
+export const removeDocument = (params, config = {}) => {
+  return request.delete(apiPrefix + 'softdelete', { params: params }, config)
 }
-export const deleteImage = params => {
-  return request.delete('/api/admin/document/deleteimage', { params: params })
+export const deleteImage = (params, config = {}) => {
+  return request.delete(apiPrefix + 'deleteimage', { params: params }, config)
 }

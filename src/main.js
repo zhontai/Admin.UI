@@ -5,7 +5,7 @@ import 'regenerator-runtime/runtime'
 import Vue from 'vue'
 
 import ElementUI from 'element-ui'
-import Pagination from '@/components/ElementUI/Pagination'
+import pagination from '@/components/ElementUI/pagination'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'font-awesome/css/font-awesome.min.css'
 
@@ -22,9 +22,10 @@ Vue.use(ElementUI, {
   size: 'mini', // large / medium / small / mini
   i18n: (key, value) => i18n.t(key, value)
 })
-Vue.use(Pagination)
-Vue.config.productionTip = false
+// 覆盖分页组件
+Vue.use(pagination)
 
+Vue.config.productionTip = false
 Vue.prototype.$_ = lodash
 
 new Vue({

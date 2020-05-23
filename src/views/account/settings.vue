@@ -30,7 +30,7 @@
                   :show-file-list="false"
                   :before-upload="()=>{avatarLoading = true}"
                   :on-success="onAvatarSuccess"
-                  :on-error="()=>{avatarLoading = false}"
+                  :on-error="onAvatarError"
                   style="display: inline-block;"
                 >
                   <el-image class="el-avatar el-avatar--square" :src="avatar" style="height:90px;width:90px;line-height: 90px;">
@@ -51,7 +51,7 @@
           <el-row>
             <el-col :sm="12" :xs="24">
               <el-form-item>
-                <confirm-button
+                <my-confirm-button
                   :disabled="disabled"
                   :validate="editFormvalidate"
                   :placement="'top-end'"
@@ -63,7 +63,7 @@
                     <p>确定要更新基本信息吗？</p>
                   </template>
                   更新基本信息
-                </confirm-button>
+                </my-confirm-button>
               </el-form-item>
             </el-col>
           </el-row>
@@ -106,7 +106,7 @@
             </el-col>
           </el-row>
           <el-form-item>
-            <confirm-button
+            <my-confirm-button
               :disabled="disabled"
               :validate="editPwdFormvalidate"
               :placement="'top-end'"
@@ -118,7 +118,7 @@
                 <p>确定要更新密码吗？</p>
               </template>
               更新密码
-            </confirm-button>
+            </my-confirm-button>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -127,12 +127,12 @@
 </template>
 
 <script>
-import ConfirmButton from '@/components/ConfirmButton'
+import MyConfirmButton from '@/components/my-confirm-button'
 import { getBasic, changePassword, updateBasicUser } from '@/api/admin/user'
 export default {
   name: 'Settins',
   components: {
-    ConfirmButton
+    MyConfirmButton
   },
   data() {
     const validateNewPassword = (rule, value, callback) => {
@@ -210,16 +210,7 @@ export default {
     this.loading = true
     const res = await getBasic()
     this.loading = false
-    if (!res) {
-      return
-    }
-    if (!res.success) {
-      if (res.msg) {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
-      }
+    if (!res?.success) {
       return
     }
 
@@ -229,18 +220,26 @@ export default {
     this.editPwdForm.version = data.version
   },
   methods: {
+    // 上传成功
     onAvatarSuccess(res) {
       this.avatarLoading = false
-      if (!(res && res.code === 1)) {
+      if (!res?.code === 1) {
+        return
+      }
+      this.editForm.avatar = res.data
+    },
+    // 上传失败
+    onAvatarError(err, file) {
+      this.avatarLoading = false
+      const res = err.message ? JSON.parse(err.message) : {}
+      if (!(res?.code === 1)) {
         if (res.msg) {
           this.$message({
             message: res.msg,
             type: 'error'
           })
         }
-        return
       }
-      this.editForm.avatar = res.data
     },
     editFormvalidate() {
       let isValid = false
@@ -255,21 +254,17 @@ export default {
       const res = await updateBasicUser(para)
       this.editLoading = false
 
-      if (res.success) {
-        ++this.editForm.version
-        ++this.editPwdForm.version
-        this.$message({
-          message: this.$t('admin.updateOk'),
-          type: 'success'
-        })
-        this.$store.commit('user/setName', para.nickName)
-        this.$store.commit('user/setAvatar', para.avatar)
-      } else {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
+        return
       }
+      ++this.editForm.version
+      ++this.editPwdForm.version
+      this.$message({
+        message: this.$t('admin.updateOk'),
+        type: 'success'
+      })
+      this.$store.commit('user/setName', para.nickName)
+      this.$store.commit('user/setAvatar', para.avatar)
     },
     editPwdFormvalidate() {
       let isValid = false
@@ -284,21 +279,17 @@ export default {
       const res = await changePassword(para)
       this.editPwdLoading = false
 
-      if (res.success) {
-        ++this.editForm.version
-        ++this.editPwdForm.version
-        this.$message({
-          message: this.$t('admin.updateOk'),
-          type: 'success'
-        })
-
-        this.$refs['editPwdForm'].resetFields()
-      } else {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
+        return
       }
+      ++this.editForm.version
+      ++this.editPwdForm.version
+      this.$message({
+        message: this.$t('admin.updateOk'),
+        type: 'success'
+      })
+
+      this.$refs['editPwdForm'].resetFields()
     }
   }
 }

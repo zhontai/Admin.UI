@@ -41,13 +41,13 @@ hljs.registerLanguage('xml', xml)
 import defaultOptions from './default-options'
 
 export default {
-  name: 'MarkdownEditor',
+  name: 'MyMarkdownEditor',
   props: {
     id: {
       type: String,
       required: false,
       default() {
-        return _.uniqueId('markdown-editor-')
+        return _.uniqueId('my-markdown-editor-')
       }
     },
     value: {

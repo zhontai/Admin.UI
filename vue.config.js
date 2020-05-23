@@ -23,7 +23,7 @@ module.exports = {
     proxy: {
       // 配置多个代理
       // detail: https://cli.vuejs.org/config/#devserver-proxy
-      '^/api': {
+      ['^' + process.env.VUE_APP_BASE_API]: {
         target: 'http://localhost:8888',
         ws: true,
         changeOrigin: true

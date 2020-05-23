@@ -1,5 +1,5 @@
 <template>
-  <container>
+  <my-container v-loading="pageLoading">
     <!--查询-->
     <template #header>
       <el-form class="ad-form-query" :inline="true" :model="filter" @submit.native.prevent>
@@ -19,10 +19,13 @@
           <el-button type="primary" @click="getUsers">查询</el-button>
         </el-form-item>
         <el-form-item>
+          <el-button type="primary" @click="onsearchWindowVisible">高级查询</el-button>
+        </el-form-item>
+        <el-form-item>
           <el-button type="primary" @click="onAdd">新增</el-button>
         </el-form-item>
         <el-form-item>
-          <confirm-button
+          <my-confirm-button
             :disabled="sels.length === 0"
             :type="'delete'"
             :placement="'bottom-end'"
@@ -35,7 +38,7 @@
               <p>确定要批量删除吗？</p>
             </template>
             批量删除
-          </confirm-button>
+          </my-confirm-button>
         </el-form-item>
       </el-form>
     </template>
@@ -69,7 +72,7 @@
       <el-table-column label="操作" width="180">
         <template v-slot="{ $index, row }">
           <el-button @click="onEdit($index, row)">编辑</el-button>
-          <confirm-button
+          <my-confirm-button
             type="delete"
             :loading="row._loading"
             :validate="deleteValidate"
@@ -82,7 +85,7 @@
 
     <!--分页-->
     <template #footer>
-      <pagination
+      <my-pagination
         ref="pager"
         :page.sync="pager.currentPage"
         :size.sync="pager.pageSize"
@@ -91,6 +94,14 @@
         @get-page="getUsers"
       />
     </template>
+
+    <!--高级查询窗口-->
+    <my-search-window
+      :visible.sync="searchWindowVisible"
+      :fields="fields"
+      @cancel="searchWindowVisible = false"
+      @click="onSearchFilter"
+    />
 
     <!--新增窗口-->
     <el-drawer
@@ -151,7 +162,7 @@
       </section>
       <div class="drawer-footer">
         <el-button @click.native="addFormVisible = false">取消</el-button>
-        <confirm-button type="submit" :validate="addFormvalidate" :loading="addLoading" @click="onAddSubmit" />
+        <my-confirm-button type="submit" :validate="addFormvalidate" :loading="addLoading" @click="onAddSubmit" />
       </div>
     </el-drawer>
 
@@ -204,34 +215,45 @@
       </section>
       <div class="drawer-footer">
         <el-button @click.native="editFormVisible = false">取消</el-button>
-        <confirm-button type="submit" :validate="editFormvalidate" :loading="editLoading" @click="onEditSubmit" />
+        <my-confirm-button type="submit" :validate="editFormvalidate" :loading="editLoading" @click="onEditSubmit" />
       </div>
     </el-drawer>
-  </container>
+  </my-container>
 </template>
 
 <script>
 import { formatTime } from '@/utils'
 import { getRoleListPage } from '@/api/admin/role'
 import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser, getUser } from '@/api/admin/user'
-import Container from '@/components/Container'
-import ConfirmButton from '@/components/ConfirmButton'
-import Pagination from '@/components/Pagination'
+import MyContainer from '@/components/my-container'
+import MyConfirmButton from '@/components/my-confirm-button'
+import MyPagination from '@/components/my-pagination'
+import MySearchWindow from '@/components/my-search-window'
 
 export default {
   name: 'Users',
-  components: { Container, ConfirmButton, Pagination },
+  components: { MyContainer, MyConfirmButton, MyPagination, MySearchWindow },
   data() {
     return {
       filter: {
         userName: ''
       },
+
+      // 高级查询字段
+      fields: [
+        { value: 'userName', label: '用户名' },
+        { value: 'nickName', label: '昵称', type: 'string' },
+        { value: 'createdTime', label: '创建时间', type: 'date', config: { type: 'date' }}
+      ],
+      searchWindowVisible: false,
+
       users: [],
       roles: [],
       pager: {},
       listLoading: false,
       sels: [], // 列表选中列
 
+      pageLoading: false,
       addDialogFormVisible: false,
       editFormVisible: false, // 编辑界面是否显示
       editLoading: false,
@@ -271,25 +293,31 @@ export default {
     formatCreatedTime(row, column, time) {
       return formatTime(time, 'yyyy-MM-dd hh:mm')
     },
+
+    // 高级查询显示
+    onsearchWindowVisible() {
+      this.searchWindowVisible = true
+    },
+    // 高级查询
+    onSearchFilter(dynamicFilter) {
+      this.getUsers(dynamicFilter)
+      this.searchWindowVisible = false
+    },
+
     // 获取用户列表
-    async getUsers() {
+    async getUsers(dynamicFilter = null) {
       const para = {
         currentPage: this.pager.currentPage,
         pageSize: this.pager.pageSize,
-        filter: this.filter
+        filter: this.filter,
+        dynamicFilter: dynamicFilter
       }
 
       this.listLoading = true
       const res = await getUserListPage(para)
       this.listLoading = false
 
-      if (!res.success) {
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
+      if (!res?.success) {
         return
       }
 
@@ -308,12 +336,12 @@ export default {
     },
     // 显示编辑界面
     async onEdit(index, row) {
-      const loading = this.$loading()
+      this.pageLoading = true
       if (this.roles.length === 0) {
         await this.getRoleListPage()
       }
       const res = await getUser({ id: row.id })
-      loading.close()
+      this.pageLoading = false
       if (res && res.success) {
         const data = res.data
         this.editForm = data
@@ -326,9 +354,9 @@ export default {
     // 显示新增界面
     async onAdd() {
       if (this.roles.length === 0) {
-        const loading = this.$loading()
+        this.pageLoading = true
         await this.getRoleListPage()
-        loading.close()
+        this.pageLoading = false
       }
       this.addFormVisible = true
     },
@@ -351,20 +379,17 @@ export default {
       const res = await editUser(para)
       this.editLoading = false
 
-      if (res.success) {
-        this.$message({
-          message: this.$t('admin.updateOk'),
-          type: 'success'
-        })
-        this.$refs['editForm'].resetFields()
-        this.editFormVisible = false
-        this.getUsers()
-      } else {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
+        return
       }
+
+      this.$message({
+        message: this.$t('admin.updateOk'),
+        type: 'success'
+      })
+      this.$refs['editForm'].resetFields()
+      this.editFormVisible = false
+      this.getUsers()
     },
     // 新增验证
     addFormvalidate() {
@@ -382,20 +407,17 @@ export default {
       const res = await addUser(para)
       this.addLoading = false
 
-      if (res.success) {
-        this.$message({
-          message: this.$t('admin.addOk'),
-          type: 'success'
-        })
-        this.$refs['addForm'].resetFields()
-        this.addFormVisible = false
-        this.getUsers()
-      } else {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
+        return
       }
+
+      this.$message({
+        message: this.$t('admin.addOk'),
+        type: 'success'
+      })
+      this.$refs['addForm'].resetFields()
+      this.addFormVisible = false
+      this.getUsers()
     },
     // 删除验证
     deleteValidate(row) {
@@ -417,11 +439,7 @@ export default {
       const res = await removeUser(para)
       row._loading = false
 
-      if (!res.success) {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
         return
       }
       this.$message({
@@ -455,11 +473,7 @@ export default {
       const res = await batchRemoveUser(para.ids)
       this.deleteLoading = false
 
-      if (!res.success) {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
         return
       }
       this.$message({
@@ -476,3 +490,4 @@ export default {
   }
 }
 </script>
+

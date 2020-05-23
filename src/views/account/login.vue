@@ -13,6 +13,7 @@
               type="text"
               auto-complete="off"
               placeholder="账号"
+              @keyup.enter.native="onLogin"
             >
               <template #prefix>
                 <i class="el-input__icon el-icon-user" />
@@ -133,24 +134,22 @@ export default {
         this.loginLoading = false
         this.loginText = '重新登录'
 
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
-
-        if (res.data === 1) {
-          this.getLoginVerifyCode()
-          this.$refs.verifyCode.focus()
-        } else if (res.data === 2) {
-          this.$refs.verifyCode.focus()
-        } else if (res.data === 3) {
-          this.getLoginVerifyCode()
-          this.$refs.userName.focus()
-        } else if (res.data === 4) {
-          this.getLoginVerifyCode()
-          this.$refs.password.focus()
+        switch (res.data) {
+          case 1:
+            this.getLoginVerifyCode()
+            this.$refs.verifyCode.focus()
+            break
+          case 2:
+            this.$refs.verifyCode.focus()
+            break
+          case 3:
+            this.getLoginVerifyCode()
+            this.$refs.userName.focus()
+            break
+          case 4:
+            this.getLoginVerifyCode()
+            this.$refs.password.focus()
+            break
         }
         return
       }
@@ -161,21 +160,9 @@ export default {
       const res = await this.$store.dispatch('user/getLoginInfo')
       this.loginLoading = false
 
-      if (!res) {
+      if (!res?.success) {
         this.loginLoading = false
         this.loginText = '重新登录'
-        return
-      }
-
-      if (!res.success) {
-        this.loginLoading = false
-        this.loginText = '重新登录'
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
         return
       }
 

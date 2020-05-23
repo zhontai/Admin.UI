@@ -22,7 +22,7 @@
 /**
  * pagination 分页组件
  * 使用说明
-    <pagination
+    <my-pagination
     ref="pager"
     :page.sync="pager.currentPage"
     :size.sync="pager.pageSize"
@@ -32,7 +32,7 @@
     />
     this.pager = this.$refs.pager.getPager()
     this.pager.total = res.data.total
- */
+*/
 import { addResizeListener, removeResizeListener } from 'element-ui/lib/utils/resize-event'
 
 const layouts = {
@@ -41,7 +41,7 @@ const layouts = {
   simple: 'prev, jumper, next'
 }
 export default {
-  name: 'Pagination',
+  name: 'MyPagination',
   props: {
     layout: {
       type: String,

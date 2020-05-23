@@ -1,27 +1,29 @@
 import request from '@/utils/request'
+import scope from './scope'
+const apiPrefix = `${process.env.VUE_APP_BASE_API}/${scope}/view/`
 
 // 接口管理
-export const getView = params => {
-  return request.get('/api/admin/view/get', { params: params })
+export const getView = (params, config = {}) => {
+  return request.get(apiPrefix + 'get', { params: params }, config)
 }
-export const getViewList = params => {
-  return request.get('/api/admin/view/getlist', { params: params })
+export const getViewList = (params, config = {}) => {
+  return request.get(apiPrefix + 'getlist', { params: params }, config)
 }
-export const removeView = params => {
-  return request.delete('/api/admin/view/softdelete', { params: params })
+export const removeView = (params, config = {}) => {
+  return request.delete(apiPrefix + 'softdelete', { params: params }, config)
 }
-export const batchRemoveView = params => {
-  return request.put('/api/admin/view/BatchsoftDelete', params)
+export const batchRemoveView = (params, config = {}) => {
+  return request.put(apiPrefix + 'BatchsoftDelete', params, config)
 }
-export const editView = params => {
-  return request.put('/api/admin/view/update', params)
+export const editView = (params, config = {}) => {
+  return request.put(apiPrefix + 'update', params, config)
 }
-export const addView = params => {
-  return request.post('/api/admin/view/add', params)
+export const addView = (params, config = {}) => {
+  return request.post(apiPrefix + 'add', params, config)
 }
 /**
  * 同步api
  */
-export const syncView = params => {
-  return request.post('/api/admin/view/sync', params)
+export const syncView = (params, config = {}) => {
+  return request.post(apiPrefix + 'sync', params, config)
 }

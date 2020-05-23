@@ -5,7 +5,7 @@
         <i v-if="item.icon" :class="item.icon" />
         <span>{{ item.label }}</span>
       </template>
-      <menu-item v-for="child in item.children" :key="child.id" :item="child" />
+      <my-menu-item v-for="child in item.children" :key="child.id" :item="child" />
     </el-submenu>
     <template v-else-if="item.path">
       <a v-if="item.newWindow" :href="item.path" target="_blank" rel="noopener">
@@ -32,7 +32,7 @@
 
 <script>
 export default {
-  name: 'MenuItem',
+  name: 'MyMenuItem',
   props: {
     item: {
       type: Object,

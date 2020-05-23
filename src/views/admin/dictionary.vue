@@ -1,5 +1,5 @@
 <template>
-  <container>
+  <my-container>
     <!--查询-->
     <template #header>
       <el-form class="ad-form-query" :inline="true" :model="filter" @submit.native.prevent>
@@ -55,7 +55,7 @@
       <el-table-column label="操作" fixed="right" width="180">
         <template v-slot="{ $index, row }">
           <el-button icon="el-icon-edit" @click="onEdit($index, row)">编辑</el-button>
-          <confirm-button
+          <my-confirm-button
             :type="'delete'"
             :loading="row._loading"
             :icon="'el-icon-delete'"
@@ -68,7 +68,7 @@
 
     <!--分页-->
     <template #footer>
-      <pagination
+      <my-pagination
         ref="pager"
         :layout="'fullPager'"
         :page.sync="pager.currentPage"
@@ -125,7 +125,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click.native="addFormVisible = false">取消</el-button>
-          <confirm-button type="submit" :loading="addLoading" :validate="addFormValidate" @click="onAddSubmit" />
+          <my-confirm-button type="submit" :loading="addLoading" :validate="addFormValidate" @click="onAddSubmit" />
         </div>
       </template>
     </el-dialog>
@@ -176,12 +176,12 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click.native="editFormVisible = false">取消</el-button>
-          <confirm-button type="submit" :loading="editLoading" :validate="editFormValidate" @click="onEditSubmit" />
+          <my-confirm-button type="submit" :loading="editLoading" :validate="editFormValidate" @click="onEditSubmit" />
         </div>
       </template>
     </el-dialog>
 
-  </container>
+  </my-container>
 </template>
 
 <script>
@@ -193,12 +193,12 @@ import {
   addDictionary,
   getDictionary
 } from '@/api/admin/dictionary'
-import Container from '@/components/Container'
-import Pagination from '@/components/Pagination'
-import ConfirmButton from '@/components/ConfirmButton'
+import MyContainer from '@/components/my-container'
+import MyPagination from '@/components/my-pagination'
+import MyConfirmButton from '@/components/my-confirm-button'
 export default {
   name: 'Dictionary',
-  components: { Container, ConfirmButton, Pagination },
+  components: { MyContainer, MyConfirmButton, MyPagination },
   data() {
     return {
       filter: {
@@ -275,13 +275,7 @@ export default {
       const res = await getDictionaryListPage(para)
       this.listLoading = false
 
-      if (!res.success) {
-        if (res.msg) {
-          this.$message({
-            message: res.msg,
-            type: 'error'
-          })
-        }
+      if (!res?.success) {
         return
       }
 
@@ -307,17 +301,13 @@ export default {
       const res = await removeDictionary(para)
       row._loading = false
 
-      if (res.success) {
-        this.$message({
-          message: '删除成功',
-          type: 'success'
-        })
-      } else {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
+        return
       }
+      this.$message({
+        message: '删除成功',
+        type: 'success'
+      })
 
       this.getDictionaries()
     },
@@ -376,20 +366,16 @@ export default {
       const res = await editDictionary(para)
       this.editLoading = false
 
-      if (res.success) {
-        this.$message({
-          message: this.$t('admin.updateOk'),
-          type: 'success'
-        })
-        this.$refs['editForm'].resetFields()
-        this.editFormVisible = false
-        this.getDictionaries()
-      } else {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
+        return
       }
+      this.$message({
+        message: this.$t('admin.updateOk'),
+        type: 'success'
+      })
+      this.$refs['editForm'].resetFields()
+      this.editFormVisible = false
+      this.getDictionaries()
     },
     addFormValidate: function() {
       let isValid = false
@@ -407,20 +393,16 @@ export default {
       const res = await addDictionary(para)
       this.addLoading = false
 
-      if (res.success) {
-        this.$message({
-          message: this.$t('admin.addOk'),
-          type: 'success'
-        })
-        this.$refs['addForm'].resetFields()
-        this.addFormVisible = false
-        this.getDictionaries()
-      } else {
-        this.$message({
-          message: res.msg,
-          type: 'error'
-        })
+      if (!res?.success) {
+        return
       }
+      this.$message({
+        message: this.$t('admin.addOk'),
+        type: 'success'
+      })
+      this.$refs['addForm'].resetFields()
+      this.addFormVisible = false
+      this.getDictionaries()
     },
     selectAll: function(selection) {
       const selections = treeToList(selection)

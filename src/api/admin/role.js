@@ -1,22 +1,24 @@
 import request from '@/utils/request'
+import scope from './scope'
+const apiPrefix = `${process.env.VUE_APP_BASE_API}/${scope}/role/`
 
 // 角色管理
-export const getRole = params => {
-  return request.get('/api/admin/role/get', { params: params })
+export const getRole = (params, config = {}) => {
+  return request.get(apiPrefix + 'get', { params: params }, config)
 }
-export const getRoleListPage = params => {
+export const getRoleListPage = (params, config = {}) => {
   params = params || {}
-  return request.post('/api/admin/role/getpage', params)
+  return request.post(apiPrefix + 'getpage', params, config)
 }
-export const addRole = params => {
-  return request.post('/api/admin/role/add', params)
+export const addRole = (params, config = {}) => {
+  return request.post(apiPrefix + 'add', params, config)
 }
-export const editRole = params => {
-  return request.put('/api/admin/role/update', params)
+export const editRole = (params, config = {}) => {
+  return request.put(apiPrefix + 'update', params, config)
 }
-export const removeRole = params => {
-  return request.delete('/api/admin/role/softdelete', { params: params })
+export const removeRole = (params, config = {}) => {
+  return request.delete(apiPrefix + 'softdelete', { params: params }, config)
 }
-export const batchRemoveRole = params => {
-  return request.put('/api/admin/role/BatchsoftDelete', params)
+export const batchRemoveRole = (params, config = {}) => {
+  return request.put(apiPrefix + 'BatchsoftDelete', params, config)
 }
