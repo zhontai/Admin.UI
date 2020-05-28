@@ -7,6 +7,7 @@
     :custom-class="'my-search-window'"
     :close-on-click-modal="false"
     :close-on-press-escape="false"
+    :before-close="onCancel"
     style="position:absolute;"
   >
     <my-search-filter ref="searchFilter" :fields="fields" />
@@ -39,7 +40,6 @@
     <my-search-window
       :visible.sync="searchWindowVisible"
       :fields="fields"
-      @cancel="searchWindowVisible = false"
       @click="onSearchFilter"
     />
 
@@ -109,6 +109,7 @@ export default {
     },
     // 取消
     onCancel() {
+      this.$emit('update:visible', false)
       this.$emit('cancel')
     },
     // 高级查询

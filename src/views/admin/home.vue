@@ -1,6 +1,17 @@
 <template>
   <section style="padding:20px 80px 0px 8px;">
     <el-timeline>
+      <el-timeline-item timestamp="版本 1.3.1" placement="top">
+        <el-card>
+          <h4>新增 接口、服务和仓储测试</h4>
+          <h4>新增 Ip限流，支持内存和Redis缓存</h4>
+          <h4>新增 权限管理增加权限编码字段，接口表单增加权限编码保存</h4>
+          <h4>新增 权限指令v-permission="'权限编码'" 或 v-permission="{ permission: '权限编码', disabled:true }"</h4>
+          <h4>新增 权限检查方法v-if="checkPermission('权限编码')"</h4>
+          <h4>修复 高级查询窗口点击关闭图标按钮，无法再打开高级查询窗口</h4>
+          <p>小雪转中雪 提交于 2020-5-28</p>
+        </el-card>
+      </el-timeline-item>
       <el-timeline-item timestamp="版本 1.3.0" placement="top">
         <el-card>
           <h4>升级 element-ui到 2.13.2 版本</h4>

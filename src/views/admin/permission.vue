@@ -261,6 +261,9 @@
         <el-form-item label="名称" prop="label">
           <el-input v-model="permissionApi.form.label" auto-complete="off" />
         </el-form-item>
+        <el-form-item label="编码" prop="code">
+          <el-input v-model="permissionApi.form.code" auto-complete="off" />
+        </el-form-item>
         <el-form-item label="描述" prop="description">
           <el-input v-model="permissionApi.form.description" auto-complete="off" />
         </el-form-item>
@@ -361,6 +364,7 @@ export default {
         // viewId: [{ required: true, message: '请选择视图组件', trigger: 'change' }],
         // viewIds: [{ required: true, message: '请选择视图组件', trigger: 'change' }],
         label: [{ required: true, message: '请输入名称', trigger: ['blur'] }],
+        code: [{ required: true, message: '请输入编码', trigger: ['blur'] }],
         path: [{ required: true, message: '请输入菜单地址', trigger: ['blur'] }]
       },
 
@@ -417,6 +421,7 @@ export default {
           apiId: null,
           apiIds: [],
           label: '',
+          code: '',
           description: '',
           hidden: false,
           enabled: true
@@ -672,7 +677,6 @@ export default {
       return isValid
     },
     async onSubmitApi() {
-      debugger
       this.permissionApi.loading = true
       const para = _.cloneDeep(this.permissionApi.form)
       para.parentId = para.parentIds[para.parentIds.length - 1]
@@ -703,6 +707,7 @@ export default {
       const api = apis.find(a => a.id === value)
       if (api && api.label) {
         this.permissionApi.form.label = api.label
+        this.permissionApi.form.code = _.trimStart(_.replace(api.path, /\//g, ':'), ':')
       }
     },
     onChangeView(value) {

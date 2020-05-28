@@ -8,7 +8,8 @@ const state = {
   token: getToken(),
   name: '',
   avatar: require('@/assets/avatar.png'),
-  menus: []
+  menus: [],
+  permissions: []
 }
 
 const mutations = {
@@ -27,6 +28,9 @@ const mutations = {
   },
   setMenus: (state, menus) => {
     state.menus = menus
+  },
+  setPermissions: (state, permissions) => {
+    state.permissions = permissions
   }
 }
 
@@ -56,6 +60,7 @@ const actions = {
       commit('setName', name)
       commit('setAvatar', user.avatar)
       commit('setMenus', res.data.menus)
+      commit('setPermissions', res.data.permissions)
       addRoutes(res.data.menus)
       // localStorage.setItem('loginInfo', JSON.stringify(res.data))
     }

@@ -99,7 +99,6 @@
     <my-search-window
       :visible.sync="searchWindowVisible"
       :fields="fields"
-      @cancel="searchWindowVisible = false"
       @click="onSearchFilter"
     />
 
