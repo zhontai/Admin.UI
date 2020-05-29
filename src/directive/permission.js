@@ -2,6 +2,7 @@ import Vue from 'vue'
 import checkPermission from '@/utils/permission'
 
 /**
+ * 使用说明
  * v-permission="'api:admin:api:add'" 或 v-permission="['api:admin:api:add']"
  * v-permission="{ permission: 'api:admin:api:add', disabled: true }"
  */
