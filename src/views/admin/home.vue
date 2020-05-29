@@ -9,6 +9,7 @@
           <h4>新增 权限指令v-permission="'权限编码'" 或 v-permission="{ permission: '权限编码', disabled:true }"</h4>
           <h4>新增 权限检查方法v-if="checkPermission('权限编码')"</h4>
           <h4>修复 高级查询窗口点击关闭图标按钮，无法再打开高级查询窗口</h4>
+          <h4>修复 表格在部分浏览器无法满屏的问题</h4>
           <p>小雪转中雪 提交于 2020-5-28</p>
         </el-card>
       </el-timeline-item>
