@@ -48,7 +48,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row>
+          <el-row v-if="checkPermission(['api:admin:user:updatebasic'])">
             <el-col :sm="12" :xs="24">
               <el-form-item>
                 <my-confirm-button
@@ -105,21 +105,25 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-form-item>
-            <my-confirm-button
-              :disabled="disabled"
-              :validate="editPwdFormvalidate"
-              :placement="'top-end'"
-              :loading="editPwdLoading"
-              style="margin-left:0px;"
-              @click="onSubmitPwd"
-            >
-              <template #content>
-                <p>确定要更新密码吗？</p>
-              </template>
-              更新密码
-            </my-confirm-button>
-          </el-form-item>
+          <el-row v-if="checkPermission(['api:admin:user:changepassword'])">
+            <el-col :sm="12" :xs="24">
+              <el-form-item>
+                <my-confirm-button
+                  :disabled="disabled"
+                  :validate="editPwdFormvalidate"
+                  :placement="'top-end'"
+                  :loading="editPwdLoading"
+                  style="margin-left:0px;"
+                  @click="onSubmitPwd"
+                >
+                  <template #content>
+                    <p>确定要更新密码吗？</p>
+                  </template>
+                  更新密码
+                </my-confirm-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form>
       </el-tab-pane>
     </el-tabs>

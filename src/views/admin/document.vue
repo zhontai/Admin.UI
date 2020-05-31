@@ -4,7 +4,7 @@
       <el-container>
         <el-header class="header" height="auto" style="padding:5px 10px 5px 10px;text-align:right;">
           <span style="float:left;font-size:14px;line-height: 28px;">{{ document.form.label }}</span>
-          <el-button type="primary" :disabled="!hasDocument" :loading="document.loadingSave" @click="save(false)">保存文档</el-button>
+          <el-button v-if="checkPermission(['api:admin:document:updatecontent'])" type="primary" :disabled="!hasDocument" :loading="document.loadingSave" @click="save(false)">保存文档</el-button>
         </el-header>
         <el-main class="main" style="padding:0px 5px 5px 5px;">
           <div style="height:calc(100% - 2px);">
@@ -18,14 +18,14 @@
             <div v-show="isDocTab">
               <el-button-group>
                 <el-button type="primary" @click="getDocuments">刷新</el-button>
-                <el-dropdown>
+                <el-dropdown v-if="checkPermission(['api:admin:document:addgroup','api:admin:document:addmenu'])">
                   <el-button type="primary">
                     新增<i class="el-icon-arrow-down el-icon--right" />
                   </el-button>
                   <template #dropdown>
                     <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;">
-                      <el-dropdown-item icon="el-icon-folder" @click.native="onOpenAddGroup">新增分组</el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-tickets" @click.native="onOpenAddMenu">新增菜单</el-dropdown-item>
+                      <el-dropdown-item v-if="checkPermission(['api:admin:document:addgroup'])" icon="el-icon-folder" @click.native="onOpenAddGroup">新增分组</el-dropdown-item>
+                      <el-dropdown-item v-if="checkPermission(['api:admin:document:addmenu'])" icon="el-icon-tickets" @click.native="onOpenAddMenu">新增菜单</el-dropdown-item>
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
@@ -47,7 +47,7 @@
                   :on-error="onUploadError"
                   style="display: inline-block;"
                 >
-                  <el-button type="primary">
+                  <el-button v-if="checkPermission(['api:admin:document:uploadimage'])" type="primary">
                     <i class="el-icon-upload el-icon--left" />上传图片
                   </el-button>
                 </el-upload>
@@ -79,10 +79,24 @@
                     {{ row.label }}
                   </template>
                 </el-table-column>
-                <el-table-column label="操作" align="right">
+                <el-table-column
+                  v-if="checkPermission([
+                    'api:admin:document:updategroup',
+                    'api:admin:document:updatemenu',
+                    'api:admin:document:softdelete'])"
+                  label="操作"
+                  align="right"
+                >
                   <template v-slot="{ $index, row }">
-                    <el-button type="text" icon="el-icon-edit" @click="onEdit($index, row)" />
+                    <el-button
+                      v-if="(row.type === 1 && checkPermission(['api:admin:document:updategroup']))
+                        || (row.type === 2 && checkPermission(['api:admin:document:updatemenu']))"
+                      type="text"
+                      icon="el-icon-edit"
+                      @click="onEdit($index, row)"
+                    />
                     <my-confirm-button
+                      v-if="checkPermission(['api:admin:document:softdelete'])"
                       type="text"
                       :loading="row._loading"
                       :icon="'el-icon-delete'"
@@ -127,7 +141,7 @@
                   </div>
                   <span class="mc-upload-list__item-actions">
                     <span class="cm-upload-list__item-preview" @click="onOpenViewer(img.src)"><i class="el-icon-zoom-in" /></span>
-                    <span class="cm-upload-list__item-delete" @click="onDeleteImage(img.src)"><i class="el-icon-delete" /></span>
+                    <span v-if="checkPermission(['api:admin:document:deleteimage'])" class="cm-upload-list__item-delete" @click="onDeleteImage(img.src)"><i class="el-icon-delete" /></span>
                   </span>
                 </el-col>
               </el-row>
@@ -152,6 +166,7 @@
 
     <!--分组-->
     <el-dialog
+      v-if="checkPermission(['api:admin:document:addgroup','api:admin:document:updategroup'])"
       :title="(documentGroup.form.id > 0 ? '编辑':'新增')+'分组'"
       :visible.sync="documentGroup.visible"
       :close-on-click-modal="false"
@@ -189,6 +204,7 @@
 
     <!--菜单-->
     <el-dialog
+      v-if="checkPermission(['api:admin:document:addmenu','api:admin:document:updatemenu'])"
       :title="(documentMenu.form.id > 0 ? '编辑':'新增')+'菜单'"
       :visible.sync="documentMenu.visible"
       :close-on-click-modal="false"
@@ -282,6 +298,7 @@ export default {
         tabName: tabs.doc,
         timer: '',
         form: {
+          label: '',
           content: ''
         },
         images: [],

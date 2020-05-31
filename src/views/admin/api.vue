@@ -12,10 +12,10 @@
       <el-form-item>
         <el-button type="primary" @click="onGetList">查询</el-button>
       </el-form-item>
-      <el-form-item>
+      <el-form-item v-if="checkPermission(['api:admin:api:add'])">
         <el-button type="primary" @click="onAdd">新增</el-button>
       </el-form-item>
-      <el-form-item>
+      <el-form-item v-if="checkPermission(['api:admin:api:sync'])">
         <my-confirm-button
           :icon="'el-icon-refresh'"
           :placement="'bottom-end'"
@@ -29,10 +29,10 @@
           同步Api
         </my-confirm-button>
       </el-form-item>
-      <el-form-item>
+      <!-- <el-form-item>
         <el-button type="primary" icon="el-icon-s-operation" @click="onGenerate">生成前端Api</el-button>
-      </el-form-item>
-      <el-form-item>
+      </el-form-item> -->
+      <el-form-item v-if="checkPermission(['api:admin:api:batchsoftdelete'])">
         <my-confirm-button
           :disabled="sels.length === 0"
           :type="'delete'"
@@ -80,17 +80,17 @@
           >{{ row.enabled ? '正常' : '禁用' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="180">
+      <el-table-column v-if="checkPermission(['api:admin:api:update','api:admin:api:softdelete'])" label="操作" width="180">
         <template v-slot="{ $index, row }">
-          <el-button @click="onEdit($index, row)">编辑</el-button>
-          <my-confirm-button type="delete" :loading="row._loading" @click="onDelete($index, row)" />
+          <el-button v-if="checkPermission(['api:admin:api:update'])" @click="onEdit($index, row)">编辑</el-button>
+          <my-confirm-button v-if="checkPermission(['api:admin:api:softdelete'])" type="delete" :loading="row._loading" @click="onDelete($index, row)" />
         </template>
       </el-table-column>
     </el-table>
 
     <!--新增窗口-->
     <el-dialog
-      v-model="addFormVisible"
+      v-if="checkPermission(['api:admin:api:add'])"
       title="新增"
       :visible.sync="addFormVisible"
       :close-on-click-modal="false"
@@ -140,7 +140,7 @@
 
     <!--编辑窗口-->
     <el-dialog
-      v-model="editFormVisible"
+      v-if="checkPermission(['api:admin:api:update'])"
       title="编辑"
       :visible.sync="editFormVisible"
       :close-on-click-modal="false"

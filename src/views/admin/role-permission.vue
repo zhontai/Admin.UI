@@ -32,6 +32,7 @@
             <div class="clearfix">
               <span>权限</span>
               <my-confirm-button
+                v-if="checkPermission(['api:admin:permission:assign'])"
                 :validate="saveValidate"
                 :loading="loadingSave"
                 :disabled="disabledSave"

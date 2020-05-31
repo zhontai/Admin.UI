@@ -17,7 +17,7 @@
         <el-form-item>
           <el-button type="primary" icon="el-icon-search" @click="getDictionaries">查询</el-button>
         </el-form-item>
-        <el-form-item>
+        <el-form-item v-if="checkPermission(['api:admin:dictionary:add'])">
           <el-button type="primary" icon="el-icon-plus" @click="handleAdd">新增</el-button>
         </el-form-item>
       </el-form>
@@ -28,9 +28,9 @@
       ref="multipleTable"
       v-loading="listLoading"
       :data="dictionaryTree"
-      highlight-current-row
       row-key="id"
       :default-expand-all="true"
+      highlight-current-row
       :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       height="'100%'"
       style="width: 100%;height:100%;"
@@ -52,16 +52,16 @@
           >{{ row.enabled ? '正常' : '禁用' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right" width="180">
-        <template v-slot="{ $index, row }">
+      <el-table-column v-if="checkPermission(['api:admin:dictionary:update','api:admin:dictionary:softdelete'])" label="操作" fixed="right" width="180">
+        <template v-if="checkPermission(['api:admin:dictionary:add'])" v-slot="{ $index, row }">
           <el-button icon="el-icon-edit" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
+            v-if="checkPermission(['api:admin:dictionary:add'])"
             :type="'delete'"
             :loading="row._loading"
             :icon="'el-icon-delete'"
             @click="onDelete($index, row)"
           />
-          <!-- <el-button type="danger" @click="onDelete(scope.$index, scope.row)" icon="el-icon-delete">删除</el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -81,7 +81,7 @@
 
     <!--新增窗口-->
     <el-dialog
-      v-model="addFormVisible"
+      v-if="checkPermission(['api:admin:dictionary:add'])"
       title="新增"
       :visible.sync="addFormVisible"
       :close-on-click-modal="false"
@@ -132,7 +132,7 @@
 
     <!--编辑窗口-->
     <el-dialog
-      v-model="editFormVisible"
+      v-if="checkPermission(['api:admin:dictionary:update'])"
       title="编辑"
       :visible.sync="editFormVisible"
       :close-on-click-modal="false"
@@ -180,7 +180,6 @@
         </div>
       </template>
     </el-dialog>
-
   </my-container>
 </template>
 

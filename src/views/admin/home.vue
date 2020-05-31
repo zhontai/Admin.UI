@@ -1,6 +1,19 @@
 <template>
   <section style="padding:20px 80px 0px 8px;">
     <el-timeline>
+      <el-timeline-item timestamp="版本 1.3.2" placement="top">
+        <el-card>
+          <h4>新增 查询组件my-search</h4>
+          <h4>新增 用户管理使用查询组件查询</h4>
+          <h4>新增 高级查询日期数据类型增加时间段</h4>
+          <h4>新增 全局混入mixin，混入权限检查方法</h4>
+          <h4>新增 界面所有操作受权限控制</h4>
+          <h4>新增 权限管理权限点，用于字段粒度控制</h4>
+          <h4>优化 高级查询支持字段和操作符默认值，日期时间段查询处理</h4>
+          <h4>修复 部分环境npm run serve提示安装分页错误</h4>
+          <p>小雪转中雪 提交于 2020-5-31</p>
+        </el-card>
+      </el-timeline-item>
       <el-timeline-item timestamp="版本 1.3.1" placement="top">
         <el-card>
           <h4>新增 接口、服务和仓储测试</h4>
@@ -8,7 +21,7 @@
           <h4>新增 权限管理增加权限编码字段，接口表单增加权限编码保存</h4>
           <h4>新增 权限指令v-permission="'权限编码'" 或 v-permission="{ permission: '权限编码', disabled:true }"</h4>
           <h4>新增 权限检查方法v-if="checkPermission('权限编码')"</h4>
-          <h4>修复 高级查询窗口点击关闭图标按钮，无法再打开高级查询窗口</h4>
+          <h4>修复 高级查询窗口点击关闭按钮，无法再打开高级查询窗口的问题</h4>
           <h4>修复 表格在部分浏览器无法满屏的问题</h4>
           <p>小雪转中雪 提交于 2020-5-28</p>
         </el-card>

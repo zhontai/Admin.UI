@@ -27,15 +27,23 @@
         <el-button type="primary" icon="el-icon-search" @click="getPermissions">查询</el-button>
       </el-form-item>
       <el-form-item>
-        <el-dropdown>
+        <el-dropdown
+          v-if="checkPermission([
+            'api:admin:permission:addgroup',
+            'api:admin:permission:addmenu',
+            'api:admin:permission:addapi',
+            'api:admin:permission:adddot'
+          ])"
+        >
           <el-button type="primary">
             新增<i class="el-icon-arrow-down el-icon--right" />
           </el-button>
           <template #dropdown>
             <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;">
-              <el-dropdown-item icon="el-icon-folder" @click.native="onOpenAddGroup">新增分组</el-dropdown-item>
-              <el-dropdown-item icon="el-icon-tickets" @click.native="onOpenAddMenu">新增菜单</el-dropdown-item>
-              <el-dropdown-item icon="el-icon-s-operation" @click.native="onOpenAddApi">新增接口</el-dropdown-item>
+              <el-dropdown-item v-if="checkPermission(['api:admin:permission:addgroup'])" icon="el-icon-folder" @click.native="onOpenAddGroup">新增分组</el-dropdown-item>
+              <el-dropdown-item v-if="checkPermission(['api:admin:permission:addmenu'])" icon="el-icon-tickets" @click.native="onOpenAddMenu">新增菜单</el-dropdown-item>
+              <el-dropdown-item v-if="checkPermission(['api:admin:permission:addapi'])" icon="el-icon-s-operation" @click.native="onOpenAddApi">新增接口</el-dropdown-item>
+              <el-dropdown-item v-if="checkPermission(['api:admin:permission:adddot'])" icon="el-icon-s-operation" @click.native="onOpenAddDot">新增权限点</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -67,7 +75,7 @@
       <el-table-column prop="id" label="编号" width="80" />
       <el-table-column label="类型" width="100">
         <template v-slot="{ row }">
-          {{ row.type === 1 ? '分组' : row.type === 2 ? '菜单' : row.type === 3 ? '接口':'' }}
+          {{ row.type === 1 ? '分组' : row.type === 2 ? '菜单' : row.type === 3 ? '接口' : row.type === 4 ? '权限点' : '' }}
         </template>
       </el-table-column>
       <el-table-column label="地址" width>
@@ -84,14 +92,32 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right" width="180">
+      <el-table-column
+        v-if="checkPermission([
+          'api:admin:permission:updategroup',
+          'api:admin:permission:updatemenu',
+          'api:admin:permission:updateapi',
+          'api:admin:permission:updatedot',
+          'api:admin:permission:softdelete'])"
+        label="操作"
+        fixed="right"
+        width="180"
+      >
         <template v-slot="{ $index, row }">
           <!-- <el-link @click="onEdit(scope.$index, scope.row)" icon="el-icon-edit" style="color:#409eff">编辑</el-link>
           <el-link @click="onEdit(scope.$index, scope.row)" icon="el-icon-delete" style="margin-left:10px;color:#f56c6c;">删除</el-link>-->
           <!-- <el-button type="primary" icon="el-icon-edit" circle></el-button>
           <el-button type="danger" icon="el-icon-delete" circle style="margin-left:10px;"></el-button>-->
-          <el-button icon="el-icon-edit" @click="onEdit($index, row)">编辑</el-button>
+          <el-button
+            v-if="(row.type === 1 && checkPermission(['api:admin:permission:updategroup']))
+              || (row.type === 2 && checkPermission(['api:admin:permission:updatemenu']))
+              || (row.type === 3 && checkPermission(['api:admin:permission:updateapi']))
+              || (row.type === 4 && checkPermission(['api:admin:permission:updatedot']))"
+            icon="el-icon-edit"
+            @click="onEdit($index, row)"
+          >编辑</el-button>
           <my-confirm-button
+            v-if="checkPermission(['api:admin:permission:softdelete'])"
             type="delete"
             :loading="row._loading"
             :icon="'el-icon-delete'"
@@ -103,6 +129,7 @@
 
     <!--分组-->
     <el-dialog
+      v-if="checkPermission(['api:admin:permission:addgroup','api:admin:permission:updategroup'])"
       :title="(permissionGroup.form.id > 0 ? '编辑':'新增')+'分组'"
       :visible.sync="permissionGroup.visible"
       :close-on-click-modal="false"
@@ -149,6 +176,7 @@
 
     <!--菜单-->
     <el-dialog
+      v-if="checkPermission(['api:admin:permission:addmenu','api:admin:permission:updatemenu'])"
       :title="(permissionMenu.form.id > 0 ? '编辑':'新增')+'菜单'"
       :visible.sync="permissionMenu.visible"
       :close-on-click-modal="false"
@@ -223,6 +251,7 @@
 
     <!--接口-->
     <el-dialog
+      v-if="checkPermission(['api:admin:permission:addapi','api:admin:permission:updateapi'])"
       :title="(permissionApi.form.id > 0 ? '编辑':'新增')+'接口'"
       :visible.sync="permissionApi.visible"
       :close-on-click-modal="false"
@@ -281,6 +310,44 @@
         </div>
       </template>
     </el-dialog>
+
+    <!--权限点-->
+    <el-dialog
+      v-if="checkPermission(['api:admin:permission:adddot','api:admin:permission:updatedot'])"
+      :title="(permissionDot.form.id > 0 ? '编辑':'新增')+'权限点'"
+      :visible.sync="permissionDot.visible"
+      :close-on-click-modal="false"
+      @close="onCloseDot"
+    >
+      <el-form ref="dotForm" :model="permissionDot.form" label-width="100px" :rules="formRules">
+        <el-form-item prop="parentIds" label="父级" width>
+          <el-cascader
+            :key="permissionDot.key"
+            v-model="permissionDot.form.parentIds"
+            placeholder="请选择，支持搜索功能"
+            style="width: 100%;"
+            :options="menuTree"
+            :props="{ value: 'id' }"
+            filterable
+          />
+        </el-form-item>
+        <el-form-item label="名称" prop="label">
+          <el-input v-model="permissionDot.form.label" auto-complete="off" />
+        </el-form-item>
+        <el-form-item label="编码" prop="code">
+          <el-input v-model="permissionDot.form.code" auto-complete="off" />
+        </el-form-item>
+        <el-form-item label="描述" prop="description">
+          <el-input v-model="permissionDot.form.description" auto-complete="off" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click.native="permissionDot.visible = false">取消</el-button>
+          <my-confirm-button type="submit" :validate="validateDot" :loading="permissionDot.loading" @click="onSubmitDot" />
+        </div>
+      </template>
+    </el-dialog>
   </section>
 </template>
 
@@ -294,12 +361,15 @@ import {
   addGroup,
   addMenu,
   addApi,
+  addDot,
   updateGroup,
   updateMenu,
   updateApi,
+  updateDot,
   getGroup,
   getMenu,
-  getApi
+  getApi,
+  getDot
 } from '@/api/admin/permission'
 import MyConfirmButton from '@/components/my-confirm-button'
 
@@ -425,6 +495,22 @@ export default {
           description: '',
           hidden: false,
           enabled: true
+          // icon: ''
+        },
+        form: {},
+        visible: false,
+        loading: false,
+        key: 1
+      },
+      permissionDot: {
+        addForm: {
+          id: 0,
+          type: 4,
+          parentId: null,
+          parentIds: [],
+          label: '',
+          code: '',
+          description: ''
           // icon: ''
         },
         form: {},
@@ -558,6 +644,16 @@ export default {
           this.permissionApi.form = data
           this.permissionApi.visible = true
           ++this.permissionApi.key
+        }
+      } else if (type === 4) {
+        const res = await getDot({ id: row.id })
+        loading.close()
+        if (res && res.success) {
+          const data = res.data
+          data.parentIds = parentIds
+          this.permissionDot.form = data
+          this.permissionDot.visible = true
+          ++this.permissionDot.key
         }
       }
     },
@@ -699,6 +795,49 @@ export default {
       })
 
       this.permissionApi.visible = false
+      this.getPermissions()
+    },
+
+    // 权限点方法
+    async onOpenAddDot() {
+      this.permissionDot.form = _.cloneDeep(this.permissionDot.addForm)
+      this.permissionDot.visible = true
+      ++this.permissionDot.key
+    },
+    onCloseDot() {
+      this.$refs.dotForm.resetFields()
+      ++this.permissionDot.key
+    },
+    validateDot() {
+      let isValid = false
+      this.$refs.dotForm.validate(valid => {
+        isValid = valid
+      })
+      return isValid
+    },
+    async onSubmitDot() {
+      this.permissionDot.loading = true
+      const para = _.cloneDeep(this.permissionDot.form)
+      para.parentId = para.parentIds[para.parentIds.length - 1]
+
+      let res
+      if (para.id > 0) {
+        res = await updateDot(para)
+      } else {
+        res = await addDot(para)
+      }
+      this.permissionDot.loading = false
+
+      if (!res?.success) {
+        return
+      }
+
+      this.$message({
+        message: this.$t('admin.submitOk'),
+        type: 'success'
+      })
+
+      this.permissionDot.visible = false
       this.getPermissions()
     },
 

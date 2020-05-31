@@ -18,10 +18,10 @@
         <el-form-item>
           <el-button type="primary" @click="getRoles">查询</el-button>
         </el-form-item>
-        <el-form-item>
+        <el-form-item v-if="checkPermission(['api:admin:role:add'])">
           <el-button type="primary" @click="onAdd">新增</el-button>
         </el-form-item>
-        <el-form-item>
+        <el-form-item v-if="checkPermission(['api:admin:role:batchsoftdelete'])">
           <my-confirm-button
             :disabled="sels.length === 0"
             :type="'delete'"
@@ -64,10 +64,11 @@
           >{{ row.enabled ? '正常' : '禁用' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="180">
+      <el-table-column v-if="checkPermission(['api:admin:role:update','api:admin:role:softdelete'])" label="操作" width="180">
         <template v-slot="{ $index, row }">
-          <el-button @click="onEdit($index, row)">编辑</el-button>
+          <el-button v-if="checkPermission(['api:admin:role:update'])" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
+            v-if="checkPermission(['api:admin:role:softdelete'])"
             type="delete"
             :loading="row._loading"
             :validate="deleteValidate"
@@ -92,6 +93,7 @@
 
     <!--新增窗口-->
     <el-drawer
+      v-if="checkPermission(['api:admin:role:add'])"
       title="新增角色"
       :wrapper-closable="true"
       :visible.sync="addFormVisible"
@@ -151,6 +153,7 @@
 
     <!--编辑窗口-->
     <el-drawer
+      v-if="checkPermission(['api:admin:role:update'])"
       title="编辑角色"
       :wrapper-closable="true"
       :visible.sync="editFormVisible"

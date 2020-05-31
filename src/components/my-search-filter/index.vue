@@ -37,24 +37,33 @@
               :value="op.value"
             />
           </el-select>
-          <el-input
-            v-if="!data.type || data.type === 'string'"
-            v-model="data.value"
-            style="width:150px;margin-left:5px;"
-          />
-          <el-date-picker
-            v-if="data.type === 'date'"
-            v-model="data.value"
-            :type="data.config&&data.config.type?data.config.type:'date'"
-            style="width:180px;margin-left:5px;"
-          />
+
+          <template v-if="data.type === 'date'">
+            <el-date-picker
+              v-if="data.config && data.config.type === 'daterange'"
+              v-model="data.value"
+              :type="'daterange'"
+              start-placeholder="开始时间"
+              end-placeholder="结束时间"
+              :picker-options="datePickerOptions"
+              style="width:240px;margin-left:5px;"
+            />
+            <el-date-picker
+              v-else
+              v-model="data.value"
+              :type="data.config && data.config.type ? data.config.type : 'date'"
+              style="width:150px;margin-left:5px;"
+            />
+          </template>
           <el-input-number
-            v-if="data.type === 'number'"
+            v-else-if="data.type === 'number'"
             v-model="data.value"
             controls-position="right"
             style="width:120px;margin-left:5px;"
           />
-          <el-switch v-if="data.type === 'bool'" v-model="data.value" style="margin-left:5px;" />
+          <el-switch v-else-if="data.type === 'bool'" v-model="data.value" style="margin-left:5px;" />
+          <el-input v-else v-model="data.value" style="width:150px;margin-left:5px;" />
+
           <el-button icon="el-icon-minus" style="margin-left:5px;" @click="onDelete(node, data)" />
         </span>
       </template>
@@ -78,38 +87,68 @@ export default {
   },
   data() {
     const operators = {
+      equals: { label: '等于', value: 'Equals' },
+      notEqual: { label: '不等于', value: 'NotEqual' },
+      contains: { label: '包含', value: 'Contains' },
+      notContains: { label: '不包含', value: 'NotContains' },
+      startsWith: { label: '开始以', value: 'StartsWith' },
+      notStartsWith: { label: '开始不是以', value: 'NotStartsWith' },
+      endsWith: { label: '结束以', value: 'EndsWith' },
+      notEndsWith: { label: '结束不是以', value: 'NotEndsWith' },
+      lessThan: { label: '小于', value: 'LessThan' },
+      lessThanOrEqual: { label: '小于等于', value: 'LessThanOrEqual' },
+      greaterThan: { label: '大于', value: 'GreaterThan' },
+      greaterThanOrEqual: { label: '大于等于', value: 'GreaterThanOrEqual' },
+      dateRange: { label: '时间段', value: 'dateRange' }
+    }
+
+    const operatorGroups = {
       string: [
-        { label: '等于', value: 'Equals' },
-        { label: '不等于', value: 'NotEqual' },
-        { label: '包含', value: 'Contains' },
-        { label: '不包含', value: 'NotContains' },
-        { label: '开始以', value: 'StartsWith' },
-        { label: '开始不是以', value: 'NotStartsWith' },
-        { label: '结束以', value: 'EndsWith' },
-        { label: '结束不是以', value: 'NotEndsWith' }
+        operators.equals,
+        operators.notEqual,
+        operators.contains,
+        operators.notContains,
+        operators.startsWith,
+        operators.notStartsWith,
+        operators.endsWith,
+        operators.notEndsWith
       ],
       date: [
-        { label: '等于', value: 'Equals' },
-        { label: '不等于', value: 'NotEqual' },
-        { label: '小于', value: 'LessThan' },
-        { label: '小于等于', value: 'LessThanOrEqual' },
-        { label: '大于', value: 'GreaterThan' },
-        { label: '大于等于', value: 'GreaterThanOrEqual' }
+        operators.equals,
+        operators.notEqual,
+        operators.lessThan,
+        operators.lessThanOrEqual,
+        operators.greaterThan,
+        operators.greaterThanOrEqual,
+        operators.dateRange
       ],
       number: [
-        { label: '等于', value: 'Equals' },
-        { label: '不等于', value: 'NotEqual' },
-        { label: '小于', value: 'LessThan' },
-        { label: '小于等于', value: 'LessThanOrEqual' },
-        { label: '大于', value: 'GreaterThan' },
-        { label: '大于等于', value: 'GreaterThanOrEqual' }
+        operators.equals,
+        operators.notEqual,
+        operators.lessThan,
+        operators.lessThanOrEqual,
+        operators.greaterThan,
+        operators.greaterThanOrEqual
       ],
       bool: [
-        { label: '等于', value: 'Equals' },
-        { label: '不等于', value: 'NotEqual' }
+        operators.equals,
+        operators.notEqual
       ]
     }
-    const firstField = this.fields[0]
+
+    let firstField = {
+      field: '',
+      label: ''
+    }
+    if (this.fields && this.fields.length > 0) {
+      const field = this.fields.find(a => a.default === true)
+      if (field) {
+        firstField = field
+      } else {
+        firstField = this.fields[0]
+      }
+    }
+
     return {
       dataTree: {
         root: true,
@@ -120,8 +159,13 @@ export default {
         label: '',
         children: ['filters']
       },
-      operators: operators,
-      firstField: firstField
+      operatorGroups: operatorGroups,
+      firstField: firstField,
+      datePickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now()
+        }
+      }
     }
   },
   computed: {
@@ -134,7 +178,7 @@ export default {
   },
   methods: {
     getOperators(type) {
-      const ops = this.operators[type || 'string']
+      const ops = this.operatorGroups[type || 'string']
       return ops && ops.length > 0 ? ops : ops['string']
     },
     onChangeField(value, data) {
@@ -142,8 +186,17 @@ export default {
       data.value = ''
       data.label = field.label
       data.type = field.type ? field.type : ''
-      const firstOprator = this.getOperators(data.type)[0]
-      data.operator = firstOprator.value
+      const operators = this.getOperators(data.type)
+      let defaultOprator = ''
+      if (field.operator) {
+        const operatorIndex = operators.findIndex(a => a.value === field.operator)
+        defaultOprator = operatorIndex >= 0 ? field.operator : ''
+      }
+      if (!defaultOprator) {
+        defaultOprator = operators[0].value
+      }
+      data.operator = defaultOprator
+      data.config = field.config
     },
     onAddGroup(data) {
       const newFilter = {
@@ -160,8 +213,7 @@ export default {
         field: this.firstField.value,
         label: this.firstField.label,
         operator: firstOprator.value,
-        value: '',
-        filters: []
+        value: ''
       }
       if (!data.filters) {
         this.$set(data, 'filters', [])
@@ -182,8 +234,70 @@ export default {
     reset() {
       this.dataTree.filters = []
     },
+    type(obj) {
+      const toString = Object.prototype.toString
+      const map = {
+        '[object Boolean]': 'boolean',
+        '[object Number]': 'number',
+        '[object String]': 'string',
+        '[object Function]': 'function',
+        '[object Array]': 'array',
+        '[object Date]': 'date',
+        '[object RegExp]': 'regExp',
+        '[object Undefined]': 'undefined',
+        '[object Null]': 'null',
+        '[object Object]': 'object'
+      }
+      return map[toString.call(obj)]
+    },
+    deepClone(data) {
+      const t = this.type(data)
+      let o, i, ni
+
+      if (t === 'array') {
+        o = []
+      } else if (t === 'object') {
+        o = {}
+      } else {
+        return data
+      }
+
+      if (t === 'array') {
+        for (i = 0, ni = data.length; i < ni; i++) {
+          const oo = this.deepClone(data[i])
+          if (oo.operator === 'dateRange') {
+            if (oo.value?.length === 2) {
+              o.push({
+                field: oo.field,
+                operator: 'GreaterThanOrEqual',
+                value: oo.value[0]
+              })
+              const endDate = oo.value[1]
+              const end = new Date()
+              end.setTime(endDate.getTime() + 3600 * 1000 * 24)
+              o.push({
+                field: oo.field,
+                operator: 'LessThan',
+                value: end
+              })
+            }
+          } else {
+            o.push(oo)
+          }
+        }
+        return o
+      } else if (t === 'object') {
+        for (i in data) {
+          if (i !== 'config' && i !== 'type' && i !== 'label') {
+            o[i] = this.deepClone(data[i])
+          }
+        }
+        return o
+      }
+    },
     getDynamicFilter() {
-      return _.cloneDeep(this.dataTree)
+      return this.deepClone(this.dataTree)
+      // _.cloneDeep(this.dataTree)
     }
   }
 }

@@ -1,30 +1,18 @@
 <template>
   <my-container v-loading="pageLoading">
-    <!--查询-->
+    <!--顶部操作-->
     <template #header>
-      <el-form class="ad-form-query" :inline="true" :model="filter" @submit.native.prevent>
+      <el-form class="ad-form-query" :inline="true" @submit.native.prevent>
         <el-form-item>
-          <el-input
-            v-model="filter.userName"
-            placeholder="用户名/昵称"
-            clearable
-            @keyup.enter.native="getUsers"
-          >
-            <template #prefix>
-              <i class="el-input__icon el-icon-search" />
-            </template>
-          </el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="getUsers">查询</el-button>
+          <my-search :fields="fields" @click="onSearch" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onsearchWindowVisible">高级查询</el-button>
         </el-form-item>
-        <el-form-item>
+        <el-form-item v-if="checkPermission(['api:admin:user:add'])">
           <el-button type="primary" @click="onAdd">新增</el-button>
         </el-form-item>
-        <el-form-item>
+        <el-form-item v-if="checkPermission(['api:admin:user:batchsoftdelete'])">
           <my-confirm-button
             :disabled="sels.length === 0"
             :type="'delete'"
@@ -69,10 +57,11 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="180">
+      <el-table-column v-if="checkPermission(['api:admin:user:update','api:admin:user:softdelete'])" label="操作" width="180">
         <template v-slot="{ $index, row }">
-          <el-button @click="onEdit($index, row)">编辑</el-button>
+          <el-button v-if="checkPermission(['api:admin:user:update'])" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
+            v-if="checkPermission(['api:admin:user:softdelete'])"
             type="delete"
             :loading="row._loading"
             :validate="deleteValidate"
@@ -104,6 +93,7 @@
 
     <!--新增窗口-->
     <el-drawer
+      v-if="checkPermission(['api:admin:user:add'])"
       title="新增用户"
       :wrapper-closable="true"
       :visible.sync="addFormVisible"
@@ -167,6 +157,7 @@
 
     <!--编辑窗口-->
     <el-drawer
+      v-if="checkPermission(['api:admin:user:update'])"
       title="编辑用户"
       :wrapper-closable="true"
       :close-on-press-escape="true"
@@ -227,22 +218,19 @@ import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser, getUse
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyPagination from '@/components/my-pagination'
+import MySearch from '@/components/my-search'
 import MySearchWindow from '@/components/my-search-window'
 
 export default {
   name: 'Users',
-  components: { MyContainer, MyConfirmButton, MyPagination, MySearchWindow },
+  components: { MyContainer, MyConfirmButton, MyPagination, MySearch, MySearchWindow },
   data() {
     return {
-      filter: {
-        userName: ''
-      },
-
       // 高级查询字段
       fields: [
-        { value: 'userName', label: '用户名' },
+        { value: 'userName', label: '用户名', default: true },
         { value: 'nickName', label: '昵称', type: 'string' },
-        { value: 'createdTime', label: '创建时间', type: 'date', config: { type: 'date' }}
+        { value: 'createdTime', label: '创建时间', type: 'date', operator: 'dateRange', config: { type: 'daterange' }}
       ],
       searchWindowVisible: false,
 
@@ -292,6 +280,10 @@ export default {
     formatCreatedTime(row, column, time) {
       return formatTime(time, 'yyyy-MM-dd hh:mm')
     },
+    // 查询
+    onSearch(dynamicFilter) {
+      this.getUsers(dynamicFilter)
+    },
 
     // 高级查询显示
     onsearchWindowVisible() {
@@ -308,7 +300,6 @@ export default {
       const para = {
         currentPage: this.pager.currentPage,
         pageSize: this.pager.pageSize,
-        filter: this.filter,
         dynamicFilter: dynamicFilter
       }
 
@@ -490,3 +481,8 @@ export default {
 }
 </script>
 
+<style lang="scss" scoped>
+.my-search ::v-deep .el-input-group__prepend {
+    background-color: #fff;
+  }
+</style>

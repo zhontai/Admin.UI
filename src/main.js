@@ -5,11 +5,12 @@ import 'regenerator-runtime/runtime'
 import Vue from 'vue'
 
 import ElementUI from 'element-ui'
-import Pagination from '@/components/ElementUI/pagination'
+import Pagination from '@/components/ElementUI/Pagination'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'font-awesome/css/font-awesome.min.css'
 import '@/styles/index.scss'
 
+import '@/mixin'
 import '@/directive'
 
 import lodash from 'lodash'

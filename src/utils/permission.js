@@ -1,8 +1,10 @@
 /**
  * 使用说明
- * import checkPermission from '@/utils/permission'
- * v-if="checkPermission('api:admin:api:add')" 或 v-if="checkPermission(['api:admin:api:add'])"
- * methods: {
+  由于使用了全局混入检查权限方法，可以直接使用，无需导入
+  v-if="checkPermission('权限点')" 或 v-if="checkPermission(['权限点'])"
+  如未使用全局混入检查权限方法，需导入使用
+  import checkPermission from '@/utils/permission'
+  methods: {
       checkPermission
   }
  */
