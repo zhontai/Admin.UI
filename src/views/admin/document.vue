@@ -35,7 +35,7 @@
               <el-button-group>
                 <el-button type="primary" :disabled="!hasDocument" @click="getDocumentImages">刷新</el-button>
                 <el-upload
-                  v-if="hasDocument"
+                  v-if="hasDocument && checkPermission(['api:admin:document:uploadimage'])"
                   ref="upload"
                   action="/api/admin/document/uploadimage"
                   multiple
@@ -47,11 +47,11 @@
                   :on-error="onUploadError"
                   style="display: inline-block;"
                 >
-                  <el-button v-if="checkPermission(['api:admin:document:uploadimage'])" type="primary">
+                  <el-button type="primary">
                     <i class="el-icon-upload el-icon--left" />上传图片
                   </el-button>
                 </el-upload>
-                <el-button v-else type="primary" :disabled="!hasDocument">
+                <el-button v-else-if="checkPermission(['api:admin:document:uploadimage'])" type="primary" :disabled="!hasDocument">
                   <i class="el-icon-upload el-icon--left" />上传图片
                 </el-button>
               </el-button-group>
