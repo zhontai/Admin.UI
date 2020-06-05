@@ -70,7 +70,7 @@ export default {
       newFields: newFields,
       filter: {
         field: fieldValue,
-        operator: 'Equals',
+        operator: 'Equal',
         value: ''
       }
     }

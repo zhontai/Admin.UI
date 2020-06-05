@@ -1,6 +1,17 @@
 <template>
   <section style="padding:20px 80px 0px 8px;">
     <el-timeline>
+      <el-timeline-item timestamp="版本 1.3.3" placement="top">
+        <el-card>
+          <h4>新增 token以旧换新</h4>
+          <h4>新增 高级查询时间段支持月、日、时和分</h4>
+          <h4>新增 高级查询时间段和非时间段切换</h4>
+          <h4>优化 高级查询字段为时间类型时输入框宽度优化</h4>
+          <h4>优化 el日期控件过大调整为正常比例显示</h4>
+          <h4>调整 Ip限流默认关闭</h4>
+          <p>小雪转中雪 提交于 2020-6-5</p>
+        </el-card>
+      </el-timeline-item>
       <el-timeline-item timestamp="版本 1.3.2" placement="top">
         <el-card>
           <h4>新增 查询组件my-search</h4>

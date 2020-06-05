@@ -1,6 +1,8 @@
 import axios from 'axios'
 import store from '@/store'
+import router from '@/router'
 import Vue from 'vue'
+import { refresh } from '@/api/admin/auth'
 
 const requestAxios = axios.create({
   baseURL: '', // url = base url + request url
@@ -49,6 +51,22 @@ requestAxios.interceptors.response.use(
       } else if (_.isString(data)) {
         res.msg = data || error.response.statusText
       }
+
+      // 刷新令牌
+      const { code } = res
+      if (code === 401) {
+        const resRefresh = await refresh({ token: store.getters.token })
+        if (resRefresh.code === 1) {
+          store.commit('user/setToken', resRefresh.data.token)
+          return requestAxios.request(error.config)
+        } else {
+          store.dispatch('user/logout')
+          router.push('/login')
+          return res
+        }
+      }
+
+      // 错误消息
       if (!config.noErrorMsg && res.msg) {
         const duration = config.msgDuration >= 0 ? config.msgDuration : 3000
         Vue.prototype.$message.error({

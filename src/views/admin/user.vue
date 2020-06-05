@@ -230,7 +230,9 @@ export default {
       fields: [
         { value: 'userName', label: '用户名', default: true },
         { value: 'nickName', label: '昵称', type: 'string' },
-        { value: 'createdTime', label: '创建时间', type: 'date', operator: 'dateRange', config: { type: 'daterange' }}
+        { value: 'createdTime', label: '创建时间', type: 'date', operator: 'daterange',
+          config: { type: 'daterange', format: 'yyyy-MM-dd', valueFormat: 'yyyy-MM-dd' }
+        }
       ],
       searchWindowVisible: false,
 
@@ -274,7 +276,7 @@ export default {
   },
   async mounted() {
     this.pager = this.$refs.pager.getPager()
-    this.getUsers()
+    await this.getUsers()
   },
   methods: {
     formatCreatedTime(row, column, time) {

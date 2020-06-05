@@ -190,8 +190,26 @@ padding-left: 5px;
     margin-bottom: 0px;
 }
 .el-date-table td{
-    padding-top:0px;
+    padding-top: 0px;
     padding-bottom: 0px;
+}
+.el-date-table th{
+    padding: 3px;
+}
+.el-date-range-picker__content{
+    padding:5px;
+}
+.el-picker-panel [slot=sidebar], .el-picker-panel__sidebar{
+    width: 80px;
+}
+.el-picker-panel [slot=sidebar]+.el-picker-panel__body, .el-picker-panel__sidebar+.el-picker-panel__body{
+    margin-left: 80px;
+}
+.el-date-range-picker{
+    width:580px;
+}
+.el-date-range-picker.has-sidebar{
+    width:660px;
 }
 
 .el-form-item__content .el-input-group{

@@ -10,6 +10,9 @@ const apiPrefix = `${process.env.VUE_APP_BASE_API}/${scope}/auth/`
 export const login = (params, config = {}) => {
   return request.post(apiPrefix + 'login', params, config)
 }
+export const refresh = (params, config = {}) => {
+  return request.get(apiPrefix + 'refresh', { params: params }, config)
+}
 export const getVerifyCode = (params, config = {}) => {
   return request.get(apiPrefix + 'getverifycode', { params: params }, config)
 }

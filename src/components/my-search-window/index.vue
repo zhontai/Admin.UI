@@ -124,6 +124,7 @@ export default {
 
 <style lang="scss" scoped>
 ::v-deep .my-search-window{
+  width:60%;
   .el-dialog__body{
     padding:10px;
   }

@@ -29,7 +29,7 @@
               :value="o.value"
             />
           </el-select>
-          <el-select v-model="data.operator" style="width:110px;margin-left:5px;">
+          <el-select v-model="data.operator" style="width:110px;margin-left:5px;" @change="(value)=>onChangeOperator(value, data)">
             <el-option
               v-for="(op, index) in getOperators(data.type)"
               :key="index"
@@ -40,19 +40,28 @@
 
           <template v-if="data.type === 'date'">
             <el-date-picker
-              v-if="data.config && data.config.type === 'daterange'"
+              v-if="data.config.type.indexOf('range') >= 0"
+              :key="key"
               v-model="data.value"
-              :type="'daterange'"
+              :type="data.config.type"
+              unlink-panels
               start-placeholder="开始时间"
               end-placeholder="结束时间"
+              :default-time="data.config.defaultTime"
+              :format="data.config.format"
+              :value-format="data.config.valueFormat"
               :picker-options="datePickerOptions"
-              style="width:240px;margin-left:5px;"
+              style="margin-left:5px;"
             />
             <el-date-picker
               v-else
+              :key="key"
               v-model="data.value"
-              :type="data.config && data.config.type ? data.config.type : 'date'"
-              style="width:150px;margin-left:5px;"
+              :type="data.config.type"
+              :format="data.config.format"
+              :value-format="data.config.valueFormat"
+              :picker-options="datePickerOptions"
+              style="margin-left:5px;"
             />
           </template>
           <el-input-number
@@ -62,7 +71,7 @@
             style="width:120px;margin-left:5px;"
           />
           <el-switch v-else-if="data.type === 'bool'" v-model="data.value" style="margin-left:5px;" />
-          <el-input v-else v-model="data.value" style="width:150px;margin-left:5px;" />
+          <el-input v-else v-model="data.value" style="width:160px;margin-left:5px;" />
 
           <el-button icon="el-icon-minus" style="margin-left:5px;" @click="onDelete(node, data)" />
         </span>
@@ -75,9 +84,11 @@
 export default {
   name: 'MySearchFilter',
   props: {
-    // {field: '', label: '', value: '', type: 'string', config: {}}
-    // type string:字符串 date:日期 number:数字 bool:布尔
-    // config 控件配置
+    // {field: '', label: '', value: '', type: 'string', config: {type: '', format:'', valueFormat:''}}
+    // 默认字段 default: true
+    // 字段类型 type: 'string:字符串 | date:日期 | number:数字 | bool:布尔'
+    // 日期操作符 operator: 'datetimerange'
+    // 日期控件配置 config: {type: 'datetimerange', format:''yyyy-MM-dd HH:mm'', valueFormat:''yyyy-MM-dd HH:mm'', defaultTime : ['00:00:00', '00:00:00']}
     fields: {
       type: Array,
       default() {
@@ -87,7 +98,7 @@ export default {
   },
   data() {
     const operators = {
-      equals: { label: '等于', value: 'Equals' },
+      equal: { label: '等于', value: 'Equal' },
       notEqual: { label: '不等于', value: 'NotEqual' },
       contains: { label: '包含', value: 'Contains' },
       notContains: { label: '不包含', value: 'NotContains' },
@@ -99,12 +110,14 @@ export default {
       lessThanOrEqual: { label: '小于等于', value: 'LessThanOrEqual' },
       greaterThan: { label: '大于', value: 'GreaterThan' },
       greaterThanOrEqual: { label: '大于等于', value: 'GreaterThanOrEqual' },
-      dateRange: { label: '时间段', value: 'dateRange' }
+      dateRange: { label: '时间段', value: 'dateRange' },
+      any: { label: '在列表', value: 'Any' },
+      notAny: { label: '不在列表', value: 'NotAny' }
     }
 
     const operatorGroups = {
       string: [
-        operators.equals,
+        operators.equal,
         operators.notEqual,
         operators.contains,
         operators.notContains,
@@ -114,7 +127,7 @@ export default {
         operators.notEndsWith
       ],
       date: [
-        operators.equals,
+        operators.equal,
         operators.notEqual,
         operators.lessThan,
         operators.lessThanOrEqual,
@@ -123,7 +136,7 @@ export default {
         operators.dateRange
       ],
       number: [
-        operators.equals,
+        operators.equal,
         operators.notEqual,
         operators.lessThan,
         operators.lessThanOrEqual,
@@ -131,7 +144,7 @@ export default {
         operators.greaterThanOrEqual
       ],
       bool: [
-        operators.equals,
+        operators.equal,
         operators.notEqual
       ]
     }
@@ -150,6 +163,7 @@ export default {
     }
 
     return {
+      key: 1,
       dataTree: {
         root: true,
         logic: 'And',
@@ -196,7 +210,34 @@ export default {
         defaultOprator = operators[0].value
       }
       data.operator = defaultOprator
-      data.config = field.config
+      data.config = { ...field.config }
+      if (data.type === 'date') {
+        let dateType = 'date'
+        if (data.operator === 'dateRange') {
+          dateType = dateType + 'range'
+        }
+        data.config.type = data.config.type ? data.config.type : dateType
+        if (data.config.type.indexOf('range') >= 0) {
+          data.operator = 'dateRange'
+        }
+        data.config.format = data.config.format ? data.config.format : 'yyyy-MM-dd'
+        data.config.valueFormat = data.config.valueFormat ? data.config.valueFormat : 'yyyy-MM-dd'
+        data.config.defaultTime = data.config.defaultTime ? data.config.defaultTime : ['00:00:00', '00:00:00']
+      }
+    },
+    onChangeOperator(value, data) {
+      if (data.type === 'date') {
+        this.key++
+        if (value === 'dateRange') {
+          data.value = ''
+          data.config.type = data.config.type + 'range'
+        } else {
+          if (data.config.type.indexOf('range') >= 0) {
+            data.value = ''
+            data.config.type = data.config.type.replace(/range$/, '')
+          }
+        }
+      }
     },
     onAddGroup(data) {
       const newFilter = {
@@ -234,6 +275,9 @@ export default {
     reset() {
       this.dataTree.filters = []
     },
+    getDynamicFilter() {
+      return _.cloneDeep(this.dataTree)
+    },
     type(obj) {
       const toString = Object.prototype.toString
       const map = {
@@ -264,26 +308,17 @@ export default {
 
       if (t === 'array') {
         for (i = 0, ni = data.length; i < ni; i++) {
-          const oo = this.deepClone(data[i])
-          if (oo.operator === 'dateRange') {
-            if (oo.value?.length === 2) {
-              o.push({
-                field: oo.field,
-                operator: 'GreaterThanOrEqual',
-                value: oo.value[0]
-              })
-              const endDate = oo.value[1]
-              const end = new Date()
-              end.setTime(endDate.getTime() + 3600 * 1000 * 24)
-              o.push({
-                field: oo.field,
-                operator: 'LessThan',
-                value: end
-              })
-            }
-          } else {
-            o.push(oo)
-          }
+          // const oo = this.deepClone(data[i])
+          // if (oo.operator === '') {
+          //   o.push({
+          //     field: oo.field,
+          //     operator: '',
+          //     value: oo.value
+          //   })
+          // } else {
+          //   o.push(oo)
+          // }
+          o.push(this.deepClone(data[i]))
         }
         return o
       } else if (t === 'object') {
@@ -294,10 +329,6 @@ export default {
         }
         return o
       }
-    },
-    getDynamicFilter() {
-      return this.deepClone(this.dataTree)
-      // _.cloneDeep(this.dataTree)
     }
   }
 }
@@ -320,6 +351,21 @@ export default {
   }
   .el-input-number .el-input__inner{
     text-align: left;
+  }
+  .el-date-editor.el-input, .el-date-editor.el-input__inner{
+    width: 160px;
+  }
+  .el-date-editor--datetime.el-input, .el-date-editor--datetime.el-input__inner{
+    width: 160px;
+  }
+  .el-date-editor--monthrange.el-input, .el-date-editor--monthrange.el-input__inner{
+    width:180px;
+  }
+  .el-date-editor--daterange.el-input, .el-date-editor--daterange.el-input__inner, .el-date-editor--timerange.el-input, .el-date-editor--timerange.el-input__inner{
+    width: 210px;
+  }
+  .el-date-editor--datetimerange.el-input, .el-date-editor--datetimerange.el-input__inner{
+    width: 280px;
   }
 }
 </style>

@@ -15,6 +15,7 @@ const state = {
 const mutations = {
   setToken: (state, token) => {
     state.token = token
+    setToken(token)
   },
   setName: (state, name) => {
     state.name = name
