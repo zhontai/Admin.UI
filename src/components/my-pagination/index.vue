@@ -20,7 +20,7 @@
 
 <script>
 /**
- * pagination 分页组件
+ * 分页组件
  * 使用说明
     <my-pagination
     ref="pager"

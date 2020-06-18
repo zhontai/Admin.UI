@@ -1,6 +1,16 @@
 <template>
   <section style="padding:20px 80px 0px 8px;">
     <el-timeline>
+      <el-timeline-item timestamp="版本 1.3.4" placement="top">
+        <el-card>
+          <h4>升级 vue cli到4.4.4版本，升级eslint相关插件</h4>
+          <h4>新增 支持api和跨域地址多地址配置</h4>
+          <h4>新增 ip帮助类增加获得mac地址方法</h4>
+          <h4>优化 增加前后端iis发布部分代码注释说明</h4>
+          <h4>修复 权限管理输入更改Dto编码问题</h4>
+          <p>小雪转中雪 提交于 2020-6-18</p>
+        </el-card>
+      </el-timeline-item>
       <el-timeline-item timestamp="版本 1.3.3" placement="top">
         <el-card>
           <h4>新增 token以旧换新</h4>

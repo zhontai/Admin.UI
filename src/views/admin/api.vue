@@ -222,9 +222,7 @@ export default {
       editFormVisible: false, // 编辑界面是否显示
       editLoading: false,
       editFormRules: {
-        parentIds: [
-          { required: true, message: '请选择所属模块', trigger: 'change' }
-        ],
+        parentIds: [{ required: true, message: '请选择所属模块', trigger: 'change' }],
         path: [{ required: true, message: '请输入接口地址', trigger: 'blur' }],
         label: [{ required: true, message: '请输入接口名', trigger: 'blur' }]
       },
@@ -243,9 +241,7 @@ export default {
       addFormVisible: false, // 新增界面是否显示
       addLoading: false,
       addFormRules: {
-        parentIds: [
-          { required: true, message: '请选择所属模块', trigger: 'change' }
-        ],
+        parentIds: [{ required: true, message: '请选择所属模块', trigger: 'change' }],
         path: [{ required: true, message: '请输入接口地址', trigger: 'blur' }],
         label: [{ required: true, message: '请输入接口名', trigger: 'blur' }]
       },

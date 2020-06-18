@@ -30,7 +30,9 @@ const constantRoutes = [
 
 const createRouter = () =>
   new Router({
-    mode: 'history', // require service support
+    // IIS发布使用默认的hash模式
+    // IIS使用history请参考 https://router.vuejs.org/zh/guide/essentials/history-mode.html#internet-information-services-iis
+    mode: 'history',
     // scrollBehavior: () => ({ y: 100 }),
     routes: constantRoutes
   })
@@ -59,6 +61,7 @@ function generateRoutes(menus = []) {
         const route = {
           name: m.path,
           path: m.path,
+          // 如果IIS导入组件修改_import_production还是有问题，可以尝试直接使用 require('@/views' + m.viewPath + '.vue').default 导入
           component: _import(m.viewPath),
           meta: {
             title: m.label,

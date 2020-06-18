@@ -16,7 +16,7 @@
 
 <script>
 /**
- * container 容器组件
+ * 容器组件
  * 使用说明
 <my-container>
   <template #header>
