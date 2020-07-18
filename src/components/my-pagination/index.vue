@@ -24,14 +24,12 @@
  * 使用说明
     <my-pagination
     ref="pager"
-    :page.sync="pager.currentPage"
-    :size.sync="pager.pageSize"
     :total="pager.total"
     :checked-count="sels.length"
     @get-page="getData"
     />
     this.pager = this.$refs.pager.getPager()
-    this.pager.total = res.data.total
+    this.total = res.data.total
 */
 import { addResizeListener, removeResizeListener } from 'element-ui/lib/utils/resize-event'
 
