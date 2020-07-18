@@ -7,7 +7,8 @@
           <el-input
             v-model="filter.name"
             placeholder="字典名称"
-            @keyup.enter.native="getDictionaries"
+            clearable
+            @keyup.enter.native="onSearch"
           >
             <template #prefix>
               <i class="el-input__icon el-icon-search" />
@@ -15,7 +16,7 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="el-icon-search" @click="getDictionaries">查询</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="onSearch">查询</el-button>
         </el-form-item>
         <el-form-item v-if="checkPermission(['api:admin:dictionary:add'])">
           <el-button type="primary" icon="el-icon-plus" @click="handleAdd">新增</el-button>
@@ -71,11 +72,9 @@
       <my-pagination
         ref="pager"
         :layout="'fullPager'"
-        :page.sync="pager.currentPage"
-        :size.sync="pager.pageSize"
-        :total="pager.total"
+        :total="total"
         :checked-count="sels.length"
-        @get-page="getDictionaries"
+        @get-page="getList"
       />
     </template>
 
@@ -203,15 +202,15 @@ export default {
       filter: {
         name: ''
       },
-      pager: {},
       dictionaryTree: [],
       dictionaries: [],
       statusList: [
         { name: '激活', value: true },
         { name: '禁用', value: false }
       ],
-      listLoading: false,
+      total: 0,
       sels: [], // 列表选中列
+      listLoading: false,
 
       editFormVisible: false, // 编辑界面是否显示
       editLoading: false,
@@ -256,18 +255,21 @@ export default {
     }
   },
   mounted() {
-    this.pager = this.$refs.pager.getPager()
-    this.getDictionaries()
+    this.getList()
   },
   methods: {
     formatCreatedTime: function(row, column, time) {
       return formatTime(time, 'yyyy-MM-dd hh:mm')
     },
+    onSearch() {
+      this.$refs.pager.setPage(1)
+      this.getList()
+    },
     // 获取列表
-    async getDictionaries() {
+    async getList() {
+      const pager = this.$refs.pager.getPager()
       const para = {
-        currentPage: this.pager.currentPage,
-        pageSize: this.pager.pageSize,
+        ...pager,
         filter: this.filter
       }
       this.listLoading = true
@@ -278,7 +280,7 @@ export default {
         return
       }
 
-      this.pager.total = res.data.total
+      this.total = res.data.total
       const list = _.cloneDeep(res.data.list)
 
       this.dictionaries = listToTree(_.cloneDeep(list), {
@@ -308,7 +310,7 @@ export default {
         type: 'success'
       })
 
-      this.getDictionaries()
+      this.getList()
     },
     // 显示编辑界面
     async onEdit(index, row) {
@@ -374,7 +376,7 @@ export default {
       })
       this.$refs['editForm'].resetFields()
       this.editFormVisible = false
-      this.getDictionaries()
+      this.getList()
     },
     addFormValidate: function() {
       let isValid = false
@@ -401,7 +403,7 @@ export default {
       })
       this.$refs['addForm'].resetFields()
       this.addFormVisible = false
-      this.getDictionaries()
+      this.getList()
     },
     selectAll: function(selection) {
       const selections = treeToList(selection)

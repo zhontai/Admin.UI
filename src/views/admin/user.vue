@@ -76,9 +76,7 @@
     <template #footer>
       <my-pagination
         ref="pager"
-        :page.sync="pager.currentPage"
-        :size.sync="pager.pageSize"
-        :total="pager.total"
+        :total="total"
         :checked-count="sels.length"
         @get-page="getUsers"
       />
@@ -235,12 +233,13 @@ export default {
         }
       ],
       searchWindowVisible: false,
+      dynamicFilter: null,
 
       users: [],
       roles: [],
-      pager: {},
-      listLoading: false,
+      total: 0,
       sels: [], // 列表选中列
+      listLoading: false,
 
       pageLoading: false,
       addDialogFormVisible: false,
@@ -275,7 +274,6 @@ export default {
     }
   },
   async mounted() {
-    this.pager = this.$refs.pager.getPager()
     await this.getUsers()
   },
   methods: {
@@ -284,7 +282,9 @@ export default {
     },
     // 查询
     onSearch(dynamicFilter) {
-      this.getUsers(dynamicFilter)
+      this.$refs.pager.setPage(1)
+      this.dynamicFilter = dynamicFilter
+      this.getUsers()
     },
 
     // 高级查询显示
@@ -293,27 +293,29 @@ export default {
     },
     // 高级查询
     onSearchFilter(dynamicFilter) {
-      this.getUsers(dynamicFilter)
+      this.$refs.pager.setPage(1)
+      this.dynamicFilter = dynamicFilter
+      this.getUsers()
       this.searchWindowVisible = false
     },
 
     // 获取用户列表
-    async getUsers(dynamicFilter = null) {
-      const para = {
-        currentPage: this.pager.currentPage,
-        pageSize: this.pager.pageSize,
-        dynamicFilter: dynamicFilter
+    async getUsers() {
+      var pager = this.$refs.pager.getPager()
+      const params = {
+        ...pager,
+        dynamicFilter: this.dynamicFilter
       }
 
       this.listLoading = true
-      const res = await getUserListPage(para)
+      const res = await getUserListPage(params)
       this.listLoading = false
 
       if (!res?.success) {
         return
       }
 
-      this.pager.total = res.data.total
+      this.total = res.data.total
       const data = res.data.list
       data.forEach(d => {
         d._loading = false

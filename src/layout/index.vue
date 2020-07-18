@@ -188,6 +188,7 @@ import MyMenuItem from './components/my-menu-item'
 import { listToTree, getTreeParents } from '@/utils'
 import Sortable from 'sortablejs'
 import { isExternalLink } from '@/utils/validate'
+import { toLogout } from '@/router'
 
 export default {
   name: 'AppMain',
@@ -376,8 +377,7 @@ export default {
     // 退出登录
     logout: function() {
       this.$confirm('确认退出吗?', '提示').then(() => {
-        this.$store.dispatch('user/logout')
-        this.$router.push('/login')
+        toLogout()
       }).catch(() => {})
     },
     // 设置

@@ -8,7 +8,7 @@
             v-model="filter.name"
             placeholder="角色名"
             clearable
-            @keyup.enter.native="getRoles"
+            @keyup.enter.native="onSearch"
           >
             <template #prefix>
               <i class="el-input__icon el-icon-search" />
@@ -16,7 +16,7 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="getRoles">查询</el-button>
+          <el-button type="primary" @click="onSearch">查询</el-button>
         </el-form-item>
         <el-form-item v-if="checkPermission(['api:admin:role:add'])">
           <el-button type="primary" @click="onAdd">新增</el-button>
@@ -83,9 +83,7 @@
     <template #footer>
       <my-pagination
         ref="pager"
-        :page.sync="pager.currentPage"
-        :size.sync="pager.pageSize"
-        :total="pager.total"
+        :total="total"
         :checked-count="sels.length"
         @get-page="getRoles"
       />
@@ -136,13 +134,6 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <!-- <el-row>
-                        <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-                            <el-form-item label="说明" prop="description">
-                                <el-input type="textarea" v-model="addForm.description" auto-complete="off"></el-input>
-                            </el-form-item>
-                        </el-col>
-          </el-row>-->
         </el-form>
       </section>
       <div class="drawer-footer">
@@ -157,7 +148,7 @@
       title="编辑角色"
       :wrapper-closable="true"
       :visible.sync="editFormVisible"
-      direction="ltr"
+      direction="btt"
       size="'auto'"
       @close="closeEditForm"
     >
@@ -169,22 +160,32 @@
           label-width="80px"
           :inline="false"
         >
-          <el-form-item label="角色名" prop="name">
-            <el-input v-model="editForm.name" auto-complete="off" />
-          </el-form-item>
-          <el-form-item label="说明" prop="description">
-            <el-input v-model="editForm.description" auto-complete="off" />
-          </el-form-item>
-          <el-form-item label="状态" prop="enabled">
-            <el-select v-model="editForm.enabled" placeholder="请选择角色状态">
-              <el-option
-                v-for="item in statusList"
-                :key="item.value"
-                :label="item.name"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
+          <el-row>
+            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+              <el-form-item label="角色名" prop="name">
+                <el-input v-model="editForm.name" auto-complete="off" />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+              <el-form-item label="状态" prop="enabled">
+                <el-select v-model="editForm.enabled" placeholder="请选择角色状态" style="width:100%;">
+                  <el-option
+                    v-for="item in statusList"
+                    :key="item.value"
+                    :label="item.name"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+              <el-form-item label="说明" prop="description">
+                <el-input v-model="editForm.description" auto-complete="off" />
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form>
       </section>
       <div class="drawer-footer">
@@ -211,13 +212,13 @@ export default {
         name: ''
       },
       roles: [],
+      total: 0,
+      sels: [], // 列表选中列
       statusList: [
         { name: '激活', value: true },
         { name: '禁用', value: false }
       ],
-      pager: {},
       listLoading: false,
-      sels: [], // 列表选中列
 
       addDialogFormVisible: false,
       editFormVisible: false, // 编辑界面是否显示
@@ -252,29 +253,32 @@ export default {
     }
   },
   mounted() {
-    this.pager = this.$refs.pager.getPager()
     this.getRoles()
   },
   methods: {
     formatCreatedTime: function(row, column, time) {
       return formatTime(time, 'yyyy-MM-dd hh:mm')
     },
+    onSearch() {
+      this.$refs.pager.setPage(1)
+      this.getRoles()
+    },
     // 获取角色列表
     async getRoles() {
-      const para = {
-        currentPage: this.pager.currentPage,
-        pageSize: this.pager.pageSize,
+      var pager = this.$refs.pager.getPager()
+      const params = {
+        ...pager,
         filter: this.filter
       }
       this.listLoading = true
-      const res = await getRoleListPage(para)
+      const res = await getRoleListPage(params)
       this.listLoading = false
 
       if (!res?.success) {
         return
       }
 
-      this.pager.total = res.data.total
+      this.total = res.data.total
       const data = res.data.list
       data.forEach(d => {
         d._loading = false

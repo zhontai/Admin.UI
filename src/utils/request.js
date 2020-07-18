@@ -1,6 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
-import router from '@/router'
+import { toLogout } from '@/router'
 import Vue from 'vue'
 import { refresh } from '@/api/admin/auth'
 
@@ -39,9 +39,13 @@ requestAxios.interceptors.response.use(
     return data
   },
   async error => {
-    console.log(error)
     const res = { success: false, code: 0, msg: '' }
+
     if (error?.response) {
+      if (error.config._request) {
+        return res
+      }
+
       const { config, data, status } = error.response
       if (_.isNumber(status)) {
         res.code = status
@@ -58,10 +62,10 @@ requestAxios.interceptors.response.use(
         const resRefresh = await refresh({ token: store.getters.token })
         if (resRefresh.code === 1) {
           store.commit('user/setToken', resRefresh.data.token)
+          error.config._request = true
           return requestAxios.request(error.config)
         } else {
-          store.dispatch('user/logout')
-          router.push('/login')
+          toLogout()
           return res
         }
       }

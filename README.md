@@ -27,12 +27,12 @@ npm run serve
 如果你想换端口，可以直接修改根目录下的 vue.config.js 文件
 
   devServer: {
-    port: 9999, // 当前 admin 项目的端口号
+    port: 9000, // 当前 admin 项目的端口号
 
     proxy: {
       // 配置代理
       "/api": {
-        target: "http://localhost:8888",//改成后端api地址
+        target: "http://localhost:8000",//改成后端api地址
 
 ```
 

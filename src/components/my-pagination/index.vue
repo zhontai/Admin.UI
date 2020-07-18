@@ -10,7 +10,7 @@
     :small="small"
     style="text-align:right;"
     @size-change="onSizeChange"
-    @current-change="onCurrentChange"
+    @current-change="onPageChange"
   >
     <slot>
       <span v-if="checkedCount>0" class="ad-pagination__selection">，已选 {{ checkedCount }} 条</span>
@@ -53,7 +53,7 @@ export default {
         return [10, 20, 50, 100]
       }
     },
-    size: {
+    pageSize: {
       type: Number,
       default: 10
     },
@@ -61,7 +61,7 @@ export default {
       type: Number,
       default: 0
     },
-    page: {
+    currentPage: {
       type: Number,
       default: 1
     },
@@ -84,6 +84,8 @@ export default {
   },
   data() {
     return {
+      page: this.currentPage,
+      size: this.pageSize,
       currentLayout: layouts[this.layout] || this.layout
     }
   },
@@ -110,13 +112,14 @@ export default {
   },
   methods: {
     onSizeChange(val) {
-      this.$emit('update:size', val)
+      this.page = 1
+      this.size = val
       this.$emit('size-change', val)
       this.$emit('get-page')
     },
-    onCurrentChange(val) {
-      this.$emit('update:page', val)
-      this.$emit('current-change', val)
+    onPageChange(val) {
+      this.page = val
+      this.$emit('page-change', val)
       this.$emit('get-page')
     },
     changeLayout() {
@@ -127,9 +130,11 @@ export default {
         this.currentLayout = layouts.simple
       }
     },
+    setPage(val) {
+      this.page = val
+    },
     getPager() {
       return {
-        total: this.total,
         pageSize: this.size,
         currentPage: this.page
       }

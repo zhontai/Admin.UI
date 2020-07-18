@@ -7,7 +7,7 @@
             v-model="filter.createdUserName"
             placeholder="操作账号"
             clearable
-            @keyup.enter.native="getList"
+            @keyup.enter.native="onSearch"
           >
             <template #prefix>
               <i class="el-input__icon el-icon-search" />
@@ -15,7 +15,7 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="getList">查询</el-button>
+          <el-button type="primary" @click="onSearch">查询</el-button>
         </el-form-item>
       </el-form>
     </template>
@@ -59,9 +59,7 @@
     <template #footer>
       <my-pagination
         ref="pager"
-        :page.sync="pager.currentPage"
-        :size.sync="pager.pageSize"
-        :total="pager.total"
+        :total="total"
         @get-page="getList"
       />
     </template>
@@ -83,23 +81,26 @@ export default {
         name: ''
       },
       list: [],
-      pager: {},
+      total: 0,
       listLoading: false
     }
   },
   mounted() {
-    this.pager = this.$refs.pager.getPager()
     this.getList()
   },
   methods: {
     formatCreatedTime: function(row, column, time) {
       return formatTime(time, 'yyyy-MM-dd hh:mm')
     },
+    onSearch() {
+      this.$refs.pager.setPage(1)
+      this.getList()
+    },
     // 获取列表
     async getList() {
+      const pager = this.$refs.pager.getPager()
       const para = {
-        currentPage: this.pager.currentPage,
-        pageSize: this.pager.pageSize,
+        ...pager,
         filter: this.filter
       }
       this.listLoading = true
@@ -110,7 +111,7 @@ export default {
         return
       }
 
-      this.pager.total = res.data.total
+      this.total = res.data.total
       this.list = res.data.list
     }
   }

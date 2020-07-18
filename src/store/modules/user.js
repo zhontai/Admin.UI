@@ -47,7 +47,6 @@ const actions = {
     if (res && res.success) {
       const token = res.data.token
       commit('setToken', token)
-      setToken(token)
     }
 
     return res

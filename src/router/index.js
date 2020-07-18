@@ -5,6 +5,7 @@ import defaultSettings from '@/settings'
 import { getToken } from '@/utils/auth'
 import Layout from '@/layout'
 import store from '@/store'
+import { login, logout } from '@/utils/is4'
 const _import = require('./_import_' + process.env.NODE_ENV) // 获取组件的方法
 
 /**
@@ -20,11 +21,24 @@ Vue.use(Router)
 const constantRoutes = [
   {
     path: '/login',
+    // name: 'Login',
     component: _import('/account/login'),
     hidden: true,
     meta: {
       title: '登录'
     }
+  },
+  {
+    path: '/callback',
+    // name: 'Callback',
+    component: _import('/account/login-callback'),
+    hidden: true
+  },
+  {
+    path: '/refresh',
+    // name: 'Refresh',
+    component: _import('/account/refresh-token'),
+    hidden: true
   }
 ]
 
@@ -77,7 +91,7 @@ function generateRoutes(menus = []) {
     }
   })
 
-  // 修复无首页组件不显示404
+  // 修复无首页时不显示404
   routes.children.push({
     path: '',
     hidden: true
@@ -111,6 +125,36 @@ function getPageTitle(pageTitle) {
   return title
 }
 
+// 登出
+export function toLogout() {
+  store.dispatch('user/logout')
+  if (defaultSettings.is4) {
+    logout()
+  } else {
+    router.push('/login')
+  }
+}
+
+// 登录
+function toLogin(to, next) {
+  // 自动登录判断
+  // next({ path: '/' })
+
+  if (defaultSettings.is4) {
+    if (to.path === '/callback' || to.path === '/refresh') {
+      next()
+    } else {
+      login()
+    }
+  } else {
+    if (to.path === '/login') {
+      next()
+    } else {
+      next(`/login?redirect=${to.path}`)
+    }
+  }
+}
+
 let first = true
 // 路由全局前置守卫
 router.beforeEach(async(to, from, next) => {
@@ -119,9 +163,7 @@ router.beforeEach(async(to, from, next) => {
 
   if (token) {
     if (to.path === '/login') {
-      // 自动登录判断
-      // next({ path: '/' })
-      next()
+      toLogin(to, next)
     } else {
       const hasPermission = store.getters.menus && store.getters.menus.length > 0
       if (hasPermission) {
@@ -130,21 +172,17 @@ router.beforeEach(async(to, from, next) => {
         // 仅执行一次
         if (first) {
           first = false
-          const res = await store.dispatch('user/getLoginInfo', null, { root: true })
+          const res = await store.dispatch('user/getLoginInfo')
           if (res && res.success) {
             next({ ...to, replace: true })
           } else {
-            next(`/login?redirect=${to.path}`)
+            toLogin(to, next)
           }
         }
       }
     }
   } else {
-    if (to.path === '/login') {
-      next()
-    } else {
-      next(`/login?redirect=${to.path}`)
-    }
+    toLogin(to, next)
   }
 })
 

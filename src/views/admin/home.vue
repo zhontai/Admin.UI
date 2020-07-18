@@ -1,6 +1,21 @@
 <template>
   <section style="padding:20px 80px 0px 8px;">
     <el-timeline>
+      <el-timeline-item timestamp="版本 1.4.0" placement="top">
+        <el-card>
+          <h4>新增 支持JWT和IS4认证切换</h4>
+          <h4>新增 集成统一认证授权项目Admin.IdentityServer</h4>
+          <h4>更新 后端nuget包</h4>
+          <h4>调整 data.json用户数据</h4>
+          <h4>修复 分页根据条件查询后没有从第一页开始的问题</h4>
+          <h4>修复 执行db方法显示启动端口不按顺序执行的问题</h4>
+          <h4>修复 swagger api加权小锁弹出无输入框的问题</h4>
+          <h4>修复 刷新token执行成功，请求重试执行失败会循环执行的问题</h4>
+          <h4>修复 token以旧换新刷新时间不精确的问题</h4>
+          <h4>修复 ip带端口验证ip不通过返回本地ip的问题</h4>
+          <p>小雪转中雪 提交于 2020-7-14</p>
+        </el-card>
+      </el-timeline-item>
       <el-timeline-item timestamp="版本 1.3.4" placement="top">
         <el-card>
           <h4>升级 vue cli到4.4.4版本，升级eslint相关插件</h4>

@@ -14,7 +14,7 @@ module.exports = {
   productionSourceMap: false,
   devServer: {
     open: true, // 自动启动浏览器
-    port: 9999,
+    port: 9000,
     // 浏览器弹出错误
     overlay: {
       warnings: false,
@@ -24,22 +24,22 @@ module.exports = {
       // 配置多个代理
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       ['^' + process.env.VUE_APP_BASE_API]: {
-        target: 'http://localhost:8888',
+        target: 'http://localhost:8000',
         ws: true,
         changeOrigin: true
       },
       '^/upload': {
-        target: 'http://localhost:8888',
+        target: 'http://localhost:8000',
         ws: true,
         changeOrigin: true
       },
       '^/images': {
-        target: 'http://localhost:8888',
+        target: 'http://localhost:8000',
         ws: true,
         changeOrigin: true
       },
       '^/swagger': {
-        target: 'http://localhost:8888',
+        target: 'http://localhost:8000',
         ws: true,
         changeOrigin: true
       }

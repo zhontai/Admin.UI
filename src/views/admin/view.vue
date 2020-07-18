@@ -3,7 +3,7 @@
     <!--查询-->
     <el-form :inline="true" :model="filters" @submit.native.prevent>
       <el-form-item>
-        <el-input v-model="filters.label" placeholder="视图名或地址" @keyup.enter.native="onGetList">
+        <el-input v-model="filters.label" placeholder="视图名或地址" clearable @keyup.enter.native="onGetList">
           <template #prefix>
             <i class="el-input__icon el-icon-search" />
           </template>
