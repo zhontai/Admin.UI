@@ -1,4 +1,4 @@
 export default {
   title: '中台admin',
-  is4: true
+  is4: false
 }
