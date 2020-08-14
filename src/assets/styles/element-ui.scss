@@ -1,217 +1,217 @@
-.el-menu-item [class^=fa], 
+.el-menu-item [class^=fa],
 .el-submenu [class^=fa],
 .el-menu-item [class^=el-icon-],
 .el-submenu [class^=el-icon-] {
-    vertical-align: middle;
-    margin-right: 5px;
-    width: 20px;
-    text-align: center;
-    font-size: 14px;
+  vertical-align: middle;
+  margin-right: 5px;
+  width: 20px;
+  text-align: center;
+  font-size: 14px;
 }
 
-.el-menu--collapse .el-menu-item>span, 
+.el-menu--collapse .el-menu-item>span,
 .el-menu--collapse .el-submenu .el-submenu__title>span {
-    height: 0;
-    width: 0;
-    overflow: hidden;
-    visibility: hidden;
-    display: inline-block;
+  height: 0;
+  width: 0;
+  overflow: hidden;
+  visibility: hidden;
+  display: inline-block;
 }
-.el-menu--collapse .el-menu-item .el-submenu__icon-arrow, 
+.el-menu--collapse .el-menu-item .el-submenu__icon-arrow,
 .el-menu--collapse .el-submenu .el-submenu__title .el-submenu__icon-arrow {
-    display: none;
+  display: none;
 }
 
 .el-drawer .el-drawer__header{
-    margin-bottom: 0px;
-    padding: 16px 24px;
-    border-bottom: 1px solid #e8e8e8;
+  margin-bottom: 0px;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e8e8e8;
 }
 .el-drawer__body{
-    overflow: auto;
+  overflow: auto;
 }
 
-.el-pagination.is-background .btn-next, 
-.el-pagination.is-background .btn-prev, 
+.el-pagination.is-background .btn-next,
+.el-pagination.is-background .btn-prev,
 .el-pagination.is-background .el-pager li{
-    border-radius: 50% !important;
+  border-radius: 50% !important;
 }
 .el-pagination.is-background .btn-next:hover,
 .el-pagination.is-background .btn-prev:hover{
-    color:#409EFF;
+  color:#409EFF;
 }
 
 .el-table .cell{
-    text-overflow: unset;
+  text-overflow: unset;
 }
 .el-table th>.cell{
-    padding-left: 14px;
-    padding-right: 14px;
+  padding-left: 14px;
+  padding-right: 14px;
 }
 .el-table--medium td, .el-table--medium th,
 .el-table--mini td, .el-table--mini th{
-    padding:4px 0;
+  padding:4px 0;
 }
 
 .el-table--mini, .el-table--small, .el-table__expand-icon{
-    font-size: 13px;
+  font-size: 13px;
 }
 
 .el-drawer__wrapper{
-    overflow:hidden;
+  overflow:hidden;
 }
 
 .el-pagination__total{
-    margin-right: 0px;
-    float:left;
+  margin-right: 0px;
+  float:left;
 }
 .el-pagination__jump{
-    margin-left: 0px;
+  margin-left: 0px;
 }
 // .el-pagination__sizes{
 //     float:left;
 // }
 
 .el-checkbox-group .el-checkbox {
-    margin-right: 15px;
+  margin-right: 15px;
 }
-.el-checkbox__label{    
+.el-checkbox__label{
 padding-left: 5px;
 }
 
 .el-dropdown-menu--mini .el-dropdown-menu__item {
-    line-height: 30px;
+  line-height: 30px;
 }
 
 .el-menu-item, .el-submenu__title{
-    height: 42px;
-    line-height: 42px;
+  height: 42px;
+  line-height: 42px;
 }
 .el-submenu .el-menu-item {
-    height: 38px;
-    line-height: 38px;
-    padding:0 20px;
+  height: 38px;
+  line-height: 38px;
+  padding:0 20px;
 }
 
 .el-drawer{
-    outline: none;
+  outline: none;
 }
 .el-drawer__header>:first-child{
-    outline: none;
+  outline: none;
 }
 .el-drawer__close-btn{
-    border: none;
-    outline: none;
+  border: none;
+  outline: none;
 }
 .el-drawer__close-btn:focus .el-dialog__close, .el-drawer__close-btn:hover .el-dialog__close {
-    color: #409eff;
+  color: #409eff;
 }
 
 // el-tabs
 
 .el-tabs__nav{
-    padding-left: 15px;
+  padding-left: 15px;
 }
 .el-tabs--border-card, .el-tabs--card {
-    .el-tabs__nav{
-        padding-left: 0px;
-    }
+  .el-tabs__nav{
+      padding-left: 0px;
+  }
 }
 .el-tabs--card>.el-tabs__header .el-tabs__nav{
-    border-left-width: 0px;
-    border-top-width: 0px;
+  border-left-width: 0px;
+  border-top-width: 0px;
 }
 .el-tabs--card>.el-tabs__header .el-tabs__nav.is-bottom{
-    border-radius: 0px 0px 4px 4px;
+  border-radius: 0px 0px 4px 4px;
 }
 .el-tabs__active-bar{
-    margin-left: 15px;
+  margin-left: 15px;
 }
 .el-tabs__header{
-    margin-bottom: 0px;
+  margin-bottom: 0px;
 }
 
 .el-tabs__nav-next, .el-tabs__nav-prev{
-    font-size: 16px;
-    line-height: 40px;
-    &:hover{
-        color: #409eff;
-    }
+  font-size: 16px;
+  line-height: 40px;
+  &:hover{
+      color: #409eff;
+  }
 }
 .el-tabs--bottom .el-tabs__active-bar.is-bottom,
 .el-tabs--bottom .el-tabs__nav-wrap.is-bottom:after {
-    top: 0;
+  top: 0;
 }
 .el-tabs--bottom .el-tabs__header.is-bottom {
-    margin-top: 0px;
+  margin-top: 0px;
 }
 
 .el-tabs--border-card{
-    border-width: 0px 0px 0px 0px;
-    -webkit-box-shadow: none;
-    box-shadow: none;
+  border-width: 0px 0px 0px 0px;
+  -webkit-box-shadow: none;
+  box-shadow: none;
 }
 .el-tabs--border-card > .el-tabs__content {
-    padding: 0px;
+  padding: 0px;
 }
 .el-tabs--border-card {
-    border-width: 0px;
-    -webkit-box-shadow: none;
-    box-shadow: none;
+  border-width: 0px;
+  -webkit-box-shadow: none;
+  box-shadow: none;
 }
 .el-tabs--border-card > .el-tabs__content {
-    padding: 0px;
+  padding: 0px;
 }
 
 .el-tabs--card>.el-tabs__header .el-tabs__item.is-bottom{
-    border-top: 1px solid transparent;
+  border-top: 1px solid transparent;
 }
 .el-tabs--card>.el-tabs__header .el-tabs__item.is-bottom.is-active{
-    border-top-color: #fff;
+  border-top-color: #fff;
 }
 .el-tabs--card>.el-tabs__header .is-scrollable .el-tabs__item:first-child {
-    border-left: 1px solid #E4E7ED;
+  border-left: 1px solid #E4E7ED;
 }
 .el-tabs--bottom.el-tabs--card .el-tabs__nav-wrap.is-bottom{
-    margin-top:-1px;
+  margin-top:-1px;
 }
 .el-tabs--bottom.el-tabs--card .el-tabs__header.is-bottom {
-    border-bottom: 0;
-    border-top: 1px solid #DCDFE6;
+  border-bottom: 0;
+  border-top: 1px solid #DCDFE6;
 }
 
 /*el-date-picker*/
 .el-date-picker__header
 {
-    margin: 0px 12px;
+  margin: 0px 12px;
 }
 .el-picker-panel__content{
-    margin-top: 0px;
-    margin-bottom: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 .el-date-table td{
-    padding-top: 0px;
-    padding-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
 }
 .el-date-table th{
-    padding: 3px;
+  padding: 3px;
 }
 .el-date-range-picker__content{
-    padding:5px;
+  padding:5px;
 }
 .el-picker-panel [slot=sidebar], .el-picker-panel__sidebar{
-    width: 80px;
+  width: 80px;
 }
 .el-picker-panel [slot=sidebar]+.el-picker-panel__body, .el-picker-panel__sidebar+.el-picker-panel__body{
-    margin-left: 80px;
+  margin-left: 80px;
 }
 .el-date-range-picker{
-    width:580px;
+  width:580px;
 }
 .el-date-range-picker.has-sidebar{
-    width:660px;
+  width:660px;
 }
 
 .el-form-item__content .el-input-group{
-    vertical-align: 0px;
+  vertical-align: 0px;
 }

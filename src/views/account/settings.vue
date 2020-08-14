@@ -191,7 +191,7 @@ export default {
       editLoading: false,
       editPwdLoading: false,
       avatarLoading: false,
-      avatarDefault: require('@/assets/avatar.png')
+      avatarDefault: require('@/assets/images/avatar.png')
     }
   },
   computed: {
@@ -307,10 +307,10 @@ export default {
   font-size: 20px;
   line-height: 28px;
 }
-.pc >>> .el-tabs--left .el-tabs__header.is-left {
+.pc ::v-deep .el-tabs--left .el-tabs__header.is-left {
   margin-right: -1px;
 }
-.pc >>> .el-tabs__content::before {
+.pc ::v-deep .el-tabs__content::before {
   content: "";
   position: absolute;
   bottom: 0;
@@ -321,7 +321,7 @@ export default {
   top: 0;
 }
 
-.avatar-uploader >>> .el-loading-spinner .circular{
+.avatar-uploader ::v-deep .el-loading-spinner .circular{
   width:26px;
   height:26px;
 }

@@ -70,11 +70,10 @@
 import { formatTime } from '@/utils'
 import { getOprationLogPage } from '@/api/admin/opration-log'
 import MyContainer from '@/components/my-container'
-import MyPagination from '@/components/my-pagination'
 
 export default {
   name: 'OprationLog',
-  components: { MyContainer, MyPagination },
+  components: { MyContainer },
   data() {
     return {
       filter: {
@@ -90,7 +89,7 @@ export default {
   },
   methods: {
     formatCreatedTime: function(row, column, time) {
-      return formatTime(time, 'yyyy-MM-dd hh:mm')
+      return formatTime(time, 'YYYY-MM-DD HH:mm')
     },
     onSearch() {
       this.$refs.pager.setPage(1)

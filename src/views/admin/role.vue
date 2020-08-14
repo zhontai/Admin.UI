@@ -201,11 +201,10 @@ import { formatTime } from '@/utils'
 import { getRoleListPage, removeRole, editRole, addRole, batchRemoveRole, getRole } from '@/api/admin/role'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
-import MyPagination from '@/components/my-pagination'
 
 export default {
   name: 'Roles',
-  components: { MyContainer, MyConfirmButton, MyPagination },
+  components: { MyContainer, MyConfirmButton },
   data() {
     return {
       filter: {
@@ -257,7 +256,7 @@ export default {
   },
   methods: {
     formatCreatedTime: function(row, column, time) {
-      return formatTime(time, 'yyyy-MM-dd hh:mm')
+      return formatTime(time, 'YYYY-MM-DD HH:mm')
     },
     onSearch() {
       this.$refs.pager.setPage(1)

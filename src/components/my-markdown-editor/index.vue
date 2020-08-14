@@ -163,10 +163,10 @@ export default {
 </script>
 
 <style scoped>
-.ad-markdown >>> .tui-editor-defaultUI .te-switch-button{
+.ad-markdown ::v-deep .tui-editor-defaultUI .te-switch-button{
   border-right-width: 0px;
 }
-.ad-markdown >>> .tui-editor-defaultUI .te-switch-button.markdown{
+.ad-markdown ::v-deep .tui-editor-defaultUI .te-switch-button.markdown{
   vertical-align: 1px;
 }
 </style>

@@ -314,7 +314,7 @@ export default {
   clear: both;
 }
 
-.save >>> [_button] {
+.save ::v-deep [_button] {
   padding: 3px 0px;
 }
 </style>

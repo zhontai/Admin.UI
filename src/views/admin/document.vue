@@ -252,7 +252,6 @@
 </template>
 
 <script>
-import ImageViewer from 'element-ui/packages/image/src/image-viewer'
 import MyMarkdownEditor from '@/components/my-markdown-editor'
 import MyConfirmButton from '@/components/my-confirm-button'
 import { listToTree, getTreeParents } from '@/utils'
@@ -275,7 +274,7 @@ let prevOverflow = ''
 
 export default {
   name: 'Doc',
-  components: { ImageViewer, MyMarkdownEditor, MyConfirmButton },
+  components: { MyMarkdownEditor, MyConfirmButton },
   data() {
     const tabs = { doc: 'docTab', img: 'imgTab' }
     return {

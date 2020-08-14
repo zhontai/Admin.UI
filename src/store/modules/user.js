@@ -7,7 +7,7 @@ import { resetRouter, addRoutes } from '@/router'
 const state = {
   token: getToken(),
   name: '',
-  avatar: require('@/assets/avatar.png'),
+  avatar: require('@/assets/images/avatar.png'),
   menus: [],
   permissions: []
 }
@@ -24,7 +24,7 @@ const mutations = {
     if (avatar) {
       state.avatar = process.env.VUE_APP_AVATAR_URL + avatar
     } else {
-      state.avatar = require('@/assets/avatar.png')
+      state.avatar = require('@/assets/images/avatar.png')
     }
   },
   setMenus: (state, menus) => {

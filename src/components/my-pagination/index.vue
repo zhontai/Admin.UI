@@ -12,9 +12,9 @@
     @size-change="onSizeChange"
     @current-change="onPageChange"
   >
-    <slot>
+    <template #default>
       <span v-if="checkedCount>0" class="ad-pagination__selection">，已选 {{ checkedCount }} 条</span>
-    </slot>
+    </template>
   </el-pagination>
 </template>
 

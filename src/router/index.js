@@ -99,7 +99,7 @@ function generateRoutes(menus = []) {
 
   routes.children.push({
     path: '*',
-    component: _import('/admin/404'),
+    component: _import('/error/404'),
     hidden: true
   })
 

@@ -1,6 +1,20 @@
 <template>
   <section style="padding:20px 80px 0px 8px;">
     <el-timeline>
+      <el-timeline-item timestamp="版本 1.4.1" placement="top">
+        <el-card>
+          <h4>升级 Nuget包到最新版本</h4>
+          <h4>升级 vue cli到4.5.3版本</h4>
+          <h4>修复 在ie11下无法访问界面，get请求使用缓存导致无法登录的问题</h4>
+          <h4>修复 在ie11下文档管理界面无法加载</h4>
+          <h4>修复 在ie11下tabs右键菜单无法打开的问题</h4>
+          <h4>修复 在ie11下前端时间格式化显示错误</h4>
+          <h4>调整 将node-sass更改为sass，穿透组件样式统一使用::v-deep</h4>
+          <h4>调整 测试项目用户数据，测试时用户能够成功登录</h4>
+          <h4>优化 将分页组件加入到全局组件中，界面无需再导入分页组件</h4>
+          <p>小雪转中雪 提交于 2020-8-14</p>
+        </el-card>
+      </el-timeline-item>
       <el-timeline-item timestamp="版本 1.4.0" placement="top">
         <el-card>
           <h4>新增 支持JWT和IS4认证切换</h4>

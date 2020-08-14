@@ -1,9 +1,14 @@
 const path = require('path')
+const defaultSettings = require('./src/settings.js')
+
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
-const isDev = process.env.NODE_ENV === 'development'
 
+const isDev = process.env.NODE_ENV === 'development'
+const name = defaultSettings.title || '中台admin'
+
+// 官方配置说明 https://cli.vuejs.org/zh/config/#vue-config-js
 module.exports = {
   // 基本路径
   publicPath: '/',
@@ -13,16 +18,17 @@ module.exports = {
   lintOnSave: isDev,
   productionSourceMap: false,
   devServer: {
-    open: true, // 自动启动浏览器
+    // 自动启动浏览器
+    open: true,
     port: 9000,
     // 浏览器弹出错误
     overlay: {
       warnings: false,
       errors: true
     },
+    // 配置多个代理
+    // detail: https://cli.vuejs.org/config/#devserver-proxy
     proxy: {
-      // 配置多个代理
-      // detail: https://cli.vuejs.org/config/#devserver-proxy
       ['^' + process.env.VUE_APP_BASE_API]: {
         target: 'http://localhost:8000',
         ws: true,
@@ -46,9 +52,7 @@ module.exports = {
     }
   },
   configureWebpack: {
-    // provide the app's title in webpack's name field, so that
-    // it can be accessed in index.html to inject the correct title.
-    // name: name,
+    name: name,
     resolve: {
       alias: {
         '@': resolve('src')
@@ -60,21 +64,21 @@ module.exports = {
     }
   },
   // webpack配置
-  // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
   chainWebpack(config) {
-    /**
-     * 删除懒加载模块的 prefetch preload，降低带宽压力
-     * https://cli.vuejs.org/zh/guide/html-and-static-assets.html#prefetch
-     * https://cli.vuejs.org/zh/guide/html-and-static-assets.html#preload
-     * 而且预渲染时生成的 prefetch 标签是 modern 版本的，低版本浏览器是不需要的
-     */
-    config.plugins.delete('prefetch').delete('preload')
+    config.plugins.delete('prefetch')
+    config.plugins.delete('preload')
 
-    config
-      // https://webpack.js.org/configuration/devtool/#development
-      .when(isDev, config => config.devtool('cheap-source-map'))
+    // config.when(isDev, config => config.devtool('cheap-source-map'))
 
     config.when(!isDev, config => {
+      config
+        .plugin('ScriptExtHtmlWebpackPlugin')
+        .after('html')
+        .use('script-ext-html-webpack-plugin', [{
+          // `runtime` must same as runtimeChunk name. default is `runtime`
+          inline: /runtime\..*\.js$/
+        }])
+        .end()
       config.optimization.splitChunks({
         chunks: 'all',
         cacheGroups: {
@@ -100,19 +104,5 @@ module.exports = {
       })
       config.optimization.runtimeChunk('single')
     })
-  },
-  // css相关配置
-  css: {
-    // 是否使用css分离插件 ExtractTextPlugin
-    extract: true,
-    sourceMap: false,
-    // css预设器配置项
-    loaderOptions: {},
-    // 启用 CSS modules for all css / pre-processor files.
-    // modules: false,
-    requireModuleExtension: true
-  },
-  // use thread-loader for babel & TS in production build
-  // enabled by default if the machine has more than 1 cores
-  parallel: require('os').cpus().length > 1
+  }
 }

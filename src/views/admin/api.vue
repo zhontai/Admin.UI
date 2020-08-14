@@ -265,7 +265,7 @@ export default {
   },
   methods: {
     formatCreatedTime: function(row, column, time) {
-      return formatTime(time, 'yyyy-MM-dd hh:mm')
+      return formatTime(time, 'YYYY-MM-DD HH:mm')
     },
     // 获取列表
     async onGetList() {

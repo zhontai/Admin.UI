@@ -15,6 +15,11 @@ const userManager = new UserManager({
   // userStore: new WebStorageStateStore()
 })
 
+userManager.events.addUserSignedOut(async() => {
+  store.dispatch('user/logout')
+  account.logout()
+})
+
 class Account {
   async login() {
     await userManager.signinRedirect()
@@ -41,10 +46,5 @@ export const getAcessToken = async() => account.getAcessToken()
 export const getNewAcessToken = async() => account.getNewAcessToken()
 export const login = async() => account.login()
 export const logout = async() => account.logout()
-
-userManager.events.addUserSignedOut(async() => {
-  store.dispatch('user/logout')
-  account.logout()
-})
 
 export default account

@@ -215,13 +215,12 @@ import { getRoleListPage } from '@/api/admin/role'
 import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser, getUser } from '@/api/admin/user'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
-import MyPagination from '@/components/my-pagination'
 import MySearch from '@/components/my-search'
 import MySearchWindow from '@/components/my-search-window'
 
 export default {
   name: 'Users',
-  components: { MyContainer, MyConfirmButton, MyPagination, MySearch, MySearchWindow },
+  components: { MyContainer, MyConfirmButton, MySearch, MySearchWindow },
   data() {
     return {
       // 高级查询字段
@@ -278,7 +277,7 @@ export default {
   },
   methods: {
     formatCreatedTime(row, column, time) {
-      return formatTime(time, 'yyyy-MM-dd hh:mm')
+      return formatTime(time, 'YYYY-MM-DD HH:mm')
     },
     // 查询
     onSearch(dynamicFilter) {

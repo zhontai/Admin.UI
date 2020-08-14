@@ -4,6 +4,9 @@ import { toLogout } from '@/router'
 import Vue from 'vue'
 import { refresh } from '@/api/admin/auth'
 
+axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
+axios.defaults.headers['Cache-Control'] = 'no-cache'
+axios.defaults.headers['Pragma'] = 'no-cache'
 const requestAxios = axios.create({
   baseURL: '', // url = base url + request url
   timeout: 20000 // 请求延时

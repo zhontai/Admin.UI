@@ -69,7 +69,7 @@
             :type="tabType"
             @tab-click="onTabClick"
             @tab-remove="onRemoveTab"
-            @contextmenu.prevent.native="onOpenRightMenu($event)"
+            @contextmenu.prevent.native="onOpenMenu"
           >
             <el-tab-pane
               v-for="tab in tabsList"
@@ -86,6 +86,35 @@
               </template>
             </el-tab-pane>
           </el-tabs>
+          <ul
+            v-if="tabPosition === 'top'"
+            v-show="rightMenu.visible"
+            ref="rightMenu"
+            :style="{ left: rightMenu.left + 'px', top: rightMenu.top + 'px' }"
+            class="contextmenu"
+          >
+            <li @click="refreshCurrentTab">
+              <i class="el-icon-refresh-right" />刷新
+            </li>
+            <el-divider
+              v-if="canClose || canCloseOthers || canCloseRight || canCloseLeft || canCloseAll"
+            />
+            <li v-if="canClose" @click="closecurrentTab">
+              <span>关闭</span>
+            </li>
+            <li v-if="canCloseOthers" @click="closeOthersTabs">
+              <i class="el-icon-more" />关闭其它
+            </li>
+            <li v-if="canCloseRight" @click="closeRightTabs">
+              <i class="el-icon-right" />关闭到右侧
+            </li>
+            <li v-if="canCloseLeft" @click="closeLeftTabs">
+              <i class="el-icon-back" />关闭到左侧
+            </li>
+            <li v-if="canCloseAll" @click="closeAllTabs">
+              <span>关闭所有</span>
+            </li>
+          </ul>
         </div>
       </el-header>
       <el-main class="main" style="height:100%;">
@@ -102,7 +131,7 @@
           :tab-position="tabPosition"
           @tab-click="onTabClick"
           @tab-remove="onRemoveTab"
-          @contextmenu.prevent.native="onOpenRightMenu"
+          @contextmenu.prevent.native="onOpenMenu"
         >
           <el-tab-pane
             v-for="tab in tabsList"
@@ -119,65 +148,36 @@
             </template>
           </el-tab-pane>
         </el-tabs>
+        <ul
+          v-if="tabPosition === 'bottom'"
+          v-show="rightMenu.visible"
+          ref="rightMenu"
+          :style="{ left: rightMenu.left + 'px', top: rightMenu.top + 'px' }"
+          class="contextmenu"
+        >
+          <li v-if="canCloseAll" @click="closeAllTabs">
+            <span>关闭所有</span>
+          </li>
+          <li v-if="canCloseLeft" @click="closeLeftTabs">
+            <i class="el-icon-back" />关闭到左侧
+          </li>
+          <li v-if="canCloseRight" @click="closeRightTabs">
+            <i class="el-icon-right" />关闭到右侧
+          </li>
+          <li v-if="canCloseOthers" @click="closeOthersTabs">
+            <i class="el-icon-more" />关闭其它
+          </li>
+          <li v-if="canClose" @click="closecurrentTab">
+            <span>关闭</span>
+          </li>
+          <el-divider
+            v-if="canClose || canCloseOthers || canCloseRight || canCloseLeft || canCloseAll"
+          />
+          <li @click="refreshCurrentTab">
+            <i class="el-icon-refresh-right" />刷新
+          </li>
+        </ul>
       </el-footer>
-      <ul
-        v-if="tabPosition === 'top'"
-        v-show="rightMenu.visible"
-        ref="rightMenu"
-        :style="{ left: rightMenu.left + 'px', top: rightMenu.top + 'px' }"
-        class="contextmenu"
-      >
-        <li @click="refreshCurrentTab">
-          <i class="el-icon-refresh-right" />刷新
-        </li>
-        <el-divider
-          v-if="canClose || canCloseOthers || canCloseRight || canCloseLeft || canCloseAll"
-        />
-        <li v-if="canClose" @click="closecurrentTab">
-          <span>关闭</span>
-        </li>
-        <li v-if="canCloseOthers" @click="closeOthersTabs">
-          <i class="el-icon-more" />关闭其它
-        </li>
-        <li v-if="canCloseRight" @click="closeRightTabs">
-          <i class="el-icon-right" />关闭到右侧
-        </li>
-        <li v-if="canCloseLeft" @click="closeLeftTabs">
-          <i class="el-icon-back" />关闭到左侧
-        </li>
-        <li v-if="canCloseAll" @click="closeAllTabs">
-          <span>关闭所有</span>
-        </li>
-      </ul>
-      <ul
-        v-if="tabPosition === 'bottom'"
-        v-show="rightMenu.visible"
-        ref="rightMenu"
-        :style="{ left: rightMenu.left + 'px', top: rightMenu.top + 'px' }"
-        class="contextmenu"
-      >
-        <li v-if="canCloseAll" @click="closeAllTabs">
-          <span>关闭所有</span>
-        </li>
-        <li v-if="canCloseLeft" @click="closeLeftTabs">
-          <i class="el-icon-back" />关闭到左侧
-        </li>
-        <li v-if="canCloseRight" @click="closeRightTabs">
-          <i class="el-icon-right" />关闭到右侧
-        </li>
-        <li v-if="canCloseOthers" @click="closeOthersTabs">
-          <i class="el-icon-more" />关闭其它
-        </li>
-        <li v-if="canClose" @click="closecurrentTab">
-          <span>关闭</span>
-        </li>
-        <el-divider
-          v-if="canClose || canCloseOthers || canCloseRight || canCloseLeft || canCloseAll"
-        />
-        <li @click="refreshCurrentTab">
-          <i class="el-icon-refresh-right" />刷新
-        </li>
-      </ul>
     </el-container>
   </el-container>
 </template>
@@ -190,6 +190,22 @@ import Sortable from 'sortablejs'
 import { isExternalLink } from '@/utils/validate'
 import { toLogout } from '@/router'
 
+if (!Element.prototype.closest) {
+  if (!Element.prototype.matches) {
+    Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector
+  }
+
+  Element.prototype.closest = function(s) {
+    var el = this
+    if (!document.documentElement.contains(el)) return null
+    do {
+      if (el.matches(s)) return el
+      el = el.parentElement
+    } while (el !== null)
+    return null
+  }
+}
+
 export default {
   name: 'AppMain',
   components: {
@@ -201,7 +217,7 @@ export default {
       menuTree: [],
       projectName: 'Admin',
       projectNameShort: 'AD',
-      avatarDefault: require('@/assets/avatar.png'),
+      avatarDefault: require('@/assets/images/avatar.png'),
       collapsedClass: 'menu-expanded',
       isCollapse: false,
       isPc: false,
@@ -343,7 +359,6 @@ export default {
       if (exists) {
         return
       }
-
       // 获取视图缓存名
       const matchedIndex = route.matched && route.matched.length - 1
       let name = matchedIndex >= 0 && route.matched[matchedIndex].components.default.name
@@ -397,7 +412,7 @@ export default {
       // this.collapsedClass = this.isCollapse ? 'menu-collapsed':'menu-expanded';
     },
     // tab打开右键菜单
-    onOpenRightMenu(e) {
+    onOpenMenu(e) {
       const $tab = e.target.closest('.el-tabs__item')
       if ($tab) {
         const id = $tab.getAttribute('id')
@@ -407,12 +422,32 @@ export default {
         )
 
         this.rightMenu.visible = true
-        this.rightMenu.left = e.x
+        // this.rightMenu.left = e.x
+        // this.$nextTick(() => {
+        //   if (this.tabPosition === 'bottom') {
+        //     this.rightMenu.top = e.y - this.$refs.rightMenu.offsetHeight
+        //   } else if (this.tabPosition === 'top') {
+        //     this.rightMenu.top = e.y
+        //   }
+        // })
+
+        const menuMinWidth = 132
+        const offsetLeft = this.$el.getBoundingClientRect().left // container margin left
+        const offsetWidth = this.$el.offsetWidth // container width
+        const maxLeft = offsetWidth - menuMinWidth // left boundary
+        const left = e.clientX - offsetLeft + 0 // 15: margin right
+
+        if (left > maxLeft) {
+          this.rightMenu.left = maxLeft
+        } else {
+          this.rightMenu.left = left
+        }
+
         this.$nextTick(() => {
           if (this.tabPosition === 'bottom') {
-            this.rightMenu.top = e.y - this.$refs.rightMenu.offsetHeight
+            this.rightMenu.top = e.clientY - this.$refs.rightMenu.offsetHeight
           } else if (this.tabPosition === 'top') {
-            this.rightMenu.top = e.y
+            this.rightMenu.top = e.clientY
           }
         })
       }

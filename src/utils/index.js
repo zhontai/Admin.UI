@@ -1,25 +1,7 @@
-function padding(s, len) {
-  len = len - (s + '').length
-  for (var i = 0; i < len; i++) { s = '0' + s }
-  return s
-}
+import moment from 'moment'
 
 export function formatTime(date, pattern) {
-  if (!date) { return '' }
-  date = typeof date === 'string' ? new Date(date) : date
-
-  pattern = pattern || 'yyyy-MM-dd'
-  return pattern.replace(/([yMdhsm])(\1*)/g, function($0) {
-    switch ($0.charAt(0)) {
-      case 'y': return padding(date.getFullYear(), $0.length)
-      case 'M': return padding(date.getMonth() + 1, $0.length)
-      case 'd': return padding(date.getDate(), $0.length)
-      case 'w': return date.getDay() + 1
-      case 'h': return padding(date.getHours(), $0.length)
-      case 'm': return padding(date.getMinutes(), $0.length)
-      case 's': return padding(date.getSeconds(), $0.length)
-    }
-  })
+  return moment(date).format(pattern)
 }
 
 export function treeToList(tree = [], idValue = null, childrenField = 'children', idField = 'id', parentIdField = 'parentId') {

@@ -53,7 +53,7 @@
               </template>
             </el-input>
             <img
-              :src="verifyCodeImg"
+              :src="verifyCodeUrl"
               alt
               style="width:33%;cursor: pointer;vertical-align: middle;"
               @click="getLoginVerifyCode"
@@ -94,14 +94,16 @@ export default {
         verifyCode: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
       },
       checked: true,
-      verifyCodeImg: '',
+      verifyCodeUrl: '',
       loginLoading: false,
       loginText: '登录'
     }
   },
+  created() {
+    this.getLoginVerifyCode()
+  },
   mounted() {
     this.$refs.verifyCode.focus()
-    this.getLoginVerifyCode()
     // window.localStorage.clear()
   },
   methods: {
@@ -185,7 +187,7 @@ export default {
       this.form.verifyCode = ''
       const res = await getVerifyCode({ lastKey: this.form.verifyCodeKey })
       if (res && res.success) {
-        this.verifyCodeImg = 'data:image/png;base64,' + res.data.img
+        this.verifyCodeUrl = 'data:image/png;base64,' + res.data.img
         this.form.verifyCodeKey = res.data.key
       }
     }
@@ -201,10 +203,10 @@ export default {
   background: linear-gradient(to bottom right, #3a8ee6 0, #3a8ee6);
   opacity: 0.8;
 }
-.bg >>> .el-scrollbar__view {
+.bg ::v-deep .el-scrollbar__view {
   height: 100%;
 }
-.verifyCode >>> .el-input__inner {
+.verifyCode ::v-deep .el-input__inner {
   letter-spacing: 2px;
 }
 
