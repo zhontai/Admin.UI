@@ -37,7 +37,9 @@
     "@vue/cli-plugin-unit-jest": "^4.5.3",
     "@vue/cli-service": "^4.5.3",
     "@vue/test-utils": "^1.0.0-beta.20",
+    "autoprefixer": "^9.8.6",
     "babel-eslint": "^10.1.0",
+    "babel-plugin-dynamic-import-node": "^2.3.3",
     "eslint": "^7.2.0",
     "eslint-plugin-vue": "^6.2.2",
     "html-webpack-plugin": "^4.3.0",
@@ -46,10 +48,6 @@
     "sass-loader": "^8.0.2",
     "script-ext-html-webpack-plugin": "^2.1.4",
     "vue-template-compiler": "^2.6.11"
-  },
-  "engines": {
-    "node": ">=8.9",
-    "npm": ">= 3.0.0"
   },
   "browserslist": [
     "> 1%",
