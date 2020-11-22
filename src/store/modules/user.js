@@ -54,16 +54,22 @@ const actions = {
 
   async getLoginInfo({ commit }) {
     const res = await getLoginInfo()
-    if (res && res.success) {
-      const user = res.data.user
-      const name = user.nickName ? user.nickName : user.userName
-      commit('setName', name)
-      commit('setAvatar', user.avatar)
-      commit('setMenus', res.data.menus)
-      commit('setPermissions', res.data.permissions)
-      addRoutes(res.data.menus)
-      // localStorage.setItem('loginInfo', JSON.stringify(res.data))
+    if (!res?.success) {
+      return res
     }
+
+    const user = res.data.user
+    if (!user) {
+      return res
+    }
+
+    const name = user.nickName ? user.nickName : user.userName
+    commit('setName', name)
+    commit('setAvatar', user.avatar)
+    commit('setMenus', res.data.menus)
+    commit('setPermissions', res.data.permissions)
+    addRoutes(res.data.menus)
+    // localStorage.setItem('loginInfo', JSON.stringify(res.data))
 
     return res
   },

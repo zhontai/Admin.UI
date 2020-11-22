@@ -67,26 +67,26 @@
       <!-- <el-table-column type="selection" width="50" /> -->
       <el-table-column type="index" width="50" label="#" />
       <el-table-column label="权限" width="220">
-        <template v-slot="{row}">
+        <template #default="{row}">
           <i :class="row.icon" />
           {{ row.label }}
         </template>
       </el-table-column>
       <el-table-column prop="id" label="编号" width="80" />
       <el-table-column label="类型" width="100">
-        <template v-slot="{ row }">
+        <template #default="{ row }">
           {{ row.type === 1 ? '分组' : row.type === 2 ? '菜单' : row.type === 3 ? '接口' : row.type === 4 ? '权限点' : '' }}
         </template>
       </el-table-column>
       <el-table-column label="地址" width>
-        <template v-slot="{ row }">
+        <template #default="{ row }">
           {{ row.type === 2 ? row.path : row.type === 3 ? row.apiPath : '' }}
         </template>
       </el-table-column>
       <!-- <el-table-column prop="createTime" label="创建时间" :formatter="formatCreateTime" width="100" >
       </el-table-column>-->
       <el-table-column prop="enabled" label="状态" width="100">
-        <template v-slot="{row}">
+        <template #default="{row}">
           <el-tag :type="row.enabled ? 'success' : 'danger'" disable-transitions>
             {{ row.enabled ? '正常' : '禁用' }}
           </el-tag>
@@ -103,7 +103,7 @@
         fixed="right"
         width="180"
       >
-        <template v-slot="{ $index, row }">
+        <template #default="{ $index, row }">
           <!-- <el-link @click="onEdit(scope.$index, scope.row)" icon="el-icon-edit" style="color:#409eff">编辑</el-link>
           <el-link @click="onEdit(scope.$index, scope.row)" icon="el-icon-delete" style="margin-left:10px;color:#f56c6c;">删除</el-link>-->
           <!-- <el-button type="primary" icon="el-icon-edit" circle></el-button>
@@ -207,7 +207,7 @@
             :show-all-levels="false"
             @change="onChangeView"
           >
-            <template v-slot="{ data }">
+            <template #default="{ data }">
               <span>{{ data.path }}</span>
               <span style="float:right;margin-left:15px;">{{ data.label }}</span>
             </template>
@@ -281,7 +281,7 @@
             :show-all-levels="false"
             @change="onChangeApi"
           >
-            <template v-slot="{ data }">
+            <template #default="{ data }">
               <span>{{ data.path }}</span>
               <span style="float:right;margin-left:15px;">{{ data.label }}</span>
             </template>

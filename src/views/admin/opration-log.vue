@@ -29,7 +29,7 @@
     >
       <el-table-column prop="id" label="编号" width="80" />
       <el-table-column prop="createdUserName" label="操作账号" width="100">
-        <template v-slot="{row}">
+        <template #default="{row}">
           {{ row.createdUserName }}<br>{{ row.nickName }}
         </template>
       </el-table-column>
@@ -45,7 +45,7 @@
       </el-table-column> -->
       <el-table-column prop="elapsedMilliseconds" label="耗时(毫秒)" width="100" />
       <el-table-column prop="status" label="操作状态" width="80">
-        <template v-slot="{row}">
+        <template #default="{row}">
           <el-tag
             :type="row.status ? 'success' : 'danger'"
             disable-transitions

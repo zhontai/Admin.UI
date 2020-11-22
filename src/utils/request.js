@@ -15,6 +15,9 @@ const requestAxios = axios.create({
 // 拦截请求
 requestAxios.interceptors.request.use(
   config => {
+    if (config.api?.auth === false) {
+      return config
+    }
     const token = store.getters.token
     if (token) {
       config.headers.Authorization = 'Bearer ' + token
@@ -32,8 +35,8 @@ requestAxios.interceptors.response.use(
   response => {
     const { config, data } = response
     data.success = data.code === 1
-    if (!data.success && !config.noErrorMsg && data.msg) {
-      const duration = config.msgDuration >= 0 ? config.msgDuration : 3000
+    if (!data.success && !config.api?.noErrorMsg && data.msg) {
+      const duration = config.api?.msgDuration >= 0 ? config.api?.msgDuration : 3000
       Vue.prototype.$message.error({
         message: data.msg,
         duration: duration
@@ -74,8 +77,8 @@ requestAxios.interceptors.response.use(
       }
 
       // 错误消息
-      if (!config.noErrorMsg && res.msg) {
-        const duration = config.msgDuration >= 0 ? config.msgDuration : 3000
+      if (!config.api?.noErrorMsg && res.msg) {
+        const duration = config.api?.msgDuration >= 0 ? config.api?.msgDuration : 3000
         Vue.prototype.$message.error({
           message: res.msg,
           duration: duration

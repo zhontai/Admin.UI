@@ -7,7 +7,7 @@
     :indent="16"
     class="my-search-filter"
   >
-    <template v-slot="{ node, data }">
+    <template #default="{ node, data }">
       <template v-if="data.logic && !data.field">
         <span>
           <el-radio-group v-model="data.logic">

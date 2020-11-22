@@ -240,8 +240,8 @@ export default {
     ]),
     menueTitles() {
       let parentTitles = []
-      const fullPath = this.$route.fullPath
-      const menu = this.menus.find(m => m.path === fullPath)
+      const path = this.$route.meta.path
+      const menu = this.menus.find(m => m.path === path)
       if (menu && menu.id > 0) {
         const parents = getTreeParents(this.menuTree, menu.id)
         parentTitles = parents.map(p => p.label)

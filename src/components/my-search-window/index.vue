@@ -2,13 +2,14 @@
   <el-dialog
     title="高级查询"
     :visible.sync="visible"
-    :modal="false"
+    :modal="modal"
+    :modal-append-to-body="modalAppendToBody"
     :top="'8vh'"
     :custom-class="'my-search-window'"
-    :close-on-click-modal="false"
-    :close-on-press-escape="false"
+    :close-on-click-modal="closeOnClickModal"
+    :close-on-press-escape="closeOnPressEscape"
     :before-close="onCancel"
-    style="position:absolute;"
+    :style="inline?'position:absolute;':''"
   >
     <my-search-filter ref="searchFilter" :fields="fields" />
     <template #footer>
@@ -70,9 +71,27 @@ export default {
   props: {
     visible: {
       type: Boolean,
-      default() {
-        return false
-      }
+      default: false
+    },
+    modal: {
+      type: Boolean,
+      default: true
+    },
+    inline: {
+      type: Boolean,
+      default: true
+    },
+    modalAppendToBody: {
+      type: Boolean,
+      default: false
+    },
+    closeOnClickModal: {
+      type: Boolean,
+      default: true
+    },
+    closeOnPressEscape: {
+      type: Boolean,
+      default: true
     },
     // {field: '', label: '', value: '', type: 'string', config: {}}
     // type string:字符串 date:日期 number:数字 bool:布尔

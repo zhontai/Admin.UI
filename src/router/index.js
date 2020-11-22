@@ -80,7 +80,8 @@ function generateRoutes(menus = []) {
           meta: {
             title: m.label,
             icon: m.icon,
-            closable: m.closable
+            closable: m.closable,
+            path: m.path
           }
         }
 

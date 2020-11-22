@@ -168,7 +168,7 @@ export default {
         return
       }
 
-      if (!(res.data && res.data.menus && res.data.menus.length > 0)) {
+      if (!(res.data?.menus?.length > 0)) {
         this.loginLoading = false
         this.loginText = '重新登录'
         this.$message({

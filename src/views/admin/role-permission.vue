@@ -69,7 +69,7 @@
             <el-table-column type="selection" width="50" />
             <el-table-column prop="label" label="导航菜单" width="200" />
             <el-table-column label="菜单接口" width>
-              <template v-slot="{ $index, row }">
+              <template #default="{ row }">
                 <el-checkbox-group v-if="row.apis && row.apis.length > 0" v-model="chekedApis">
                   <el-checkbox v-for="api in row.apis" :key="api.id" :label="api.id" @change="(value)=>onChange(value, row.id)">{{ api.label }}</el-checkbox>
                 </el-checkbox-group>

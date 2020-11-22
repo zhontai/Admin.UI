@@ -4,16 +4,16 @@ const apiPrefix = `${process.env.VUE_APP_BASE_API}/${scope}/permission/`
 
 // 权限管理
 export const getPermissionList = (params, config = {}) => {
-  return request.get(apiPrefix + 'getlist', { params: params }, config)
+  return request.get(apiPrefix + 'getlist', { params: params, ...config })
 }
 export const removePermission = (params, config = {}) => {
-  return request.delete(apiPrefix + 'softdelete', { params: params }, config)
+  return request.delete(apiPrefix + 'softdelete', { params: params, ...config })
 }
 export const getPermissions = (params, config = {}) => {
-  return request.get(apiPrefix + 'getpermissionlist', { params: params }, config)
+  return request.get(apiPrefix + 'getpermissionlist', { params: params, ...config })
 }
 export const getPermissionIds = (params, config = {}) => {
-  return request.get(apiPrefix + 'GetRolePermissionList', { params: params }, config)
+  return request.get(apiPrefix + 'GetRolePermissionList', { params: params, ...config })
 }
 export const addRolePermission = (params, config = {}) => {
   return request.post(apiPrefix + 'Assign', params, config)
@@ -46,14 +46,14 @@ export const updateDot = (params, config = {}) => {
 }
 
 export const getGroup = (params, config = {}) => {
-  return request.get(apiPrefix + 'getGroup', { params: params }, config)
+  return request.get(apiPrefix + 'getGroup', { params: params, ...config })
 }
 export const getMenu = (params, config = {}) => {
-  return request.get(apiPrefix + 'getMenu', { params: params }, config)
+  return request.get(apiPrefix + 'getMenu', { params: params, ...config })
 }
 export const getApi = (params, config = {}) => {
-  return request.get(apiPrefix + 'getApi', { params: params }, config)
+  return request.get(apiPrefix + 'getApi', { params: params, ...config })
 }
 export const getDot = (params, config = {}) => {
-  return request.get(apiPrefix + 'getDot', { params: params }, config)
+  return request.get(apiPrefix + 'getDot', { params: params, ...config })
 }

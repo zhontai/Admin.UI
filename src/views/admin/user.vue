@@ -45,20 +45,20 @@
       <el-table-column prop="userName" label="用户名" width />
       <el-table-column prop="nickName" label="昵称" width />
       <el-table-column prop="roleNames" label="角色" width>
-        <template v-slot="{row}">
+        <template #default="{row}">
           {{ row.roleNames ? row.roleNames.join(','):'' }}
         </template>
       </el-table-column>
       <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width />
       <el-table-column prop="status" label="状态" width>
-        <template v-slot="{row}">
+        <template #default="{row}">
           <el-tag :type="row.status == 0 ? 'success' : 'danger'" disable-transitions>
             {{ row.status == 0 ? '正常' : '禁用' }}
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column v-if="checkPermission(['api:admin:user:update','api:admin:user:softdelete'])" label="操作" width="180">
-        <template v-slot="{ $index, row }">
+        <template #default="{ $index, row }">
           <el-button v-if="checkPermission(['api:admin:user:update'])" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
             v-if="checkPermission(['api:admin:user:softdelete'])"
@@ -93,11 +93,14 @@
     <el-drawer
       v-if="checkPermission(['api:admin:user:add'])"
       title="新增用户"
+      :modal="false"
       :wrapper-closable="true"
+      :modal-append-to-body="false"
       :visible.sync="addFormVisible"
       direction="btt"
       size="auto"
       class="el-drawer__wrapper"
+      style="position:absolute;"
       @close="closeAddForm"
     >
       <section style="padding:24px 48px 74px 24px;">
@@ -157,12 +160,15 @@
     <el-drawer
       v-if="checkPermission(['api:admin:user:update'])"
       title="编辑用户"
+      :modal="false"
       :wrapper-closable="true"
       :close-on-press-escape="true"
+      :modal-append-to-body="false"
       :visible.sync="editFormVisible"
       direction="btt"
       size="'auto'"
       class="el-drawer__wrapper"
+      style="position:absolute;"
       @close="closeEditForm"
     >
       <section style="padding:24px 48px 74px 24px;">
@@ -486,6 +492,6 @@ export default {
 
 <style lang="scss" scoped>
 .my-search ::v-deep .el-input-group__prepend {
-    background-color: #fff;
-  }
+  background-color: #fff;
+}
 </style>

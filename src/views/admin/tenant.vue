@@ -6,7 +6,7 @@
         <el-form-item>
           <el-input
             v-model="filter.name"
-            placeholder="角色名"
+            placeholder="租户名"
             clearable
             @keyup.enter.native="onSearch"
           >
@@ -18,10 +18,10 @@
         <el-form-item>
           <el-button type="primary" @click="onSearch">查询</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:admin:role:add'])">
+        <el-form-item v-if="checkPermission(['api:admin:tenant:add'])">
           <el-button type="primary" @click="onAdd">新增</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:admin:role:batchsoftdelete'])">
+        <el-form-item v-if="checkPermission(['api:admin:tenant:batchsoftdelete'])">
           <my-confirm-button
             :disabled="sels.length === 0"
             :type="'delete'"
@@ -43,7 +43,7 @@
     <!--列表-->
     <el-table
       v-loading="listLoading"
-      :data="roles"
+      :data="tenants"
       highlight-current-row
       height="'100%'"
       style="width: 100%;height:100%;"
@@ -51,12 +51,14 @@
     >
       <el-table-column type="selection" width="50" />
       <el-table-column type="index" width="80" label="#" />
-      <el-table-column prop="name" label="角色名" width />
-      <el-table-column prop="description" label="说明" width />
+      <el-table-column prop="name" label="租户名" width />
+      <el-table-column prop="code" label="编码" width />
+      <el-table-column prop="dbTypeName" label="数据库" width="120" />
+      <el-table-column prop="idleTime" label="空闲时间（分）" width="120" />
       <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width />
       <!--<el-table-column prop="CreatedUserName" label="创建者" width="" >-->
       <!--</el-table-column>-->
-      <el-table-column prop="enabled" label="状态" width="200">
+      <el-table-column prop="enabled" label="状态" width="80">
         <template #default="{row}">
           <el-tag
             :type="row.enabled ? 'success' : 'danger'"
@@ -64,11 +66,11 @@
           >{{ row.enabled ? '正常' : '禁用' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="checkPermission(['api:admin:role:update','api:admin:role:softdelete'])" label="操作" width="180">
+      <el-table-column v-if="checkPermission(['api:admin:tenant:update','api:admin:tenant:softdelete'])" label="操作" width="180">
         <template #default="{ $index, row }">
-          <el-button v-if="checkPermission(['api:admin:role:update'])" @click="onEdit($index, row)">编辑</el-button>
+          <el-button v-if="checkPermission(['api:admin:tenant:update'])" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
-            v-if="checkPermission(['api:admin:role:softdelete'])"
+            v-if="checkPermission(['api:admin:tenant:softdelete'])"
             type="delete"
             :loading="row._loading"
             :validate="deleteValidate"
@@ -85,14 +87,14 @@
         ref="pager"
         :total="total"
         :checked-count="sels.length"
-        @get-page="getRoles"
+        @get-page="getTenants"
       />
     </template>
 
     <!--新增窗口-->
     <el-drawer
-      v-if="checkPermission(['api:admin:role:add'])"
-      title="新增角色"
+      v-if="checkPermission(['api:admin:tenant:add'])"
+      title="新增租户"
       :modal="false"
       :wrapper-closable="true"
       :modal-append-to-body="false"
@@ -108,18 +110,42 @@
           ref="addForm"
           :model="addForm"
           :rules="addFormRules"
-          label-width="80px"
+          label-width="120px"
           :inline="false"
         >
           <el-row>
             <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-              <el-form-item label="角色名" prop="name">
+              <el-form-item label="租户名" prop="name">
                 <el-input v-model="addForm.name" auto-complete="off" />
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+              <el-form-item label="编码" prop="code">
+                <el-input v-model="addForm.code" auto-complete="off" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+              <el-form-item label="数据库" prop="dbType">
+                <el-select v-model="addForm.dbType" filterable placeholder="请选择数据库" style="width:100%;">
+                  <el-option
+                    v-for="item in dbTypeList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+              <el-form-item label="空闲时间（分）" prop="idleTime">
+                <el-input-number v-model="addForm.idleTime" controls-position="right" :min="1" style="width:100%;" />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
               <el-form-item label="状态" prop="enabled">
-                <el-select v-model="addForm.enabled" placeholder="请选择角色状态" style="width:100%;">
+                <el-select v-model="addForm.enabled" placeholder="请选择租户状态" style="width:100%;">
                   <el-option
                     v-for="item in statusList"
                     :key="item.value"
@@ -131,9 +157,16 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+            <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
+              <el-form-item label="连接字符串" prop="connectionString">
+                <el-input v-model="addForm.connectionString" type="textarea" :autosize="{ minRows: 2, maxRows: 4}" auto-complete="off" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
               <el-form-item label="说明" prop="description">
-                <el-input v-model="addForm.description" auto-complete="off" />
+                <el-input v-model="addForm.description" type="textarea" :rows="2" auto-complete="off" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -147,8 +180,8 @@
 
     <!--编辑窗口-->
     <el-drawer
-      v-if="checkPermission(['api:admin:role:update'])"
-      title="编辑角色"
+      v-if="checkPermission(['api:admin:tenant:update'])"
+      title="编辑租户"
       :modal="false"
       :wrapper-closable="true"
       :modal-append-to-body="false"
@@ -163,18 +196,42 @@
           ref="editForm"
           :model="editForm"
           :rules="editFormRules"
-          label-width="80px"
+          label-width="120px"
           :inline="false"
         >
           <el-row>
             <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-              <el-form-item label="角色名" prop="name">
+              <el-form-item label="租户名" prop="name">
                 <el-input v-model="editForm.name" auto-complete="off" />
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+              <el-form-item label="编码" prop="code">
+                <el-input v-model="editForm.code" auto-complete="off" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+              <el-form-item label="数据库" prop="dbType">
+                <el-select v-model="editForm.dbType" filterable placeholder="请选择数据库" style="width:100%;">
+                  <el-option
+                    v-for="item in dbTypeList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+              <el-form-item label="空闲时间（分）" prop="idleTime">
+                <el-input-number v-model="editForm.idleTime" controls-position="right" :min="1" style="width:100%;" />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
               <el-form-item label="状态" prop="enabled">
-                <el-select v-model="editForm.enabled" placeholder="请选择角色状态" style="width:100%;">
+                <el-select v-model="editForm.enabled" placeholder="请选择租户状态" style="width:100%;">
                   <el-option
                     v-for="item in statusList"
                     :key="item.value"
@@ -186,9 +243,16 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+            <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
+              <el-form-item label="连接字符串" prop="connectionString">
+                <el-input v-model="editForm.connectionString" type="textarea" :autosize="{ minRows: 2, maxRows: 4}" auto-complete="off" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
               <el-form-item label="说明" prop="description">
-                <el-input v-model="editForm.description" auto-complete="off" />
+                <el-input v-model="editForm.description" type="textarea" :rows="2" auto-complete="off" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -204,24 +268,43 @@
 
 <script>
 import { formatTime } from '@/utils'
-import { getRoleListPage, removeRole, editRole, addRole, batchRemoveRole, getRole } from '@/api/admin/role'
+import { getTenantListPage, removeTenant, editTenant, addTenant, batchRemoveTenant, getTenant } from '@/api/admin/tenant'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 
 export default {
-  name: 'Roles',
+  name: 'Tenants',
   components: { MyContainer, MyConfirmButton },
   data() {
     return {
       filter: {
         name: ''
       },
-      roles: [],
+      tenants: [],
       total: 0,
       sels: [], // 列表选中列
       statusList: [
         { name: '激活', value: true },
         { name: '禁用', value: false }
+      ],
+      dbTypeList: [
+        { 'label': 'MySql', 'value': 0 },
+        { 'label': 'SqlServer', 'value': 1 },
+        { 'label': 'PostgreSQL', 'value': 2 },
+        { 'label': 'Oracle', 'value': 3 },
+        { 'label': 'Sqlite', 'value': 4 },
+        { 'label': 'OdbcOracle', 'value': 5 },
+        { 'label': 'OdbcSqlServer', 'value': 6 },
+        { 'label': 'OdbcMySql', 'value': 7 },
+        { 'label': 'OdbcPostgreSQL', 'value': 8 },
+        { 'label': 'Odbc', 'value': 9 },
+        { 'label': 'OdbcDameng', 'value': 10 },
+        { 'label': 'MsAccess', 'value': 11 },
+        { 'label': 'Dameng', 'value': 12 },
+        { 'label': 'OdbcKingbaseES', 'value': 13 },
+        { 'label': 'ShenTong', 'value': 14 },
+        { 'label': 'KingbaseES', 'value': 15 },
+        { 'label': 'Firebird', 'value': 16 }
       ],
       listLoading: false,
 
@@ -230,27 +313,37 @@ export default {
       editFormVisible: false, // 编辑界面是否显示
       editLoading: false,
       editFormRules: {
-        name: [{ required: true, message: '请输入角色名', trigger: 'blur' }],
-        enabled: [{ required: true, message: '请输入状态', trigger: 'change' }]
+        name: [{ required: true, message: '请输入租户名', trigger: 'blur' }],
+        code: [{ required: true, message: '请输入编码', trigger: 'blur' }],
+        enabled: [{ required: true, message: '请选择状态', trigger: 'change' }]
       },
       // 编辑界面数据
       editForm: {
         id: 0,
         name: '',
+        code: '',
+        dbType: 0,
+        connectionString: '',
+        idleTime: 10,
         description: '',
-        enabled: ''
+        enabled: true
       },
       editFormRef: null,
 
       addFormVisible: false, // 新增界面是否显示
       addLoading: false,
       addFormRules: {
-        name: [{ required: true, message: '请输入角色名', trigger: 'blur' }],
-        enabled: [{ required: true, message: '请输入状态', trigger: 'change' }]
+        name: [{ required: true, message: '请输入租户名', trigger: 'blur' }],
+        code: [{ required: true, message: '请输入编码', trigger: 'blur' }],
+        enabled: [{ required: true, message: '请选择状态', trigger: 'change' }]
       },
       // 新增界面数据
       addForm: {
         name: '',
+        code: '',
+        dbType: 0,
+        connectionString: '',
+        idleTime: 10,
         description: '',
         enabled: true
       },
@@ -259,10 +352,7 @@ export default {
     }
   },
   mounted() {
-    this.getRoles()
-  },
-  beforeUpdate() {
-    console.log('update')
+    this.getTenants()
   },
   methods: {
     formatCreatedTime: function(row, column, time) {
@@ -270,17 +360,17 @@ export default {
     },
     onSearch() {
       this.$refs.pager.setPage(1)
-      this.getRoles()
+      this.getTenants()
     },
-    // 获取角色列表
-    async getRoles() {
+    // 获取租户列表
+    async getTenants() {
       var pager = this.$refs.pager.getPager()
       const params = {
         ...pager,
         filter: this.filter
       }
       this.listLoading = true
-      const res = await getRoleListPage(params)
+      const res = await getTenantListPage(params)
       this.listLoading = false
 
       if (!res?.success) {
@@ -292,12 +382,12 @@ export default {
       data.forEach(d => {
         d._loading = false
       })
-      this.roles = data
+      this.tenants = data
     },
     // 显示编辑界面
     async onEdit(index, row) {
       this.pageLoading = true
-      const res = await getRole({ id: row.id })
+      const res = await getTenant({ id: row.id })
       this.pageLoading = false
       if (res && res.success) {
         const data = res.data
@@ -328,7 +418,7 @@ export default {
       this.editLoading = true
       const para = _.cloneDeep(this.editForm)
 
-      const res = await editRole(para)
+      const res = await editTenant(para)
       this.editLoading = false
 
       if (!res?.success) {
@@ -341,7 +431,7 @@ export default {
       })
       this.$refs['editForm'].resetFields()
       this.editFormVisible = false
-      this.getRoles()
+      this.getTenants()
     },
     // 新增验证
     addFormValidate: function() {
@@ -356,7 +446,7 @@ export default {
       this.addLoading = true
       const para = _.cloneDeep(this.addForm)
 
-      const res = await addRole(para)
+      const res = await addTenant(para)
       this.addLoading = false
 
       if (!res?.success) {
@@ -369,7 +459,7 @@ export default {
       })
       this.$refs['addForm'].resetFields()
       this.addFormVisible = false
-      this.getRoles()
+      this.getTenants()
     },
     // 删除验证
     deleteValidate(row) {
@@ -388,7 +478,7 @@ export default {
     async onDelete(index, row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await removeRole(para)
+      const res = await removeTenant(para)
       row._loading = false
 
       if (!res?.success) {
@@ -400,7 +490,7 @@ export default {
         type: 'success'
       })
 
-      this.getRoles()
+      this.getTenants()
     },
     // 批量删除验证
     batchDeleteValidate() {
@@ -424,7 +514,7 @@ export default {
       })
 
       this.deleteLoading = true
-      const res = await batchRemoveRole(para.ids)
+      const res = await batchRemoveTenant(para.ids)
       this.deleteLoading = false
 
       if (!res?.success) {
@@ -435,7 +525,7 @@ export default {
         type: 'success'
       })
 
-      this.getRoles()
+      this.getTenants()
     },
     selsChange: function(sels) {
       this.sels = sels
@@ -443,3 +533,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+::v-deep .el-input-number .el-input__inner{
+  text-align: left;
+}
+</style>

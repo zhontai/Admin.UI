@@ -8,17 +8,17 @@ const apiPrefix = `${process.env.VUE_APP_BASE_API}/${scope}/auth/`
  * 登录
  */
 export const login = (params, config = {}) => {
-  return request.post(apiPrefix + 'login', params, config)
+  return request.post(apiPrefix + 'login', params, { ...{ api: { auth: false }}, ...config })
 }
 export const refresh = (params, config = {}) => {
-  return request.get(apiPrefix + 'refresh', { params: params }, config)
+  return request.get(apiPrefix + 'refresh', { params: params, ...config })
 }
 export const getVerifyCode = (params, config = {}) => {
-  return request.get(apiPrefix + 'getverifycode', { params: params }, config)
+  return request.get(apiPrefix + 'getverifycode', { params: params, ...{ api: { auth: false }}, ...config })
 }
 export const getPassWordEncryptKey = (params, config = {}) => {
-  return request.get(apiPrefix + 'getPassWordEncryptKey', { params: params }, config)
+  return request.get(apiPrefix + 'getPassWordEncryptKey', { params: params, ...{ api: { auth: false }}, ...config })
 }
 export const getLoginInfo = (params, config = {}) => {
-  return request.get(apiPrefix + 'getUserInfo', { params: params }, config)
+  return request.get(apiPrefix + 'getUserInfo', { params: params, ...config })
 }

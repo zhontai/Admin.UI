@@ -12,7 +12,7 @@
 
     <el-table v-loading="listLoading" :data="tableData" style="width: 100%">
       <el-table-column type="expand">
-        <template v-slot="{row}">
+        <template #default="{row}">
           <div>{{ row.datetime }}</div>
           <div
             style="white-space: normal;word-break: break-all;line-height: 30px;"
@@ -22,7 +22,7 @@
       </el-table-column>
       <el-table-column label="Datetime" prop="datetime" width="220" />
       <el-table-column label="Content">
-        <template v-slot="{row}">
+        <template #default="{row}">
           <div
             :class="row.logColor"
             v-html="row.content ? scope.row.content.substring(0, 100) : ''"
