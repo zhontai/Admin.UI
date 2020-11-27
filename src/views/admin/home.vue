@@ -1,5 +1,5 @@
 <template>
-  <section style="padding:20px 80px 0px 8px;">
+  <section class="wrap">
     <el-timeline>
       <el-timeline-item timestamp="版本 1.5.0" placement="top">
         <el-card>
@@ -182,7 +182,7 @@
         </el-card>
       </el-timeline-item>
     </el-timeline>
-    <el-backtop target=".container .main" :visibility-height="200" />
+    <el-backtop target=".container .main" :visibility-height="200" class="backtop" />
   </section>
 </template>
 
@@ -197,7 +197,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 h2,h3,h4,h5 {
     font-weight: 400;
     color: #1f2f3d;
@@ -212,5 +212,20 @@ p {
 }
 .el-timeline{
   padding-left: 15px;
+}
+
+.wrap{
+  padding:20px 80px 0px 8px;
+}
+
+@media screen and (max-width: 680px) {
+  .wrap{
+    padding:20px 10px 0px 8px;
+  }
+
+  .backtop {
+    right: 5px !important;
+    bottom: 5px !important;
+  }
 }
 </style>
