@@ -156,11 +156,21 @@ function toLogin(to, next) {
   }
 }
 
+// 设置缓存视图
+function setCachedViews() {
+  let sessionStorageTabs = sessionStorage.getItem('tabs')
+  sessionStorageTabs = sessionStorageTabs ? JSON.parse(sessionStorageTabs) : []
+  const cachedViews = sessionStorageTabs.map(t => t.name)
+  store.commit('tabsView/set_cached_view', cachedViews)
+}
+
 let first = true
 // 路由全局前置守卫
 router.beforeEach(async(to, from, next) => {
   document.title = getPageTitle(to.meta.title)
   const token = getToken()
+
+  setCachedViews()
 
   if (token) {
     if (to.path === '/login') {
