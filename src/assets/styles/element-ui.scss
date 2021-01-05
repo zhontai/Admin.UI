@@ -30,6 +30,9 @@
 .el-drawer__body{
   overflow: auto;
 }
+.el-drawer__container{
+  outline: none;
+}
 
 .el-pagination.is-background .btn-next,
 .el-pagination.is-background .btn-prev,
