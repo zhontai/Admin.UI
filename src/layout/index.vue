@@ -86,35 +86,6 @@
               </template>
             </el-tab-pane>
           </el-tabs>
-          <ul
-            v-if="tabPosition === 'top'"
-            v-show="rightMenu.visible"
-            ref="rightMenu"
-            :style="{ left: rightMenu.left + 'px', top: rightMenu.top + 'px' }"
-            class="contextmenu"
-          >
-            <li @click="refreshCurrentTab">
-              <i class="el-icon-refresh-right" />刷新
-            </li>
-            <el-divider
-              v-if="canClose || canCloseOthers || canCloseRight || canCloseLeft || canCloseAll"
-            />
-            <li v-if="canClose" @click="closecurrentTab">
-              <span>关闭</span>
-            </li>
-            <li v-if="canCloseOthers" @click="closeOthersTabs">
-              <i class="el-icon-more" />关闭其它
-            </li>
-            <li v-if="canCloseRight" @click="closeRightTabs">
-              <i class="el-icon-right" />关闭到右侧
-            </li>
-            <li v-if="canCloseLeft" @click="closeLeftTabs">
-              <i class="el-icon-back" />关闭到左侧
-            </li>
-            <li v-if="canCloseAll" @click="closeAllTabs">
-              <span>关闭所有</span>
-            </li>
-          </ul>
         </div>
       </el-header>
       <el-main class="main" style="height:100%;">
@@ -122,6 +93,35 @@
           <router-view :key="key" />
         </keep-alive>
       </el-main>
+      <ul
+        v-if="tabPosition === 'top'"
+        v-show="rightMenu.visible"
+        ref="rightMenu"
+        :style="{ left: rightMenu.left + 'px', top: rightMenu.top + 'px' }"
+        class="contextmenu"
+      >
+        <li @click="refreshCurrentTab">
+          <i class="el-icon-refresh-right" />刷新
+        </li>
+        <el-divider
+          v-if="canClose || canCloseOthers || canCloseRight || canCloseLeft || canCloseAll"
+        />
+        <li v-if="canClose" @click="closecurrentTab">
+          <span>关闭</span>
+        </li>
+        <li v-if="canCloseOthers" @click="closeOthersTabs">
+          <i class="el-icon-more" />关闭其它
+        </li>
+        <li v-if="canCloseRight" @click="closeRightTabs">
+          <i class="el-icon-right" />关闭到右侧
+        </li>
+        <li v-if="canCloseLeft" @click="closeLeftTabs">
+          <i class="el-icon-back" />关闭到左侧
+        </li>
+        <li v-if="canCloseAll" @click="closeAllTabs">
+          <span>关闭所有</span>
+        </li>
+      </ul>
       <el-footer v-if="tabPosition === 'bottom'" class="footer" height>
         <el-tabs
           v-if="showTabs"
@@ -148,36 +148,37 @@
             </template>
           </el-tab-pane>
         </el-tabs>
-        <ul
-          v-if="tabPosition === 'bottom'"
-          v-show="rightMenu.visible"
-          ref="rightMenu"
-          :style="{ left: rightMenu.left + 'px', top: rightMenu.top + 'px' }"
-          class="contextmenu"
-        >
-          <li v-if="canCloseAll" @click="closeAllTabs">
-            <span>关闭所有</span>
-          </li>
-          <li v-if="canCloseLeft" @click="closeLeftTabs">
-            <i class="el-icon-back" />关闭到左侧
-          </li>
-          <li v-if="canCloseRight" @click="closeRightTabs">
-            <i class="el-icon-right" />关闭到右侧
-          </li>
-          <li v-if="canCloseOthers" @click="closeOthersTabs">
-            <i class="el-icon-more" />关闭其它
-          </li>
-          <li v-if="canClose" @click="closecurrentTab">
-            <span>关闭</span>
-          </li>
-          <el-divider
-            v-if="canClose || canCloseOthers || canCloseRight || canCloseLeft || canCloseAll"
-          />
-          <li @click="refreshCurrentTab">
-            <i class="el-icon-refresh-right" />刷新
-          </li>
-        </ul>
+
       </el-footer>
+      <ul
+        v-if="tabPosition === 'bottom'"
+        v-show="rightMenu.visible"
+        ref="rightMenu"
+        :style="{ left: rightMenu.left + 'px', top: rightMenu.top + 'px' }"
+        class="contextmenu"
+      >
+        <li v-if="canCloseAll" @click="closeAllTabs">
+          <span>关闭所有</span>
+        </li>
+        <li v-if="canCloseLeft" @click="closeLeftTabs">
+          <i class="el-icon-back" />关闭到左侧
+        </li>
+        <li v-if="canCloseRight" @click="closeRightTabs">
+          <i class="el-icon-right" />关闭到右侧
+        </li>
+        <li v-if="canCloseOthers" @click="closeOthersTabs">
+          <i class="el-icon-more" />关闭其它
+        </li>
+        <li v-if="canClose" @click="closecurrentTab">
+          <span>关闭</span>
+        </li>
+        <el-divider
+          v-if="canClose || canCloseOthers || canCloseRight || canCloseLeft || canCloseAll"
+        />
+        <li @click="refreshCurrentTab">
+          <i class="el-icon-refresh-right" />刷新
+        </li>
+      </ul>
     </el-container>
   </el-container>
 </template>
@@ -228,7 +229,7 @@ export default {
         visible: false,
         selectedTab: {}
       },
-      tabPosition: 'top', // top | bottom
+      tabPosition: 'bottom', // top | bottom
       tabType: 'border-card' // '' | border-card | card
     }
   },
