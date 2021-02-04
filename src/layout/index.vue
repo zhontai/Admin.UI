@@ -229,7 +229,7 @@ export default {
         visible: false,
         selectedTab: {}
       },
-      tabPosition: 'bottom', // top | bottom
+      tabPosition: 'top', // top | bottom
       tabType: 'border-card' // '' | border-card | card
     }
   },
