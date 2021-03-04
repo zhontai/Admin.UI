@@ -1,7 +1,7 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 export function formatTime(date, pattern) {
-  return moment(date).format(pattern)
+  return dayjs(date).format(pattern)
 }
 
 export function treeToList(tree = [], idValue = null, childrenField = 'children', idField = 'id', parentIdField = 'parentId') {
