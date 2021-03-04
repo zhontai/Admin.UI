@@ -1,6 +1,25 @@
 <template>
   <section class="wrap">
     <el-timeline>
+      <el-timeline-item timestamp="版本 1.5.1" placement="top">
+        <el-card>
+          <h4>后端：</h4>
+          <h4>升级 FreeSql到2.3.106，其它Nuget包升级到最新版本。</h4>
+          <h4>新增 api认证授权支持IdentityServer4 V4版本</h4>
+          <h4>新增 数据库实例空闲时间（分）设置</h4>
+          <h4>修改 跨域地址默认配置</h4>
+          <h4>修改 NLog配置调试和警告日志将不再生成</h4>
+          <h4>修复 角色权限-权限列表没有查询权限点的问题</h4>
+          <h4>前端：</h4>
+          <h4>升级 前端脚手架vue-cli到4.5.11，element-ui到2.15.1，其它npm包升级到最新版本。</h4>
+          <h4>调整 使用dayjs替换moment日期处理库</h4>
+          <h4>修复 页面生命周期钩子activated未正确执行的问题</h4>
+          <h4>修复 选项卡右键菜单打开会被部分控件遮挡的问题</h4>
+          <h4>优化 更新日志移动端展示效果</h4>
+          <h4>优化 抽屉点击空白区域有边框显现的问题</h4>
+          <p>小雪转中雪 提交于 2021-03-04</p>
+        </el-card>
+      </el-timeline-item>
       <el-timeline-item timestamp="版本 1.5.0" placement="top">
         <el-card>
           <h4>升级 后端目标框架到.Net 5.0，FreeSql到1.10.3，其它Nuget包到当前最新版本。</h4>
