@@ -86,6 +86,7 @@
     <my-search-window
       :visible.sync="searchWindowVisible"
       :fields="fields"
+      :modal="false"
       @click="onSearchFilter"
     />
 
