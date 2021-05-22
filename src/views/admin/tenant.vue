@@ -6,7 +6,7 @@
         <el-form-item>
           <el-input
             v-model="filter.name"
-            placeholder="租户名"
+            placeholder="企业名称"
             clearable
             @keyup.enter.native="onSearch"
           >
@@ -51,7 +51,7 @@
     >
       <el-table-column type="selection" width="50" />
       <el-table-column type="index" width="80" label="#" />
-      <el-table-column prop="name" label="租户名" width />
+      <el-table-column prop="name" label="企业名称" width />
       <el-table-column prop="code" label="编码" width />
       <el-table-column prop="dbTypeName" label="数据库" width="120" />
       <el-table-column prop="idleTime" label="空闲时间（分）" width="120" />
@@ -115,13 +115,30 @@
         >
           <el-row>
             <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-              <el-form-item label="租户名" prop="name">
+              <el-form-item label="企业名称" prop="name">
                 <el-input v-model="addForm.name" auto-complete="off" />
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
               <el-form-item label="编码" prop="code">
                 <el-input v-model="addForm.code" auto-complete="off" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+              <el-form-item label="姓名" prop="realName">
+                <el-input v-model="addForm.realName" auto-complete="off" />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+              <el-form-item label="手机号码" prop="phone">
+                <el-input v-model="addForm.phone" auto-complete="off" />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+              <el-form-item label="邮箱地址" prop="email">
+                <el-input v-model="addForm.email" auto-complete="off" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -201,13 +218,30 @@
         >
           <el-row>
             <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-              <el-form-item label="租户名" prop="name">
+              <el-form-item label="企业名称" prop="name">
                 <el-input v-model="editForm.name" auto-complete="off" />
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
               <el-form-item label="编码" prop="code">
                 <el-input v-model="editForm.code" auto-complete="off" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+              <el-form-item label="姓名" prop="realName">
+                <el-input v-model="editForm.realName" auto-complete="off" />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+              <el-form-item label="手机号码" prop="phone">
+                <el-input v-model="editForm.phone" auto-complete="off" />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+              <el-form-item label="邮箱地址" prop="email">
+                <el-input v-model="editForm.email" auto-complete="off" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -276,6 +310,15 @@ export default {
   name: 'Tenants',
   components: { MyContainer, MyConfirmButton },
   data() {
+    const validatePhone = (rule, value, callback) => {
+      const reg = /^(0|86|17951)?(13[0-9]|15[0123456789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
+      if (!reg.test(value)) {
+        callback(new Error('请输入正确的手机号码!'))
+      } else {
+        callback()
+      }
+    }
+
     return {
       filter: {
         name: ''
@@ -313,8 +356,17 @@ export default {
       editFormVisible: false, // 编辑界面是否显示
       editLoading: false,
       editFormRules: {
-        name: [{ required: true, message: '请输入租户名', trigger: 'blur' }],
+        name: [{ required: true, message: '请输入企业名称', trigger: 'blur' }],
         code: [{ required: true, message: '请输入编码', trigger: 'blur' }],
+        realName: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+        phone: [
+          { required: true, message: '请输入手机号码', trigger: 'blur' },
+          { validator: validatePhone, trigger: ['blur', 'change'] }
+        ],
+        email: [
+          { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+          { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+        ],
         enabled: [{ required: true, message: '请选择状态', trigger: 'change' }]
       },
       // 编辑界面数据
@@ -333,8 +385,17 @@ export default {
       addFormVisible: false, // 新增界面是否显示
       addLoading: false,
       addFormRules: {
-        name: [{ required: true, message: '请输入租户名', trigger: 'blur' }],
+        name: [{ required: true, message: '请输入企业名称', trigger: 'blur' }],
         code: [{ required: true, message: '请输入编码', trigger: 'blur' }],
+        realName: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+        phone: [
+          { required: true, message: '请输入手机号码', trigger: 'blur' },
+          { validator: validatePhone, trigger: ['blur', 'change'] }
+        ],
+        email: [
+          { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+          { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+        ],
         enabled: [{ required: true, message: '请选择状态', trigger: 'change' }]
       },
       // 新增界面数据

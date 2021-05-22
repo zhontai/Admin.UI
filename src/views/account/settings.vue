@@ -227,7 +227,13 @@ export default {
     // 上传成功
     onAvatarSuccess(res) {
       this.avatarLoading = false
-      if (!res?.code === 1) {
+      if (!res?.code) {
+        if (res.msg) {
+          this.$message({
+            message: res.msg,
+            type: 'error'
+          })
+        }
         return
       }
       this.editForm.avatar = res.data
@@ -236,7 +242,7 @@ export default {
     onAvatarError(err, file) {
       this.avatarLoading = false
       const res = err.message ? JSON.parse(err.message) : {}
-      if (!(res?.code === 1)) {
+      if (!res?.code) {
         if (res.msg) {
           this.$message({
             message: res.msg,

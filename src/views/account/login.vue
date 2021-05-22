@@ -175,6 +175,8 @@ export default {
           message: '该账号未分配权限，请联系管理员！',
           type: 'error'
         })
+        this.getLoginVerifyCode()
+        this.$refs.verifyCode.focus()
         return
       }
 

@@ -10,7 +10,7 @@
                 :loading="loadingRoles"
                 type="text"
                 style="float: right; padding: 3px 0"
-                @click="getRoles"
+                @click="refreshRoles"
               >刷新</el-button>
             </div>
           </template>
@@ -35,7 +35,7 @@
                 v-if="checkPermission(['api:admin:permission:assign'])"
                 :validate="saveValidate"
                 :loading="loadingSave"
-                :disabled="disabledSave"
+                :disabled="loadingPermissions"
                 :placement="'left'"
                 type="text"
                 class="save"
@@ -111,18 +111,22 @@ export default {
     }
   },
   computed: {
-    disabledSave() {
-      return !(
-        this.roleId > 0 &&
-        (this.checkedPermissions.length > 0 || this.chekedApis.length > 0)
-      )
-    }
+    // disabledSave() {
+    //   return !(
+    //     this.roleId > 0 &&
+    //     (this.checkedPermissions.length > 0 || this.chekedApis.length > 0)
+    //   )
+    // }
   },
   mounted() {
     this.getRoles()
     this.getPermissions()
   },
   methods: {
+    refreshRoles() {
+      this.getRoles()
+      this.getPermissions()
+    },
     // 获取角色列表
     async getRoles() {
       this.loadingRoles = true
@@ -182,14 +186,14 @@ export default {
         isValid = false
         return isValid
       }
-      if (!(this.checkedPermissions.length > 0 || this.chekedApis.length > 0)) {
-        this.$message({
-          message: '请选择权限！',
-          type: 'warning'
-        })
-        isValid = false
-        return isValid
-      }
+      // if (!(this.checkedPermissions.length > 0 || this.chekedApis.length > 0)) {
+      //   this.$message({
+      //     message: '请选择权限！',
+      //     type: 'warning'
+      //   })
+      //   isValid = false
+      //   return isValid
+      // }
       return isValid
     },
     // 保存权限

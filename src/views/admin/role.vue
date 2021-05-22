@@ -52,6 +52,7 @@
       <el-table-column type="selection" width="50" />
       <el-table-column type="index" width="80" label="#" />
       <el-table-column prop="name" label="角色名" width />
+      <el-table-column prop="code" label="编码" width />
       <el-table-column prop="description" label="说明" width />
       <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width />
       <!--<el-table-column prop="CreatedUserName" label="创建者" width="" >-->
@@ -118,6 +119,11 @@
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+              <el-form-item label="编码" prop="code">
+                <el-input v-model="addForm.code" auto-complete="off" />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
               <el-form-item label="状态" prop="enabled">
                 <el-select v-model="addForm.enabled" placeholder="请选择角色状态" style="width:100%;">
                   <el-option
@@ -131,9 +137,9 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+            <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
               <el-form-item label="说明" prop="description">
-                <el-input v-model="addForm.description" auto-complete="off" />
+                <el-input v-model="addForm.description" type="textarea" :rows="2" auto-complete="off" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -173,6 +179,11 @@
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+              <el-form-item label="编码" prop="code">
+                <el-input v-model="editForm.code" auto-complete="off" />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
               <el-form-item label="状态" prop="enabled">
                 <el-select v-model="editForm.enabled" placeholder="请选择角色状态" style="width:100%;">
                   <el-option
@@ -186,9 +197,9 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+            <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
               <el-form-item label="说明" prop="description">
-                <el-input v-model="editForm.description" auto-complete="off" />
+                <el-input v-model="editForm.description" type="textarea" :rows="2" auto-complete="off" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -231,6 +242,7 @@ export default {
       editLoading: false,
       editFormRules: {
         name: [{ required: true, message: '请输入角色名', trigger: 'blur' }],
+        code: [{ required: true, message: '请输入编码', trigger: 'blur' }],
         enabled: [{ required: true, message: '请输入状态', trigger: 'change' }]
       },
       // 编辑界面数据
@@ -246,6 +258,7 @@ export default {
       addLoading: false,
       addFormRules: {
         name: [{ required: true, message: '请输入角色名', trigger: 'blur' }],
+        code: [{ required: true, message: '请输入编码', trigger: 'blur' }],
         enabled: [{ required: true, message: '请输入状态', trigger: 'change' }]
       },
       // 新增界面数据

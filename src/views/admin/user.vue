@@ -93,11 +93,13 @@
     <!--新增窗口-->
     <el-drawer
       v-if="checkPermission(['api:admin:user:add'])"
+      ref="addFormWindow"
       title="新增用户"
       :modal="false"
       :wrapper-closable="true"
       :modal-append-to-body="false"
       :visible.sync="addFormVisible"
+      destroy-on-close
       direction="btt"
       size="auto"
       class="el-drawer__wrapper"
@@ -147,15 +149,25 @@
                   </el-select>
                 </el-form-item>
               </el-col>
+              <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
+                <el-form-item label="租户" prop="tenantName">
+                  <el-input v-model="addForm.tenantName" placeholder="请选择租户" readonly autocomplete="off" class="input-with-select" @click.native="selectTenantVisible = true">
+                    <el-button slot="append" icon="el-icon-more" @click="selectTenantVisible = true" />
+                  </el-input>
+                </el-form-item>
+              </el-col>
             </el-col>
           </el-row>
         </el-form>
       </section>
       <div class="drawer-footer">
-        <el-button @click.native="addFormVisible = false">取消</el-button>
+        <el-button @click.native="$refs.addFormWindow.closeDrawer()">取消</el-button>
         <my-confirm-button type="submit" :validate="addFormvalidate" :loading="addLoading" @click="onAddSubmit" />
       </div>
     </el-drawer>
+
+    <!--选择租户-->
+    <my-select-tenant :visible.sync="selectTenantVisible" @click="onSelectTenant" />
 
     <!--编辑窗口-->
     <el-drawer
@@ -224,10 +236,11 @@ import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySearch from '@/components/my-search'
 import MySearchWindow from '@/components/my-search-window'
+import MySelectTenant from '@/components/my-select-window/tenant'
 
 export default {
   name: 'Users',
-  components: { MyContainer, MyConfirmButton, MySearch, MySearchWindow },
+  components: { MyContainer, MyConfirmButton, MySearch, MySearchWindow, MySelectTenant },
   data() {
     return {
       // 高级查询字段
@@ -274,9 +287,12 @@ export default {
         userName: '',
         nickName: '',
         password: '',
-        roleIds: []
+        roleIds: [],
+        tenantName: '',
+        tenantId: null
       },
-      deleteLoading: false
+      deleteLoading: false,
+      selectTenantVisible: false
     }
   },
   async mounted() {
@@ -303,6 +319,13 @@ export default {
       this.dynamicFilter = dynamicFilter
       this.getUsers()
       this.searchWindowVisible = false
+    },
+    // 选择租户
+    onSelectTenant(tenant) {
+      debugger
+      this.addForm.tenantName = tenant.name
+      this.addForm.tenantId = tenant.id
+      this.selectTenantVisible = false
     },
 
     // 获取用户列表
@@ -402,6 +425,7 @@ export default {
     // 新增
     async onAddSubmit() {
       this.addLoading = true
+      debugger
       const para = _.cloneDeep(this.addForm)
 
       const res = await addUser(para)
