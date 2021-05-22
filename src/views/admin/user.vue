@@ -90,6 +90,9 @@
       @click="onSearchFilter"
     />
 
+    <!--选择租户-->
+    <my-select-tenant :visible.sync="selectTenantVisible" @click="onSelectTenant" />
+
     <!--新增窗口-->
     <el-drawer
       v-if="checkPermission(['api:admin:user:add'])"
@@ -165,9 +168,6 @@
         <my-confirm-button type="submit" :validate="addFormvalidate" :loading="addLoading" @click="onAddSubmit" />
       </div>
     </el-drawer>
-
-    <!--选择租户-->
-    <my-select-tenant :visible.sync="selectTenantVisible" @click="onSelectTenant" />
 
     <!--编辑窗口-->
     <el-drawer
@@ -322,7 +322,6 @@ export default {
     },
     // 选择租户
     onSelectTenant(tenant) {
-      debugger
       this.addForm.tenantName = tenant.name
       this.addForm.tenantId = tenant.id
       this.selectTenantVisible = false

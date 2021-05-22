@@ -66,7 +66,7 @@
           >{{ row.enabled ? '正常' : '禁用' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="checkPermission(['api:admin:tenant:update','api:admin:tenant:softdelete'])" label="操作" width="180">
+      <el-table-column v-if="checkPermission(['api:admin:tenant:update','api:admin:tenant:softdelete'])" label="操作" width="260">
         <template #default="{ $index, row }">
           <el-button v-if="checkPermission(['api:admin:tenant:update'])" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
@@ -77,6 +77,16 @@
             :validate-data="row"
             @click="onDelete($index, row)"
           />
+          <el-dropdown style="margin-left:10px;" @command="(command)=>onCommand(command,row)">
+            <el-button type="primary">
+              更多<i class="el-icon-arrow-down el-icon--right" />
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item icon="el-icon-plus" command="setPermission">设置权限</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -90,6 +100,9 @@
         @get-page="getTenants"
       />
     </template>
+
+    <!--选择权限-->
+    <my-select-permission :role-id="roleId" :visible.sync="selectPermissionVisible" @click="onSelectPermission" />
 
     <!--新增窗口-->
     <el-drawer
@@ -305,10 +318,11 @@ import { formatTime } from '@/utils'
 import { getTenantListPage, removeTenant, editTenant, addTenant, batchRemoveTenant, getTenant } from '@/api/admin/tenant'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
+import MySelectPermission from '@/components/my-select-window/permission'
 
 export default {
   name: 'Tenants',
-  components: { MyContainer, MyConfirmButton },
+  components: { MyContainer, MyConfirmButton, MySelectPermission },
   data() {
     const validatePhone = (rule, value, callback) => {
       const reg = /^(0|86|17951)?(13[0-9]|15[0123456789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
@@ -409,7 +423,10 @@ export default {
         enabled: true
       },
       addFormRef: null,
-      deleteLoading: false
+      deleteLoading: false,
+
+      selectPermissionVisible: false,
+      roleId: 0
     }
   },
   mounted() {
@@ -590,6 +607,17 @@ export default {
     },
     selsChange: function(sels) {
       this.sels = sels
+    },
+    // 选择权限
+    onSelectPermission(permissions) {
+      this.selectPermissionVisible = false
+    },
+    // 更多
+    onCommand(command, row) {
+      if (command === 'setPermission') {
+        this.roleId = row.id
+        this.selectPermissionVisible = true
+      }
     }
   }
 }
