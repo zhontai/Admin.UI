@@ -67,7 +67,24 @@
       </el-table-column>
       <el-table-column v-if="checkPermission(['api:admin:role:update','api:admin:role:softdelete'])" label="操作" width="180">
         <template #default="{ $index, row }">
-          <el-button v-if="checkPermission(['api:admin:role:update'])" @click="onEdit($index, row)">编辑</el-button>
+          <el-dropdown v-if="checkPermission(['api:admin:role:update'])" split-button type="primary" style="margin-left:10px;" @click="onEdit($index, row)" @command="(command)=>onCommand(command,row)">
+            编辑
+            <template #dropdown>
+              <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:90px;text-align:right;">
+                <el-dropdown-item v-if="checkPermission(['api:admin:permission:assign'])" command="setPermission">设置权限</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          <el-dropdown v-else style="margin-left:10px;" @command="(command)=>onCommand(command,row)">
+            <el-button type="primary">
+              更多 <i class="el-icon-arrow-down el-icon--right" />
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:90px;text-align:right;">
+                <el-dropdown-item v-if="checkPermission(['api:admin:permission:assign'])" command="setPermission">设置权限</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
           <my-confirm-button
             v-if="checkPermission(['api:admin:role:softdelete'])"
             type="delete"
@@ -89,6 +106,9 @@
         @get-page="getRoles"
       />
     </template>
+
+    <!--选择权限-->
+    <my-select-permission :role-id="roleId" :title="title" :visible.sync="selectPermissionVisible" @click="onSelectPermission" />
 
     <!--新增窗口-->
     <el-drawer
@@ -216,12 +236,14 @@
 <script>
 import { formatTime } from '@/utils'
 import { getRoleListPage, removeRole, editRole, addRole, batchRemoveRole, getRole } from '@/api/admin/role'
+import { addRolePermission } from '@/api/admin/permission'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
+import MySelectPermission from '@/components/my-select-window/permission'
 
 export default {
   name: 'Roles',
-  components: { MyContainer, MyConfirmButton },
+  components: { MyContainer, MyConfirmButton, MySelectPermission },
   data() {
     return {
       filter: {
@@ -268,7 +290,18 @@ export default {
         enabled: true
       },
       addFormRef: null,
-      deleteLoading: false
+      deleteLoading: false,
+
+      selectPermissionVisible: false,
+      currentRow: null
+    }
+  },
+  computed: {
+    roleId() {
+      return this.currentRow?.id
+    },
+    title() {
+      return `设置${this.currentRow?.name}（${this.currentRow?.code}）权限`
     }
   },
   mounted() {
@@ -452,6 +485,30 @@ export default {
     },
     selsChange: function(sels) {
       this.sels = sels
+    },
+    // 选择权限
+    async onSelectPermission(permissionIds) {
+      const para = { permissionIds, roleId: this.roleId }
+      this.loadingSave = true
+      const res = await addRolePermission(para)
+      this.loadingSave = false
+
+      if (!res?.success) {
+        return
+      }
+
+      this.selectPermissionVisible = false
+      this.$message({
+        message: this.$t('admin.saveOk'),
+        type: 'success'
+      })
+    },
+    // 更多操作
+    onCommand(command, row) {
+      if (command === 'setPermission') {
+        this.currentRow = row
+        this.selectPermissionVisible = true
+      }
     }
   }
 }

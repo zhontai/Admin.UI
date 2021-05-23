@@ -90,9 +90,6 @@
       @click="onSearchFilter"
     />
 
-    <!--选择租户-->
-    <my-select-tenant :visible.sync="selectTenantVisible" @click="onSelectTenant" />
-
     <!--新增窗口-->
     <el-drawer
       v-if="checkPermission(['api:admin:user:add'])"
@@ -150,13 +147,6 @@
                       :value="item.id"
                     />
                   </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-                <el-form-item label="租户" prop="tenantName">
-                  <el-input v-model="addForm.tenantName" placeholder="请选择租户" readonly autocomplete="off" class="input-with-select" @click.native="selectTenantVisible = true">
-                    <el-button slot="append" icon="el-icon-more" @click="selectTenantVisible = true" />
-                  </el-input>
                 </el-form-item>
               </el-col>
             </el-col>
@@ -236,11 +226,10 @@ import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySearch from '@/components/my-search'
 import MySearchWindow from '@/components/my-search-window'
-import MySelectTenant from '@/components/my-select-window/tenant'
 
 export default {
   name: 'Users',
-  components: { MyContainer, MyConfirmButton, MySearch, MySearchWindow, MySelectTenant },
+  components: { MyContainer, MyConfirmButton, MySearch, MySearchWindow },
   data() {
     return {
       // 高级查询字段
@@ -287,9 +276,7 @@ export default {
         userName: '',
         nickName: '',
         password: '',
-        roleIds: [],
-        tenantName: '',
-        tenantId: null
+        roleIds: []
       },
       deleteLoading: false,
       selectTenantVisible: false
@@ -319,12 +306,6 @@ export default {
       this.dynamicFilter = dynamicFilter
       this.getUsers()
       this.searchWindowVisible = false
-    },
-    // 选择租户
-    onSelectTenant(tenant) {
-      this.addForm.tenantName = tenant.name
-      this.addForm.tenantId = tenant.id
-      this.selectTenantVisible = false
     },
 
     // 获取用户列表

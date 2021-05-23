@@ -1,6 +1,6 @@
 <template>
   <el-drawer
-    title="设置权限"
+    :title="title"
     :modal="modal"
     :wrapper-closable="true"
     :modal-append-to-body="modalAppendToBody"
@@ -13,27 +13,29 @@
     :before-close="onCancel"
     @opened="onSearch"
   >
-    <el-table
-      ref="multipleTable"
-      :data="permissionTree"
-      :default-expand-all="true"
-      :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-      row-key="id"
-      highlight-current-row
-      style="width: 100%;"
-      @select-all="onSelectAll"
-      @select="onSelect"
-    >
-      <el-table-column type="selection" width="50" />
-      <el-table-column prop="label" label="导航菜单" width="200" />
-      <el-table-column label="菜单接口" width>
-        <template #default="{ row }">
-          <el-checkbox-group v-if="row.apis && row.apis.length > 0" v-model="chekedApis">
-            <el-checkbox v-for="api in row.apis" :key="api.id" :label="api.id" @change="(value)=>onChange(value, row.id)">{{ api.label }}</el-checkbox>
-          </el-checkbox-group>
-        </template>
-      </el-table-column>
-    </el-table>
+    <my-container v-loading="loadingPermissions" :show-header="false" :show-footer="false" style="height: calc(100% - 61px);padding:0px;">
+      <el-table
+        ref="multipleTable"
+        :data="permissionTree"
+        :default-expand-all="true"
+        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+        row-key="id"
+        highlight-current-row
+        style="width: 100%;"
+        @select-all="onSelectAll"
+        @select="onSelect"
+      >
+        <el-table-column type="selection" width="50" />
+        <el-table-column prop="label" label="导航菜单" width="200" />
+        <el-table-column label="菜单接口" width>
+          <template #default="{ row }">
+            <el-checkbox-group v-if="row.apis && row.apis.length > 0" v-model="chekedApis">
+              <el-checkbox v-for="api in row.apis" :key="api.id" :label="api.id" @change="(value)=>onChange(value, row.id)">{{ api.label }}</el-checkbox>
+            </el-checkbox-group>
+          </template>
+        </el-table-column>
+      </el-table>
+    </my-container>
     <div class="drawer-footer">
       <el-button @click.native="onCancel">取消</el-button>
       <el-button type="primary" @click="onSure">确定</el-button>
@@ -44,9 +46,11 @@
 <script>
 import { treeToList, listToTree, getTreeParentsWithSelf } from '@/utils'
 import { getPermissions, getPermissionIds } from '@/api/admin/permission'
+import MyContainer from '@/components/my-container'
 
 export default {
   name: 'MySelectPermission',
+  components: { MyContainer },
   props: {
     visible: {
       type: Boolean,
@@ -63,6 +67,10 @@ export default {
     roleId: {
       type: Number,
       default: 0
+    },
+    title: {
+      type: String,
+      default: '设置权限'
     }
   },
   data() {
