@@ -38,7 +38,7 @@
     </my-container>
     <div class="drawer-footer">
       <el-button @click.native="onCancel">取消</el-button>
-      <el-button type="primary" @click="onSure">确定</el-button>
+      <my-confirm-button type="submit" :validate="addFormValidate" :loading="addLoading" @click="onSure" />
     </div>
   </el-drawer>
 </template>
@@ -47,10 +47,11 @@
 import { treeToList, listToTree, getTreeParentsWithSelf } from '@/utils'
 import { getPermissions, getPermissionIds } from '@/api/admin/permission'
 import MyContainer from '@/components/my-container'
+import MyConfirmButton from '@/components/my-confirm-button'
 
 export default {
   name: 'MySelectPermission',
-  components: { MyContainer },
+  components: { MyContainer, MyConfirmButton },
   props: {
     visible: {
       type: Boolean,
