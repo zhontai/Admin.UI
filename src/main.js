@@ -22,6 +22,7 @@ import App from './App.vue'
 import Pagination from '@/components/ElementUI/Pagination'
 import MyPagination from '@/components/my-pagination'
 
+// 组件尺寸和多语言
 Vue.use(ElementUI, {
   size: 'mini', // large / medium / small / mini
   i18n: (key, value) => i18n.t(key, value)

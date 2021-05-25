@@ -76,7 +76,7 @@
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-          <el-dropdown v-else style="margin-left:10px;" @command="(command)=>onCommand(command,row)">
+          <el-dropdown v-else-if="checkPermission(['api:admin:permission:assign'])" style="margin-left:10px;" @command="(command)=>onCommand(command,row)">
             <el-button type="primary">
               更多 <i class="el-icon-arrow-down el-icon--right" />
             </el-button>
