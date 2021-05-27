@@ -38,7 +38,7 @@
     </my-container>
     <div class="drawer-footer">
       <el-button @click.native="onCancel">取消</el-button>
-      <my-confirm-button type="submit" :validate="addFormValidate" :loading="addLoading" @click="onSure" />
+      <my-confirm-button type="submit" @click="onSure" />
     </div>
   </el-drawer>
 </template>
