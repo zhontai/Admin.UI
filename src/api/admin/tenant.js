@@ -22,3 +22,6 @@ export const removeTenant = (params, config = {}) => {
 export const batchRemoveTenant = (params, config = {}) => {
   return request.put(apiPrefix + 'BatchsoftDelete', params, config)
 }
+export const deleteTenant = (params, config = {}) => {
+  return request.delete(apiPrefix + 'delete', { params: params, ...config })
+}

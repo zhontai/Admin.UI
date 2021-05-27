@@ -66,23 +66,26 @@
           >{{ row.enabled ? '正常' : '禁用' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="checkPermission(['api:admin:tenant:update','api:admin:tenant:softdelete'])" label="操作" width="260">
+      <el-table-column v-if="checkPermission(['api:admin:tenant:update','api:admin:tenant:softdelete','api:admin:permission:assign','api:admin:permission:delete'])" label="操作" width="260">
         <template #default="{ $index, row }">
-          <el-dropdown v-if="checkPermission(['api:admin:tenant:update'])" split-button type="primary" style="margin-left:10px;" @click="onEdit($index, row)" @command="(command)=>onCommand(command,row)">
-            编辑
-            <template #dropdown>
-              <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:90px;text-align:right;">
-                <el-dropdown-item v-if="checkPermission(['api:admin:permission:assign'])" command="setPermission">设置权限</el-dropdown-item>
-              </el-dropdown-menu>
+          <el-dropdown
+            v-if="checkPermission(['api:admin:tenant:update','api:admin:permission:assign','api:admin:tenant:delete'])"
+            :split-button="checkPermission(['api:admin:tenant:update'])"
+            type="primary"
+            style="margin-left:10px;"
+            @click="onEdit($index, row)"
+            @command="(command)=>onCommand(command,row)"
+          >
+            <template v-if="checkPermission(['api:admin:tenant:update'])">
+              编辑
             </template>
-          </el-dropdown>
-          <el-dropdown v-else-if="checkPermission(['api:admin:permission:assign'])" style="margin-left:10px;" @command="(command)=>onCommand(command,row)">
-            <el-button type="primary">
+            <el-button v-else type="primary">
               更多 <i class="el-icon-arrow-down el-icon--right" />
             </el-button>
             <template #dropdown>
               <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:90px;text-align:right;">
                 <el-dropdown-item v-if="checkPermission(['api:admin:permission:assign'])" command="setPermission">设置权限</el-dropdown-item>
+                <el-dropdown-item v-if="checkPermission(['api:admin:tenant:delete'])" command="delete">彻底删除</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -322,7 +325,7 @@
 
 <script>
 import { formatTime } from '@/utils'
-import { getTenantListPage, removeTenant, editTenant, addTenant, batchRemoveTenant, getTenant } from '@/api/admin/tenant'
+import { getTenantListPage, removeTenant, editTenant, addTenant, batchRemoveTenant, getTenant, deleteTenant } from '@/api/admin/tenant'
 import { addRolePermission } from '@/api/admin/permission'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
@@ -641,11 +644,33 @@ export default {
         type: 'success'
       })
     },
+    // 彻底删除
+    async deleteAsync() {
+      this.pageLoading = true
+      const para = { id: this.currentRow?.id }
+      const res = await deleteTenant(para)
+      this.pageLoading = false
+      if (!res?.success) {
+        return
+      }
+
+      this.$message({
+        message: this.$t('admin.deleteOk'),
+        type: 'success'
+      })
+
+      this.getTenants()
+    },
     // 更多操作
     onCommand(command, row) {
+      const me = this
+      this.currentRow = row
       if (command === 'setPermission') {
-        this.currentRow = row
         this.selectPermissionVisible = true
+      } else if (command === 'delete') {
+        this.$confirm('确定要彻底删除吗?', '提示').then(() => {
+          me.deleteAsync()
+        }).catch(() => {})
       }
     }
   }
