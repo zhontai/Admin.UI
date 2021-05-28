@@ -6,7 +6,6 @@ import { getToken } from '@/utils/auth'
 import Layout from '@/layout'
 import store from '@/store'
 import { login, logout } from '@/utils/is4'
-const _import = require('./_import_' + process.env.NODE_ENV) // 获取组件的方法
 
 /**
  * 重写路由的push方法
@@ -18,11 +17,15 @@ Router.prototype.push = function push(location) {
 
 Vue.use(Router)
 
+export const getComponent = (view) => { // 路由懒加载
+  return (resolve) => require([`@/views${view}`], resolve)
+}
+
 const constantRoutes = [
   {
     path: '/login',
     // name: 'Login',
-    component: _import('/account/login'),
+    component: getComponent('/account/login'),
     hidden: true,
     meta: {
       title: '登录'
@@ -31,13 +34,13 @@ const constantRoutes = [
   {
     path: '/callback',
     // name: 'Callback',
-    component: _import('/account/login-callback'),
+    component: getComponent('/account/login-callback'),
     hidden: true
   },
   {
     path: '/refresh',
     // name: 'Refresh',
-    component: _import('/account/refresh-token'),
+    component: getComponent('/account/refresh-token'),
     hidden: true
   }
 ]
@@ -75,8 +78,7 @@ function generateRoutes(menus = []) {
         const route = {
           name: m.path,
           path: m.path,
-          // 如果IIS导入组件还是有问题，可以尝试直接使用 require('@/views' + m.viewPath + '.vue').default 导入
-          component: _import(m.viewPath),
+          component: getComponent(m.viewPath),
           meta: {
             title: m.label,
             icon: m.icon,
@@ -100,7 +102,7 @@ function generateRoutes(menus = []) {
 
   routes.children.push({
     path: '*',
-    component: _import('/error/404'),
+    component: getComponent('/error/404'),
     hidden: true
   })
 
