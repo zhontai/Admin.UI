@@ -86,6 +86,9 @@ export default {
   methods: {
     // 取消
     onCancel() {
+      this.chekedApis = []
+      this.checkedPermissions = []
+      this.$refs.multipleTable.clearSelection()
       this.$emit('update:visible', false)
       this.$emit('cancel')
     },
