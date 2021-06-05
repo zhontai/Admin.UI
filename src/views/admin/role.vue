@@ -308,7 +308,7 @@ export default {
     this.getRoles()
   },
   beforeUpdate() {
-    console.log('update')
+    // console.log('update')
   },
   methods: {
     formatCreatedTime: function(row, column, time) {

@@ -187,6 +187,12 @@ router.beforeEach(async(to, from, next) => {
           first = false
           const res = await store.dispatch('user/getLoginInfo')
           if (res && res.success) {
+            // if (!(res.data?.menus?.length > 0)) {
+            //   this.$confirm('无权限，请重新登录！', '提示').then(() => {
+            //     toLogin(to, next)
+            //   }).catch(() => {})
+            //   return
+            // }
             next({ ...to, replace: true })
           } else {
             toLogin(to, next)
