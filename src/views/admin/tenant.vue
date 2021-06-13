@@ -193,7 +193,7 @@
             </el-col>
             <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
               <el-form-item label="空闲时间（分）" prop="idleTime">
-                <el-input-number v-model="addForm.idleTime" controls-position="right" :min="1" style="width:100%;" />
+                <el-input-number v-model="addForm.idleTime" controls-position="right" :min="0" style="width:100%;" />
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
@@ -308,7 +308,7 @@
             </el-col>
             <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
               <el-form-item label="空闲时间（分）" prop="idleTime">
-                <el-input-number v-model="editForm.idleTime" controls-position="right" :min="1" style="width:100%;" />
+                <el-input-number v-model="editForm.idleTime" controls-position="right" :min="0" style="width:100%;" />
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
