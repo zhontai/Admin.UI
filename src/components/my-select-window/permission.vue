@@ -38,14 +38,14 @@
     </my-container>
     <div class="drawer-footer">
       <el-button @click.native="onCancel">取消</el-button>
-      <my-confirm-button type="submit" @click="onSure" />
+      <my-confirm-button type="submit" :loading="setPermissionLoading" @click="onSure" />
     </div>
   </el-drawer>
 </template>
 
 <script>
 import { treeToList, listToTree, getTreeParentsWithSelf } from '@/utils'
-import { getPermissions, getPermissionIds } from '@/api/admin/permission'
+import { getPermissions, getPermissionIds, GetTenantPermissionIds } from '@/api/admin/permission'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 
@@ -65,7 +65,19 @@ export default {
       type: Boolean,
       default: false
     },
+    tenant: {
+      type: Boolean,
+      default: false
+    },
+    setPermissionLoading: {
+      type: Boolean,
+      default: false
+    },
     roleId: {
+      type: Number,
+      default: 0
+    },
+    tenantId: {
       type: Number,
       default: 0
     },
@@ -182,17 +194,17 @@ export default {
       this.loadingPermissions = false
       const tree = listToTree(_.cloneDeep(res.data))
       this.permissionTree = tree
-      this.getRolePermission()
+      this.bindPermissions()
     },
-    // 获取角色权限
-    async getRolePermission() {
-      if (!this.roleId > 0) {
+    // 绑定权限
+    async bindPermissions() {
+      if (!(this.roleId > 0 || this.tenantId > 0)) {
         return
       }
 
       this.loadingPermissions = true
       const para = { roleId: this.roleId }
-      const res = await getPermissionIds(para)
+      const res = await (this.tenant ? GetTenantPermissionIds({ tenantId: this.tenantId }) : getPermissionIds(para))
 
       this.loadingPermissions = false
       const permissionIds = res.data

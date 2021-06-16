@@ -113,7 +113,7 @@
     </template>
 
     <!--选择权限-->
-    <my-select-permission :role-id="roleId" :title="title" :visible.sync="selectPermissionVisible" @click="onSelectPermission" />
+    <my-select-permission :tenant="true" :tenant-id="tenantId" :title="title" :visible.sync="selectPermissionVisible" :set-permission-loading="setPermissionLoading" @click="onSelectPermission" />
 
     <!--新增窗口-->
     <el-drawer
@@ -351,7 +351,7 @@
 <script>
 import { formatTime } from '@/utils'
 import { getTenantListPage, removeTenant, editTenant, addTenant, batchRemoveTenant, getTenant, deleteTenant } from '@/api/admin/tenant'
-import { addRolePermission } from '@/api/admin/permission'
+import { saveTenantPermissions } from '@/api/admin/permission'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySelectPermission from '@/components/my-select-window/permission'
@@ -468,12 +468,13 @@ export default {
       deleteLoading: false,
 
       selectPermissionVisible: false,
-      currentRow: null
+      currentRow: null,
+      setPermissionLoading: false
     }
   },
   computed: {
-    roleId() {
-      return this.currentRow?.roleId
+    tenantId() {
+      return this.currentRow?.id
     },
     title() {
       return `设置${this.currentRow?.name}（${this.currentRow?.code}）权限`
@@ -660,10 +661,10 @@ export default {
     },
     // 选择权限
     async onSelectPermission(permissionIds) {
-      const para = { permissionIds, roleId: this.roleId }
-      this.loadingSave = true
-      const res = await addRolePermission(para)
-      this.loadingSave = false
+      const para = { permissionIds, tenantId: this.tenantId }
+      this.setPermissionLoading = true
+      const res = await saveTenantPermissions(para)
+      this.setPermissionLoading = false
 
       if (!res?.success) {
         return
