@@ -31,7 +31,6 @@
           v-if="checkPermission([
             'api:admin:permission:addgroup',
             'api:admin:permission:addmenu',
-            'api:admin:permission:addapi',
             'api:admin:permission:adddot'
           ])"
         >
@@ -42,7 +41,6 @@
             <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;">
               <el-dropdown-item v-if="checkPermission(['api:admin:permission:addgroup'])" icon="el-icon-folder" @click.native="onOpenAddGroup">新增分组</el-dropdown-item>
               <el-dropdown-item v-if="checkPermission(['api:admin:permission:addmenu'])" icon="el-icon-tickets" @click.native="onOpenAddMenu">新增菜单</el-dropdown-item>
-              <el-dropdown-item v-if="checkPermission(['api:admin:permission:addapi'])" icon="el-icon-s-operation" @click.native="onOpenAddApi">新增接口</el-dropdown-item>
               <el-dropdown-item v-if="checkPermission(['api:admin:permission:adddot'])" icon="el-icon-s-operation" @click.native="onOpenAddDot">新增权限点</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -72,10 +70,10 @@
           {{ row.label }}
         </template>
       </el-table-column>
-      <el-table-column prop="id" label="编号" width="80" />
+      <!-- <el-table-column prop="id" label="编号" width="80" /> -->
       <el-table-column label="类型" width="100">
         <template #default="{ row }">
-          {{ row.type === 1 ? '分组' : row.type === 2 ? '菜单' : row.type === 3 ? '接口' : row.type === 4 ? '权限点' : '' }}
+          {{ row.type === 1 ? '分组' : row.type === 2 ? '菜单' : row.type === 3 ? '权限点' : '' }}
         </template>
       </el-table-column>
       <el-table-column label="地址" width>
@@ -96,7 +94,6 @@
         v-if="checkPermission([
           'api:admin:permission:updategroup',
           'api:admin:permission:updatemenu',
-          'api:admin:permission:updateapi',
           'api:admin:permission:updatedot',
           'api:admin:permission:softdelete'])"
         label="操作"
@@ -111,8 +108,7 @@
           <el-button
             v-if="(row.type === 1 && checkPermission(['api:admin:permission:updategroup']))
               || (row.type === 2 && checkPermission(['api:admin:permission:updatemenu']))
-              || (row.type === 3 && checkPermission(['api:admin:permission:updateapi']))
-              || (row.type === 4 && checkPermission(['api:admin:permission:updatedot']))"
+              || (row.type === 3 && checkPermission(['api:admin:permission:updatedot']))"
             icon="el-icon-edit"
             @click="onEdit($index, row)"
           >编辑</el-button>
@@ -249,68 +245,6 @@
       </template>
     </el-dialog>
 
-    <!--接口-->
-    <el-dialog
-      v-if="checkPermission(['api:admin:permission:addapi','api:admin:permission:updateapi'])"
-      :title="(permissionApi.form.id > 0 ? '编辑':'新增')+'接口'"
-      :visible.sync="permissionApi.visible"
-      :close-on-click-modal="false"
-      @close="onCloseApi"
-    >
-      <el-form ref="apiForm" :model="permissionApi.form" label-width="100px" :rules="formRules">
-        <el-form-item prop="parentIds" label="父级" width>
-          <el-cascader
-            :key="permissionApi.key"
-            v-model="permissionApi.form.parentIds"
-            placeholder="请选择，支持搜索功能"
-            style="width: 100%;"
-            :options="menuTree"
-            :props="{ value: 'id' }"
-            filterable
-          />
-        </el-form-item>
-        <el-form-item prop="apiId" label="API接口" width>
-          <el-cascader
-            :key="permissionApi.key"
-            v-model="permissionApi.form.apiId"
-            placeholder="请选择，支持搜索功能"
-            style="width: 100%;"
-            :options="apiTree"
-            :props="{ value: 'id', label:'path', emitPath:false }"
-            filterable
-            :show-all-levels="false"
-            @change="onChangeApi"
-          >
-            <template #default="{ data }">
-              <span>{{ data.path }}</span>
-              <span style="float:right;margin-left:15px;">{{ data.label }}</span>
-            </template>
-          </el-cascader>
-        </el-form-item>
-        <el-form-item label="名称" prop="label">
-          <el-input v-model="permissionApi.form.label" auto-complete="off" />
-        </el-form-item>
-        <el-form-item label="编码" prop="code">
-          <el-input v-model="permissionApi.form.code" auto-complete="off" />
-        </el-form-item>
-        <el-form-item label="描述" prop="description">
-          <el-input v-model="permissionApi.form.description" auto-complete="off" />
-        </el-form-item>
-        <el-form-item label="隐藏" prop="hidden">
-          <el-switch v-model="permissionApi.form.hidden" />
-        </el-form-item>
-        <!-- <el-form-item label="启用" prop="enabled">
-          <el-switch v-model="permissionApi.form.enabled" />
-        </el-form-item> -->
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click.native="permissionApi.visible = false">取消</el-button>
-          <my-confirm-button type="submit" :validate="validateApi" :loading="permissionApi.loading" @click="onSubmitApi" />
-        </div>
-      </template>
-    </el-dialog>
-
     <!--权限点-->
     <el-dialog
       v-if="checkPermission(['api:admin:permission:adddot','api:admin:permission:updatedot'])"
@@ -330,6 +264,24 @@
             :props="{ value: 'id' }"
             filterable
           />
+        </el-form-item>
+        <el-form-item prop="apiIds" label="API接口" width>
+          <el-cascader
+            :key="permissionDot.key"
+            v-model="permissionDot.form.apiIds"
+            placeholder="请选择，支持搜索功能"
+            style="width: 100%;"
+            :options="apiTree"
+            :props="{ value: 'id', label:'path', emitPath:false, multiple: true }"
+            filterable
+            :show-all-levels="false"
+            @change="onChangeApis"
+          >
+            <template #default="{ data }">
+              <span>{{ data.path }}</span>
+              <span style="float:right;margin-left:15px;">{{ data.label }}</span>
+            </template>
+          </el-cascader>
         </el-form-item>
         <el-form-item label="名称" prop="label">
           <el-input v-model="permissionDot.form.label" auto-complete="off" />
@@ -360,15 +312,12 @@ import {
   removePermission,
   addGroup,
   addMenu,
-  addApi,
   addDot,
   updateGroup,
   updateMenu,
-  updateApi,
   updateDot,
   getGroup,
   getMenu,
-  getApi,
   getDot
 } from '@/api/admin/permission'
 import MyConfirmButton from '@/components/my-confirm-button'
@@ -430,7 +379,7 @@ export default {
         parentId: [{ required: true, message: '请选择父级', trigger: 'change' }],
         parentIds: [{ required: true, message: '请选择父级', trigger: 'change' }],
         apiId: [{ required: true, message: '请选择API接口', trigger: 'change' }],
-        apiIds: [{ required: true, message: '请选择API接口', trigger: 'change' }],
+        // apiIds: [{ required: true, message: '请选择API接口', trigger: 'change' }],
         // viewId: [{ required: true, message: '请选择视图组件', trigger: 'change' }],
         // viewIds: [{ required: true, message: '请选择视图组件', trigger: 'change' }],
         label: [{ required: true, message: '请输入名称', trigger: ['blur'] }],
@@ -482,32 +431,13 @@ export default {
         loading: false,
         key: 1
       },
-      permissionApi: {
+      permissionDot: {
         addForm: {
           id: 0,
           type: 3,
           parentId: null,
           parentIds: [],
-          apiId: null,
           apiIds: [],
-          label: '',
-          code: '',
-          description: '',
-          hidden: false,
-          enabled: true
-          // icon: ''
-        },
-        form: {},
-        visible: false,
-        loading: false,
-        key: 1
-      },
-      permissionDot: {
-        addForm: {
-          id: 0,
-          type: 4,
-          parentId: null,
-          parentIds: [],
           label: '',
           code: '',
           description: ''
@@ -574,7 +504,7 @@ export default {
         label: '根节点'
       })
       ++this.permissionMenu.key
-      ++this.permissionApi.key
+      ++this.permissionDot.key
 
       const keys = list.filter(l => l.opened).map(l => l.id + '')
       this.expandRowKeys = keys
@@ -636,16 +566,6 @@ export default {
         if (this.apiTree.length === 0) {
           await this.getApiList()
         }
-        const res = await getApi({ id: row.id })
-        loading.close()
-        if (res && res.success) {
-          const data = res.data
-          data.parentIds = parentIds
-          this.permissionApi.form = data
-          this.permissionApi.visible = true
-          ++this.permissionApi.key
-        }
-      } else if (type === 4) {
         const res = await getDot({ id: row.id })
         loading.close()
         if (res && res.success) {
@@ -749,57 +669,14 @@ export default {
       this.getPermissions()
     },
 
-    // 接口方法
-    async onOpenAddApi() {
+    // 权限点方法
+    async onOpenAddDot() {
       if (this.apiTree.length === 0) {
         const loading = this.$loading()
         await this.getApiList()
         loading.close()
       }
 
-      this.permissionApi.form = _.cloneDeep(this.permissionApi.addForm)
-      this.permissionApi.visible = true
-      ++this.permissionApi.key
-    },
-    onCloseApi() {
-      this.$refs.apiForm.resetFields()
-      ++this.permissionApi.key
-    },
-    validateApi() {
-      let isValid = false
-      this.$refs.apiForm.validate(valid => {
-        isValid = valid
-      })
-      return isValid
-    },
-    async onSubmitApi() {
-      this.permissionApi.loading = true
-      const para = _.cloneDeep(this.permissionApi.form)
-      para.parentId = para.parentIds[para.parentIds.length - 1]
-
-      let res
-      if (para.id > 0) {
-        res = await updateApi(para)
-      } else {
-        res = await addApi(para)
-      }
-      this.permissionApi.loading = false
-
-      if (!res?.success) {
-        return
-      }
-
-      this.$message({
-        message: this.$t('admin.submitOk'),
-        type: 'success'
-      })
-
-      this.permissionApi.visible = false
-      this.getPermissions()
-    },
-
-    // 权限点方法
-    async onOpenAddDot() {
       this.permissionDot.form = _.cloneDeep(this.permissionDot.addForm)
       this.permissionDot.visible = true
       ++this.permissionDot.key
@@ -840,13 +717,15 @@ export default {
       this.permissionDot.visible = false
       this.getPermissions()
     },
-
-    onChangeApi(value) {
+    onChangeApis(values) {
+      if (values.length !== 1) {
+        return
+      }
       const apis = treeToList(this.apiTree)
-      const api = apis.find(a => a.id === value)
-      if (api && api.label) {
-        this.permissionApi.form.label = api.label
-        this.permissionApi.form.code = _.trimStart(_.replace(api.path, /\//g, ':'), ':')
+      const api = apis.find(a => a.id === values[0])
+      if (api && api.label && this.permissionDot.form.label === '') {
+        this.permissionDot.form.label = api.label
+        this.permissionDot.form.code = _.trimStart(_.replace(api.path, /\//g, ':'), ':')
       }
     },
     onChangeView(value) {
