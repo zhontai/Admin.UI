@@ -39,7 +39,6 @@
       @select="select"
     >
       <el-table-column type="selection" width="50" />
-      <el-table-column type="index" width="50" label="#" />
       <el-table-column prop="name" label="字典名称" width="180" />
       <el-table-column prop="id" label="编号" width="70" />
       <el-table-column prop="code" label="字典编码" width="120" />

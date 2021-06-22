@@ -63,7 +63,6 @@
       @select="onSelect"
     >
       <!-- <el-table-column type="selection" width="50" /> -->
-      <el-table-column type="index" width="50" label="#" />
       <el-table-column label="权限" width="220">
         <template #default="{row}">
           <i :class="row.icon" />

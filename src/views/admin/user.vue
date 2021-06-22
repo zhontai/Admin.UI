@@ -41,7 +41,6 @@
       @selection-change="onSelsChange"
     >
       <el-table-column type="selection" width="50" />
-      <el-table-column type="index" width="80" label="#" />
       <el-table-column prop="userName" label="用户名" width />
       <el-table-column prop="nickName" label="昵称" width />
       <el-table-column prop="roleNames" label="角色" width>

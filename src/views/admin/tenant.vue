@@ -50,7 +50,6 @@
       @selection-change="selsChange"
     >
       <el-table-column type="selection" width="50" />
-      <el-table-column type="index" width="80" label="#" />
       <el-table-column prop="name" label="企业名称" width />
       <el-table-column prop="code" label="企业编码" width />
       <el-table-column prop="dataIsolationTypeName" label="数据隔离" width="120" />

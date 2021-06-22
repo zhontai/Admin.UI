@@ -50,7 +50,6 @@
       @selection-change="selsChange"
     >
       <el-table-column type="selection" width="50" />
-      <el-table-column type="index" width="80" label="#" />
       <el-table-column prop="name" label="角色名" width />
       <el-table-column prop="code" label="编码" width />
       <el-table-column prop="description" label="说明" width />

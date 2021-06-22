@@ -63,9 +63,7 @@
       @select="onSelect"
     >
       <el-table-column type="selection" width="50" />
-      <el-table-column type="index" width="50" label="#" />
       <el-table-column prop="label" label="接口名" width="180" />
-      <el-table-column prop="id" label="编号" width="80" />
       <el-table-column prop="path" label="接口地址" width />
       <el-table-column prop="description" label="接口描述" width />
       <!-- <el-table-column prop="createTime" label="创建时间" :formatter="formatCreatedTime" width="120" >
