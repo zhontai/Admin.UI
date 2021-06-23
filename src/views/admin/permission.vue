@@ -77,7 +77,7 @@
       </el-table-column>
       <el-table-column label="地址" width>
         <template #default="{ row }">
-          {{ row.type === 2 ? row.path : row.type === 3 ? row.apiPath : '' }}
+          {{ row.type === 2 ? row.path : row.type === 3 ? row.apiPaths : '' }}
         </template>
       </el-table-column>
       <!-- <el-table-column prop="createTime" label="创建时间" :formatter="formatCreateTime" width="100" >
