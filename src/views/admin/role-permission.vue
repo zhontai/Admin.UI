@@ -93,7 +93,7 @@ import {
 import MyConfirmButton from '@/components/my-confirm-button'
 
 export default {
-  name: 'Assign',
+  name: 'RolePermission',
   components: {
     MyConfirmButton
   },

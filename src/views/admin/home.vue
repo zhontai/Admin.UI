@@ -270,7 +270,7 @@
 
 <script>
 export default {
-  name: 'Welcome',
+  name: 'Home',
   data() {
     return {
 

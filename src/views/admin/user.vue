@@ -227,7 +227,7 @@ import MySearch from '@/components/my-search'
 import MySearchWindow from '@/components/my-search-window'
 
 export default {
-  name: 'Users',
+  name: 'User',
   components: { MyContainer, MyConfirmButton, MySearch, MySearchWindow },
   data() {
     return {

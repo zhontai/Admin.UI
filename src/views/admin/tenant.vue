@@ -356,7 +356,7 @@ import MyConfirmButton from '@/components/my-confirm-button'
 import MySelectPermission from '@/components/my-select-window/permission'
 
 export default {
-  name: 'Tenants',
+  name: 'Tenant',
   components: { MyContainer, MyConfirmButton, MySelectPermission },
   data() {
     const validatePhone = (rule, value, callback) => {

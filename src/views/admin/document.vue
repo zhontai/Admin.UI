@@ -273,7 +273,7 @@ import {
 let prevOverflow = ''
 
 export default {
-  name: 'Doc',
+  name: 'Document',
   components: { MyMarkdownEditor, MyConfirmButton },
   data() {
     const tabs = { doc: 'docTab', img: 'imgTab' }

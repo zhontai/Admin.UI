@@ -170,7 +170,7 @@ import {
   removeView,
   editView,
   addView,
-  syncView,
+  // syncView,
   getViewList,
   batchRemoveView,
   getView
@@ -178,7 +178,7 @@ import {
 import MyConfirmButton from '@/components/my-confirm-button'
 
 export default {
-  name: 'V',
+  name: 'AdminView',
   components: {
     MyConfirmButton
   },
@@ -404,29 +404,36 @@ export default {
     },
     // 同步view
     async onSync() {
-      const unFinish = true
-      if (unFinish) {
-        this.$message({
-          message: '开发中',
-          type: 'info'
-        })
-        return
-      }
+      // const unFinish = true
+      // if (unFinish) {
+      //   this.$message({
+      //     message: '开发中',
+      //     type: 'info'
+      //   })
+      //   return
+      // }
 
-      const views = []
-      this.syncLoading = true
-      const syncRes = await syncView({ views })
-      this.syncLoading = false
+      const viewFiles = require.context('@/views/admin', true, /\.vue$/)
+      const views = viewFiles.keys().reduce((views, modulePath) => {
+        const moduleName = modulePath.replace(/^\.\/(.*)\.\w+$/, '$1')
+        const value = viewFiles(modulePath)
+        views[moduleName] = value.default
+        return views
+      }, {})
+      console.log(views)
+      // this.syncLoading = true
+      // const syncRes = await syncView({ views })
+      // this.syncLoading = false
 
-      if (!syncRes?.success) {
-        return
-      }
+      // if (!syncRes?.success) {
+      //   return
+      // }
 
-      this.$message({
-        message: this.$t('view.sync'),
-        type: 'success'
-      })
-      this.onGetList()
+      // this.$message({
+      //   message: this.$t('view.sync'),
+      //   type: 'success'
+      // })
+      // this.onGetList()
     },
     // 生成前端view
     onGenerate() {
