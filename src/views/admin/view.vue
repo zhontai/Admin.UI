@@ -100,8 +100,11 @@
             style="width:100%;"
           />
         </el-form-item>
-        <el-form-item label="视图名" prop="label">
+        <el-form-item label="视图名称" prop="label">
           <el-input v-model="addForm.label" auto-complete="off" />
+        </el-form-item>
+        <el-form-item label="视图命名" prop="label">
+          <el-input v-model="addForm.name" auto-complete="off" />
         </el-form-item>
         <el-form-item label="视图地址" prop="path">
           <el-input v-model="addForm.path" auto-complete="off" />
@@ -141,8 +144,11 @@
             style="width:100%;"
           />
         </el-form-item>
-        <el-form-item label="视图名" prop="label">
+        <el-form-item label="视图名称" prop="label">
           <el-input v-model="editForm.label" auto-complete="off" />
+        </el-form-item>
+        <el-form-item label="视图命名" prop="label">
+          <el-input v-model="editForm.name" auto-complete="off" />
         </el-form-item>
         <el-form-item label="视图地址" prop="path">
           <el-input v-model="editForm.path" auto-complete="off" />
@@ -203,8 +209,9 @@ export default {
       editForm: {
         id: 0,
         parentIds: [],
-        path: '',
         label: '',
+        name: '',
+        path: '',
         enabled: false,
         description: ''
       },
@@ -219,8 +226,9 @@ export default {
       // 新增界面数据
       addForm: {
         parentIds: [],
-        path: '',
         label: '',
+        name: '',
+        path: '',
         enabled: true,
         description: ''
       },
