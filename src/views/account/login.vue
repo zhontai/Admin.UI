@@ -79,6 +79,7 @@
 import { getVerifyCode } from '@/api/admin/auth'
 
 export default {
+  name: 'Login',
   data() {
     return {
       form: {

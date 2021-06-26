@@ -17,15 +17,16 @@ Router.prototype.push = function push(location) {
 
 Vue.use(Router)
 
-export const getComponent = (view) => { // 路由懒加载
-  return (resolve) => require([`@/views${view}`], resolve)
+// 路由懒加载
+export const getComponent = (view) => {
+  return (resolve) => require([`@/views/${view}`], resolve)
 }
 
 const constantRoutes = [
   {
     path: '/login',
     // name: 'Login',
-    component: getComponent('/account/login'),
+    component: getComponent('account/login'),
     hidden: true,
     meta: {
       title: '登录'
@@ -34,13 +35,13 @@ const constantRoutes = [
   {
     path: '/callback',
     // name: 'Callback',
-    component: getComponent('/account/login-callback'),
+    component: getComponent('account/login-callback'),
     hidden: true
   },
   {
     path: '/refresh',
     // name: 'Refresh',
-    component: getComponent('/account/refresh-token'),
+    component: getComponent('account/refresh-token'),
     hidden: true
   }
 ]
@@ -102,7 +103,7 @@ function generateRoutes(menus = []) {
 
   routes.children.push({
     path: '*',
-    component: getComponent('/error/404'),
+    component: getComponent('error/404'),
     hidden: true
   })
 

@@ -241,7 +241,7 @@ import MyConfirmButton from '@/components/my-confirm-button'
 import MySelectPermission from '@/components/my-select-window/permission'
 
 export default {
-  name: 'Roles',
+  name: 'Position',
   components: { MyContainer, MyConfirmButton, MySelectPermission },
   data() {
     return {

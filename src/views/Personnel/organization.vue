@@ -193,7 +193,7 @@ import {
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 export default {
-  name: 'Dictionary',
+  name: 'Organization',
   components: { MyContainer, MyConfirmButton },
   data() {
     return {

@@ -61,8 +61,8 @@
       @select="onSelect"
     >
       <el-table-column type="selection" width="50" />
-      <el-table-column prop="label" label="视图名" width="180" />
-      <el-table-column prop="id" label="编号" width="80" />
+      <el-table-column prop="label" label="视图名称" width="180" />
+      <el-table-column prop="name" label="视图命名" width="180" />
       <el-table-column prop="path" label="视图地址" width />
       <el-table-column prop="description" label="视图描述" width />
       <el-table-column prop="enabled" label="状态" width="100">
@@ -170,7 +170,7 @@ import {
   removeView,
   editView,
   addView,
-  // syncView,
+  syncView,
   getViewList,
   batchRemoveView,
   getView
@@ -197,7 +197,6 @@ export default {
       editLoading: false,
       editFormRules: {
         parentIds: [{ required: true, message: '请选择所属模块', trigger: 'change' }],
-        path: [{ required: true, message: '请输入视图地址', trigger: 'blur' }],
         label: [{ required: true, message: '请输入视图名', trigger: 'blur' }]
       },
       // 编辑界面数据
@@ -215,7 +214,6 @@ export default {
       addLoading: false,
       addFormRules: {
         parentIds: [{ required: true, message: '请选择所属模块', trigger: 'change' }],
-        path: [{ required: true, message: '请输入视图地址', trigger: 'blur' }],
         label: [{ required: true, message: '请输入视图名', trigger: 'blur' }]
       },
       // 新增界面数据
@@ -404,36 +402,34 @@ export default {
     },
     // 同步view
     async onSync() {
-      // const unFinish = true
-      // if (unFinish) {
-      //   this.$message({
-      //     message: '开发中',
-      //     type: 'info'
-      //   })
-      //   return
-      // }
-
-      const viewFiles = require.context('@/views/admin', true, /\.vue$/)
+      const viewFiles = require.context('@/views', true, /\.vue$/)
       const views = viewFiles.keys().reduce((views, modulePath) => {
-        const moduleName = modulePath.replace(/^\.\/(.*)\.\w+$/, '$1')
-        const value = viewFiles(modulePath)
-        views[moduleName] = value.default
+        const path = modulePath.replace(/^\.\/(.*)\.\w+$/, '$1')
+        const view = viewFiles(modulePath)
+        const name = view.default.name
+        const excludeNames = ['Login', 'LoginCallback', 'RefreshToken', 'Error404']
+        if (!excludeNames.includes(name)) {
+          views[views.length] = {
+            path: path,
+            name: name
+          }
+        }
         return views
-      }, {})
-      console.log(views)
-      // this.syncLoading = true
-      // const syncRes = await syncView({ views })
-      // this.syncLoading = false
+      }, [])
 
-      // if (!syncRes?.success) {
-      //   return
-      // }
+      this.syncLoading = true
+      const syncRes = await syncView({ views })
+      this.syncLoading = false
 
-      // this.$message({
-      //   message: this.$t('view.sync'),
-      //   type: 'success'
-      // })
-      // this.onGetList()
+      if (!syncRes?.success) {
+        return
+      }
+
+      this.$message({
+        message: this.$t('view.sync'),
+        type: 'success'
+      })
+      this.onGetList()
     },
     // 生成前端view
     onGenerate() {
