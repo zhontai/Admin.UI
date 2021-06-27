@@ -103,7 +103,7 @@
         <el-form-item label="视图名称" prop="label">
           <el-input v-model="addForm.label" auto-complete="off" />
         </el-form-item>
-        <el-form-item label="视图命名" prop="label">
+        <el-form-item label="视图命名" prop="name">
           <el-input v-model="addForm.name" auto-complete="off" />
         </el-form-item>
         <el-form-item label="视图地址" prop="path">
@@ -147,7 +147,7 @@
         <el-form-item label="视图名称" prop="label">
           <el-input v-model="editForm.label" auto-complete="off" />
         </el-form-item>
-        <el-form-item label="视图命名" prop="label">
+        <el-form-item label="视图命名" prop="name">
           <el-input v-model="editForm.name" auto-complete="off" />
         </el-form-item>
         <el-form-item label="视图地址" prop="path">

@@ -8,9 +8,9 @@
       style="width: 100%;height:100%;"
     >
       <el-table-column type="index" width="80" label="#" />
+      <el-table-column prop="description" label="缓存名" width />
       <el-table-column prop="name" label="键名" width />
       <el-table-column prop="value" label="键值" width />
-      <el-table-column prop="description" label="缓存名" width />
       <el-table-column v-if="checkPermission(['api:admin:cache:clear'])" label="操作" width="180">
         <template v-if="checkPermission(['api:admin:cache:clear'])" #default="{ $index, row }">
           <my-confirm-button
