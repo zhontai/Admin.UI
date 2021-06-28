@@ -11,7 +11,7 @@
 import store from '@/store'
 /**
  * 检查权限
- * @param {String | Array} value
+ * @param {String | Array} value 权限点
  */
 export default function checkPermission(value) {
   const permissions = store.getters && store.getters.permissions

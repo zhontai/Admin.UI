@@ -81,7 +81,7 @@
     </el-table>
 
     <!--新增窗口-->
-    <el-dialog
+    <my-window
       v-if="checkPermission(['api:admin:view:add'])"
       title="新增"
       :visible.sync="addFormVisible"
@@ -122,7 +122,7 @@
           <my-confirm-button type="submit" :validate="addFormValidate" :loading="addLoading" @click="onAddSubmit" />
         </div>
       </template>
-    </el-dialog>
+    </my-window>
 
     <!--编辑窗口-->
     <el-dialog
@@ -181,12 +181,14 @@ import {
   batchRemoveView,
   getView
 } from '@/api/admin/view'
+import MyWindow from '@/components/my-window'
 import MyConfirmButton from '@/components/my-confirm-button'
 
 export default {
   name: 'AdminView',
   components: {
-    MyConfirmButton
+    MyConfirmButton,
+    MyWindow
   },
   data() {
     return {
