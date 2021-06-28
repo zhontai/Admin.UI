@@ -192,6 +192,18 @@ input:-webkit-autofill {
 }
 
 //拖拽
+.user-select--none {
+  user-select: none;
+}
 .my-draggable__handle{
-  cursor: move;
+  cursor:move
+}
+.my-draggable__clone{
+  position:absolute;
+  user-select:none;
+  opacity:.6;
+  z-index:2000
+}
+.my-draggable__clone--translate{
+  transition:all .2s
 }

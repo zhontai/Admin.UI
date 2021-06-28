@@ -62,8 +62,8 @@ const defaultOptions = {
 
   // 限制拖拽范围
   range: {
-    left: -10000,
-    top: -10000,
+    left: 0,
+    top: 0,
     width: 10000,
     height: 10000
   },
@@ -77,7 +77,7 @@ const defaultOptions = {
   clone: false,
 
   // 拖拽放置后动画返回原来位置，clone不为false时才有效
-  revert: true,
+  revert: false,
 
   // 分组名称， 与droppable配合使用
   group: null,
@@ -143,11 +143,22 @@ class Draggable extends Events {
       options === false ? { disabled: true } : options || {})
 
     const o = this.options
-    this.handle = o.handle ? (this.el.querySelector(o.handle) || this.el) : this.el
+
     if (!o.disabled) {
       addClass(this.el, DRAGGABLE_CLASS)
-      addClass(this.handle, DRAGGABLE_HANDLE_CLASS)
-      this.on(this.handle, 'mousedown', this.handleMouseDown)
+      if (o.handle) {
+        const querySelectors = o.handle.split(',')
+        querySelectors.forEach(querySelector => {
+          const handle = this.el.querySelector(querySelector)
+          if (handle) {
+            addClass(handle, DRAGGABLE_HANDLE_CLASS)
+            this.on(handle, 'mousedown', this.handleMouseDown)
+          }
+        })
+      } else {
+        addClass(this.el, DRAGGABLE_HANDLE_CLASS)
+        this.on(this.el, 'mousedown', this.handleMouseDown)
+      }
     }
     this.setRange()
   }
@@ -493,6 +504,12 @@ class Draggable extends Events {
     metches.forEach(node => {
       node.entered && node.__droppable__.$emit('drop', this, metches)
     })
+
+    if (this.options.clone) {
+      const data = this.dragData
+      setStyle(this.el, this.options.relativePosition ? 'marginLeft' : 'left', `${data.left}px`)
+      setStyle(this.el, this.options.relativePosition ? 'marginTop' : 'top', `${data.top}px`)
+    }
   }
 
   /**
@@ -501,9 +518,21 @@ class Draggable extends Events {
   destroy() {
     super.destroy()
     this.handleAnimationEnd()
-    this.off(this.handle, 'mousedown', this.handleMouseDown)
+
     removeClass(this.el, DRAGGABLE_CLASS)
-    removeClass(this.handle, DRAGGABLE_HANDLE_CLASS)
+    if (this.options.handle) {
+      const querySelectors = this.options.handle.split(',')
+      querySelectors.forEach(querySelector => {
+        const handle = this.el.querySelector(querySelector)
+        if (handle) {
+          removeClass(this.handle, DRAGGABLE_HANDLE_CLASS)
+          this.off(this.handle, 'mousedown', this.handleMouseDown)
+        }
+      })
+    } else {
+      this.off(this.el, 'mousedown', this.handleMouseDown)
+      removeClass(this.el, DRAGGABLE_HANDLE_CLASS)
+    }
   }
 }
 

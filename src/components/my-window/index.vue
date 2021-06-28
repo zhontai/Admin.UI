@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    v-draggable="{ host:'.el-dialog', handle:'.el-dialog__header', relativePosition:true}"
+    v-draggable="{ host:'.el-dialog', handle:'.el-dialog__header,.el-dialog__footer', relativePosition:true}"
     :title="title"
     :visible.sync="visible"
     :modal="modal"
