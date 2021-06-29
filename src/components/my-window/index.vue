@@ -1,6 +1,7 @@
 <template>
+  <!-- v-resizable="{ host:'.el-dialog' }" -->
   <el-dialog
-    v-draggable="{ host:'.el-dialog', handle:'.el-dialog__header,.el-dialog__footer', relativePosition:true}"
+    v-draggable="dragOptions"
     :title="title"
     :visible.sync="visible"
     :modal="modal"
@@ -27,24 +28,49 @@
 
 <script>
 import draggable from '@/directive/draggable'
-
+import resizable from '@/directive/resizable'
 /**
- * 窗口
- * 使用说明
-    import MyWindow from '@/components/my-window'
-    components: { MyWindow }
+ * 窗口 my-window
 
-    <!--窗口-->
+  <my-window
+    v-if="checkPermission([''])"
+    title=""
+    :visible.sync="visibleAdd"
+    :close-on-click-modal="false"
+    @close="onCloseAdd"
+  >
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click.native="visibleAdd = false">取消</el-button>
+        <my-confirm-button type="submit" :validate="validateAdd" :loading="loadingAdd" @click="onSubmitAdd" />
+      </div>
+    </template>
+  </my-window>
+
+  import MyWindow from '@/components/my-window'
+
+  export default {
+    components: { MyWindow }
+  }
 */
 export default {
   name: 'MyWindow',
   directives: {
-    draggable
+    draggable,
+    resizable
   },
   props: {
     title: {
       type: String,
       default: ''
+    },
+    draggable: {
+      type: Boolean,
+      default: true
+    },
+    footerDraggable: {
+      type: Boolean,
+      default: true
     },
     visible: {
       type: Boolean,
@@ -56,7 +82,7 @@ export default {
     },
     inline: {
       type: Boolean,
-      default: true
+      default: false
     },
     modalAppendToBody: {
       type: Boolean,
@@ -76,6 +102,21 @@ export default {
     }
   },
   computed: {
+    dragOptions() {
+      const handles = []
+      if (this.draggable) {
+        handles.push('.el-dialog__header')
+      }
+      if (this.footerDraggable) {
+        handles.push('.el-dialog__footer')
+      }
+      return {
+        host: '.el-dialog',
+        handle: handles,
+        disabled: !this.draggable && !this.footerDraggable,
+        relativePosition: true
+      }
+    }
   },
   watch: {
 

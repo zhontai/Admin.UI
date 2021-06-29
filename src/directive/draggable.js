@@ -6,6 +6,7 @@ import Events from '@/utils/events'
 
 // 拖拽容器的className
 const DRAGGABLE_CLASS = 'my-draggable'
+const DRAGGABLE_RELATIVE_CLASS = 'my-draggable__relative'
 
 // 拖拽句柄的元素className
 const DRAGGABLE_HANDLE_CLASS = 'my-draggable__handle'
@@ -111,7 +112,7 @@ class Draggable extends Events {
    * 构造函数
    * @param {HtmlDocument} document HTML 文档对象
    * @param {HtmlElement} el 需要拖拽的元素
-   * @param {object} [options] 参数选项，默认值：[defaultOptions]{@link module:utils/directives/draggable~defaultOptions}
+   * @param {object} [options] 参数选项，默认值：[defaultOptions]{@link module:@/directive/draggable~defaultOptions}
    */
   constructor(document, el, options) {
     super()
@@ -124,14 +125,14 @@ class Draggable extends Events {
      * 需要拖拽的元素
      * @type {HtmlElement}
      */
-    this.el = options.host ? (el.querySelector(options.host) || el) : el
+    this.el = this.getElement(el, options.host)
     this.init(options)
   }
 
   /**
    * 初始化返回, 实例化时调用
    * @private
-   * @param {object} [options] 参数选项，默认值：[defaultOptions]{@link module:utils/directives/draggable~defaultOptions}
+   * @param {object} [options] 参数选项，默认值：[defaultOptions]{@link module:@/directive/draggable~defaultOptions}
    */
   init(options) {
     /**
@@ -144,23 +145,70 @@ class Draggable extends Events {
 
     const o = this.options
 
+    this.handles = []
     if (!o.disabled) {
-      addClass(this.el, DRAGGABLE_CLASS)
+      addClass(this.el, o.relativePosition ? DRAGGABLE_RELATIVE_CLASS : DRAGGABLE_CLASS)
       if (o.handle) {
-        const querySelectors = o.handle.split(',')
-        querySelectors.forEach(querySelector => {
-          const handle = this.el.querySelector(querySelector)
+        const type = this.getType(o.handle)
+        if (type === 'array') {
+          o.handle.forEach(querySelector => {
+            const handle = this.getElement(this.el, querySelector)
+            if (handle) {
+              this.handles.push(handle)
+            }
+          })
+        } else {
+          const handle = this.getElement(this.el, o.handle)
           if (handle) {
-            addClass(handle, DRAGGABLE_HANDLE_CLASS)
-            this.on(handle, 'mousedown', this.handleMouseDown)
+            this.handles.push(handle)
           }
-        })
-      } else {
-        addClass(this.el, DRAGGABLE_HANDLE_CLASS)
-        this.on(this.el, 'mousedown', this.handleMouseDown)
+        }
       }
+      if (this.handles.length === 0) {
+        this.handles.push(this.el)
+      }
+      this.handles.forEach(handle => {
+        addClass(handle, DRAGGABLE_HANDLE_CLASS)
+        this.on(handle, 'mousedown', this.handleMouseDown)
+      })
     }
     this.setRange()
+  }
+
+  getType(obj) {
+    const toString = Object.prototype.toString
+    const map = {
+      '[object Boolean]': 'boolean',
+      '[object Number]': 'number',
+      '[object String]': 'string',
+      '[object Function]': 'function',
+      '[object Array]': 'array',
+      '[object Date]': 'date',
+      '[object RegExp]': 'regExp',
+      '[object Undefined]': 'undefined',
+      '[object Null]': 'null',
+      '[object Object]': 'object'
+    }
+    return map[toString.call(obj)]
+  }
+
+  /**
+   * 通过选择器、元素对象、函数获取元素对象
+   * @private
+   * @param {HTMLElement} el 容器元素
+   * @param {HTMLElement|String|Function|*} selector
+   * @return {HTMLElement}
+   */
+  getElement(el, selector) {
+    const type = typeof selector
+    if (type === 'function') {
+      return selector()
+    } else if (type === 'string') {
+      return el.querySelector(selector)
+    } else if (selector instanceof HTMLElement) {
+      return selector
+    }
+    return null
   }
 
   /**
@@ -168,10 +216,7 @@ class Draggable extends Events {
    *  @private
    */
   setRange() {
-    const target = this.options.target
-    if (typeof target === 'string') {
-      this.options.target = this.document.querySelector(target)
-    }
+    this.options.target = this.getElement(this.document, this.options.target)
     if (this.options.target instanceof HTMLElement) {
       const rect = this.options.target.getBoundingClientRect()
       this.options.range = {
@@ -185,7 +230,7 @@ class Draggable extends Events {
 
   /**
    *  当选项参数改变时调用，更新组件
-   * @param {object} [options] 参数选项, 参考：[defaultOptions]{@link module:utils/directives/draggable~defaultOptions}
+   * @param {object} [options] 参数选项, 参考：[defaultOptions]{@link module:@/directive/draggable~defaultOptions}
    */
   reset(options) {
     this.destroy()
@@ -519,20 +564,11 @@ class Draggable extends Events {
     super.destroy()
     this.handleAnimationEnd()
 
-    removeClass(this.el, DRAGGABLE_CLASS)
-    if (this.options.handle) {
-      const querySelectors = this.options.handle.split(',')
-      querySelectors.forEach(querySelector => {
-        const handle = this.el.querySelector(querySelector)
-        if (handle) {
-          removeClass(this.handle, DRAGGABLE_HANDLE_CLASS)
-          this.off(this.handle, 'mousedown', this.handleMouseDown)
-        }
-      })
-    } else {
-      this.off(this.el, 'mousedown', this.handleMouseDown)
-      removeClass(this.el, DRAGGABLE_HANDLE_CLASS)
-    }
+    removeClass(this.el, this.options.relativePosition ? DRAGGABLE_RELATIVE_CLASS : DRAGGABLE_CLASS)
+    this.handles.forEach(handle => {
+      this.off(handle, 'mousedown', this.handleMouseDown)
+      removeClass(handle, DRAGGABLE_HANDLE_CLASS)
+    })
   }
 }
 

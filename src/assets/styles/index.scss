@@ -195,6 +195,13 @@ input:-webkit-autofill {
 .user-select--none {
   user-select: none;
 }
+.my-draggable{
+  display: inline-block;
+  position: absolute;
+}
+.my-draggable__relative{
+  position: relative;
+}
 .my-draggable__handle{
   cursor:move
 }
