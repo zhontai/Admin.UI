@@ -24,7 +24,7 @@ const noop = function() {
  * @const
  * @type {object}
  * @property {boolean} [disabled=false] 是否禁用
- * @property {string} [handles=all]  可resize的方向，可选值 e/s/w/n/all
+ * @property {string} [handles=all]  可resize的方向，可选值 e,s,w,n,[es,se],[en,ne],[ws,sw],[wn,nw],all
  * @property {number} [minWidth=20] 可resize最小宽度
  * @property {number} [minHeight=20] 可resize最小高度
  * @property {number} [maxWidth=10000] 可resize最大宽度
@@ -38,7 +38,7 @@ const defaultOptions = {
   // 宿主元素选择器
   host: null,
   disabled: false,
-  handles: 'all', // 可resize的方向，可选值 e/s/w/n/all
+  handles: 'all', // 可resize的方向，可选值 e,s,w,n,[es,se],[en,ne],[ws,sw],[wn,nw],all
   minWidth: 20,
   minHeight: 20,
   maxWidth: 10000,
@@ -279,7 +279,21 @@ class Resizable extends Events {
         setStyle(this.el, 'width', `${data.width - data.deltaWidth}px`)
         break
       case 'n':
+        setStyle(this.el, 'height', `${data.height - data.deltaHeight}px`)
         !onlySize && setStyle(this.el, 'top', `${data.top}px`)
+        break
+      case 'sn' || 'ns':
+        setStyle(this.el, 'width', `${data.width - data.deltaWidth}px`)
+        setStyle(this.el, 'height', `${data.height - data.deltaHeight}px`)
+        !onlySize && setStyle(this.el, 'top', `${data.top}px`)
+        break
+      case 'ws' || 'sw':
+        setStyle(this.el, 'width', `${data.width - data.deltaWidth}px`)
+        setStyle(this.el, 'height', `${data.height - data.deltaHeight}px`)
+        !onlySize && setStyle(this.el, 'left', `${data.left}px`)
+        break
+      case 'se' || 'es':
+        setStyle(this.el, 'width', `${data.width - data.deltaWidth}px`)
         setStyle(this.el, 'height', `${data.height - data.deltaHeight}px`)
         break
       default:

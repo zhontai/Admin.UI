@@ -2,6 +2,7 @@
   <!-- v-resizable="{ host:'.el-dialog' }" -->
   <el-dialog
     v-draggable="dragOptions"
+    v-resizable="{ host:'.el-dialog',handles:'e,s,es,se' }"
     :title="title"
     :visible.sync="visible"
     :modal="modal"
@@ -70,7 +71,7 @@ export default {
     },
     footerDraggable: {
       type: Boolean,
-      default: true
+      default: false
     },
     visible: {
       type: Boolean,

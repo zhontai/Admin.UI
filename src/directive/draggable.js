@@ -243,7 +243,7 @@ class Draggable extends Events {
    * @param {MouseEvent} e 原生 MouseEvent
    */
   handleMouseDown(e) {
-    // 防止跟随鼠标移动
+    // 防止宿主跟随鼠标移动
     e.preventDefault()
     // 设置延迟开始拖拽
     this.timer = setTimeout(() => {
