@@ -74,7 +74,7 @@ class Resizable extends Events {
      * 需要拖拽的元素
      * @type {HtmlElement}
      */
-    this.el = this.getElement(el, options.host)
+    this.el = this.getElement(el, options.host) || el
     this.init(options)
   }
 
