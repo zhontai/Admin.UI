@@ -303,9 +303,10 @@ export default {
     resizeOptions() {
       return {
         handles: 'e',
-        edge: 10,
+        edge: 5,
         onlySize: true,
-        // minWidth: 200,
+        minWidth: 201,
+        maxWidth: 500,
         disabled: this.isCollapse
       }
     }

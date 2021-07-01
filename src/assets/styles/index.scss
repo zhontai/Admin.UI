@@ -82,7 +82,6 @@ a, a:focus, a:hover {
   font-size: 22px;
   background: #409EFF;
   color:#fff;
-  width: 100%;
   overflow: hidden;
   padding-left: 20px;
 }
@@ -134,9 +133,9 @@ a, a:focus, a:hover {
   height: 100%;
   border: none;
 }
-.container .aside .el-menu:not(.el-menu--collapse) {
-  width: 200px;
-}
+// .container .aside .el-menu:not(.el-menu--collapse) {
+//   width: 200px;
+// }
 .container .main aside .el-menu--collapse{
   width:65px;
 }

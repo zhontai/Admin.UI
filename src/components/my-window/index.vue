@@ -129,7 +129,7 @@ export default {
       return {
         host: '.el-dialog',
         handles: 'e,s,w,es,se,ws,sw',
-        edge: 10,
+        edge: 5,
         disabled: !this.resizable,
         offset: {
           left: 'marginLeft',

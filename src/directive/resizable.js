@@ -103,9 +103,10 @@ class Resizable extends Events {
     this.isMouseEnter = false
     if (!o.disabled) {
       addClass(this.el, RESIZABLE_CLASS)
-      this.on(this.el, 'mousedown', this.handleMouseDown)
-      this.on(this.el, 'mouseleave', this.handleMouseLeave)
-      this.on(this.el, 'mouseenter', this.handleMouseEnter)
+      // this.on(this.el, 'mousedown', this.handleMouseDown)
+      // this.on(this.el, 'mouseleave', this.handleMouseLeave)
+      // this.on(this.el, 'mouseenter', this.handleMouseEnter)
+      this.off(this.document, 'mousemove', this.handleMouseMove)
       this.on(this.document, 'mousemove', this.handleMouseMove)
     }
   }
@@ -139,31 +140,34 @@ class Resizable extends Events {
   }
 
   handleMouseDown(e) {
-    const dir = this.getDirection(e)
-    if (!dir) return
-    this.startResize(dir, e.clientX, e.clientY)
+    this.startResize(e.clientX, e.clientY)
+    this.off(this.document, 'mouseup', this.handleMouseUp)
     this.on(this.document, 'mouseup', this.handleMouseUp)
     return false
   }
 
-  handleMouseLeave() {
-    this.isMouseEnter = false
-    !this.isResizing && this.setCursor(null)
-    return false
-  }
+  // handleMouseLeave() {
+  //   this.isMouseEnter = false
+  //   !this.isResizing && this.setCursor(null)
+  //   return false
+  // }
 
-  handleMouseEnter() {
-    this.isMouseEnter = true
-    return false
-  }
+  // handleMouseEnter() {
+  //   this.isMouseEnter = true
+  //   return false
+  // }
 
   handleMouseMove(e) {
     if (this.options.disabled) return
 
-    // 鼠标进入容器才计算resize方向
-    if (this.isMouseEnter && !this.isResizing) {
+    if (!this.isResizing) {
       const dir = this.getDirection(e)
+      this.dir = dir
       this.setCursor(dir)
+      if (dir) {
+        this.off(this.document, 'mousedown', this.handleMouseDown)
+        this.on(this.document, 'mousedown', this.handleMouseDown)
+      }
     }
     if (this.isResizing) {
       this.resize(e)
@@ -174,6 +178,7 @@ class Resizable extends Events {
 
   handleMouseUp() {
     this.stopResize()
+    this.setCursor(null)
     this.off(this.document, 'mouseup', this.handleMouseUp)
   }
 
@@ -201,13 +206,14 @@ class Resizable extends Events {
     return null
   }
 
-  startResize(dir, clientX, clientY) {
+  startResize(clientX, clientY) {
+    this.isResizing = true
     const left = this.el.offsetLeft
     const top = this.el.offsetTop
     const width = this.el.offsetWidth
     const height = this.el.offsetHeight
     this.resizeData = {
-      dir: dir,
+      dir: this.dir,
       startLeft: left,
       startTop: top,
       left: left,
@@ -221,7 +227,6 @@ class Resizable extends Events {
       deltaWidth: width - Number.parseInt(getStyle(this.el, 'width')), // outerWidth 与 元素 width 的差值
       deltaHeight: height - Number.parseInt(getStyle(this.el, 'height')) // outerHeight 与 元素 height 的差值
     }
-    this.isResizing = true
     this.setBodySelect(true)
     this.options.onStartResize(this.resizeData)
     addClass(this.el, RESIZING_CLASS)
@@ -338,9 +343,11 @@ class Resizable extends Events {
    */
   destroy() {
     super.destroy()
-    this.off(this.el, 'mousedown', this.handleMouseDown)
-    this.off(this.el, 'mouseleave', this.handleMouseLeave)
-    this.off(this.el, 'mouseenter', this.handleMouseEnter)
+
+    // this.off(this.el, 'mousedown', this.handleMouseDown)
+    // this.off(this.el, 'mouseleave', this.handleMouseLeave)
+    // this.off(this.el, 'mouseenter', this.handleMouseEnter)
+
     this.off(this.document, 'mousemove', this.handleMouseMove)
     removeClass(this.el, RESIZABLE_CLASS)
   }
