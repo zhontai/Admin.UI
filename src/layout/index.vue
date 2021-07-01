@@ -1,8 +1,8 @@
 <template>
   <el-container class="container" style="height: 100%;">
-    <el-aside class="aside" :class="collapsedClass" width>
+    <el-aside v-resizable="resizeOptions" class="aside" :class="collapsedClass" width>
       <div class="logo collapsedLogo" :class="isCollapse ? 'logo-collapse' : ''">
-        <router-link to="/" tag="div" class="logo-text" style="font-size: 22px;">
+        <router-link to="/">
           {{ isCollapse ? projectNameShort : projectName }}
         </router-link>
       </div>
@@ -190,6 +190,7 @@ import { listToTree, getTreeParents } from '@/utils'
 import Sortable from 'sortablejs'
 import { isExternalLink } from '@/utils/validate'
 import { toLogout } from '@/router'
+import resizable from '@/directive/resizable'
 
 if (!Element.prototype.closest) {
   if (!Element.prototype.matches) {
@@ -211,6 +212,9 @@ export default {
   name: 'AppMain',
   components: {
     MyMenuItem
+  },
+  directives: {
+    resizable
   },
   data() {
     return {
@@ -295,6 +299,15 @@ export default {
     },
     canCloseAll() {
       return this.tabsList.length > 1
+    },
+    resizeOptions() {
+      return {
+        handles: 'e',
+        edge: 10,
+        onlySize: true,
+        // minWidth: 200,
+        disabled: this.isCollapse
+      }
     }
   },
   watch: {

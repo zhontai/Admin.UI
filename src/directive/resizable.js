@@ -30,6 +30,9 @@ const noop = function() {
  * @property {number} [maxWidth=10000] 可resize最大宽度
  * @property {number} [maxHeight=10000] 可resize最大高度
  * @property {number} [edge=5] 距离边缘多少时显示鼠标Cursor
+ * @property {Object} [offset={}] 位置定义
+ * @property {string} [offset.left=left] x位置名称
+ * @property {string} [offset.top=top] y位置名称
  * @property {function} [onStartResize] 开始改变尺寸时回调
  * @property {function} [onStopResize] 结束改变尺寸时回调
  * @property {function} [onResize] 正在改变尺寸时回调
@@ -38,14 +41,21 @@ const defaultOptions = {
   // 宿主元素选择器
   host: null,
   disabled: false,
-  handles: 'all', // 可resize的方向，可选值 e,s,w,n,[es,se],[en,ne],[ws,sw],[wn,nw],all
+  // 可resize的方向，可选值 e,s,w,n,[es,se],[en,ne],[ws,sw],[wn,nw],all
+  handles: 'all',
   minWidth: 20,
   minHeight: 20,
   maxWidth: 10000,
   maxHeight: 10000,
   // 是否只改变width和height的值，在layout组件不需要改变left 和 top
   onlySize: false,
-  edge: 5, // 距离边缘多少时显示鼠标Cursor
+  // 距离边缘多少时显示鼠标Cursor
+  edge: 5,
+  // 位置定义
+  offset: {
+    left: 'left',
+    top: 'top'
+  },
   onStartResize: noop,
   onStopResize: noop,
   onResize: noop
@@ -181,6 +191,7 @@ class Resizable extends Events {
     } else if (clientX < data.left + data.width + edge && clientX > data.left + data.width - edge) {
       dir += 'e'
     }
+
     for (let i = 0; i < this.handleArray.length; i++) {
       const handle = this.handleArray[i].trim()
       if (handle === 'all' || handle === dir) {
@@ -273,24 +284,24 @@ class Resizable extends Events {
         break
       case 'w':
         setStyle(this.el, 'width', `${data.width - data.deltaWidth}px`)
-        !onlySize && setStyle(this.el, 'left', `${data.left}px`)
+        !onlySize && setStyle(this.el, this.options.offset.left, `${data.left}px`)
         break
       case 'e':
         setStyle(this.el, 'width', `${data.width - data.deltaWidth}px`)
         break
       case 'n':
         setStyle(this.el, 'height', `${data.height - data.deltaHeight}px`)
-        !onlySize && setStyle(this.el, 'top', `${data.top}px`)
+        !onlySize && setStyle(this.el, this.options.offset.top, `${data.top}px`)
         break
       case 'sn' || 'ns':
         setStyle(this.el, 'width', `${data.width - data.deltaWidth}px`)
         setStyle(this.el, 'height', `${data.height - data.deltaHeight}px`)
-        !onlySize && setStyle(this.el, 'top', `${data.top}px`)
+        !onlySize && setStyle(this.el, this.options.offset.top, `${data.top}px`)
         break
       case 'ws' || 'sw':
         setStyle(this.el, 'width', `${data.width - data.deltaWidth}px`)
         setStyle(this.el, 'height', `${data.height - data.deltaHeight}px`)
-        !onlySize && setStyle(this.el, 'left', `${data.left}px`)
+        !onlySize && setStyle(this.el, this.options.offset.left, `${data.left}px`)
         break
       case 'se' || 'es':
         setStyle(this.el, 'width', `${data.width - data.deltaWidth}px`)
@@ -299,8 +310,8 @@ class Resizable extends Events {
       default:
         setStyle(this.el, 'width', `${data.width - data.deltaWidth}px`)
         setStyle(this.el, 'height', `${data.height - data.deltaHeight}px`)
-        !onlySize && setStyle(this.el, 'left', `${data.left}px`)
-        !onlySize && setStyle(this.el, 'top', `${data.top}px`)
+        !onlySize && setStyle(this.el, this.options.offset.left, `${data.left}px`)
+        !onlySize && setStyle(this.el, this.options.offset.top, `${data.top}px`)
         break
     }
     this.options.onResize(this.resizeData)
@@ -359,8 +370,8 @@ export default {
     el.__resizable__ = new Resizable(window.document, el, binding.value)
   },
   componentUpdated(el, binding) {
-    // const instance = el.__resizable__
-    // instance.reset(binding.value)
+    const instance = el.__resizable__
+    instance.reset(binding.value)
   },
   /**
    * 元素在页面销毁时回调，在这里销毁Resizable实例

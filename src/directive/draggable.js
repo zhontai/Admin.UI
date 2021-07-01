@@ -6,7 +6,6 @@ import Events from '@/utils/events'
 
 // 拖拽容器的className
 const DRAGGABLE_CLASS = 'my-draggable'
-const DRAGGABLE_RELATIVE_CLASS = 'my-draggable__relative'
 
 // 拖拽句柄的元素className
 const DRAGGABLE_HANDLE_CLASS = 'my-draggable__handle'
@@ -40,6 +39,10 @@ const noop = function() {
  * @property {number} [range.top=-10000] y坐标位置
  * @property {number} [range.width=10000] 最大宽度
  * @property {number} [range.height=10000] 最大高度
+ * @property {Object} [offset={}] 位置定义
+ * @property {string} [offset.left=left] x位置名称
+ * @property {string} [offset.top=top] y位置名称
+ * @property {Object} [autoCalcRange={}] 自动计算范围
  * @property {HTMLElement} [target=null] 限制在元素范围内拖拽
  * @property {boolean|function} [clone=false] 克隆拖拽对象，可以是函数返回HtmlElement
  * @property {boolean} [revert=true] 拖拽放置后动画返回原来位置，clone不为false时才有效
@@ -63,16 +66,22 @@ const defaultOptions = {
 
   // 限制拖拽范围
   range: {
-    left: 0,
-    top: 0,
+    left: -10000,
+    top: -10000,
     width: 10000,
     height: 10000
   },
   // 在元素范围内
   target: null,
 
-  // 相对定位
-  relativePosition: false,
+  // 位置定义
+  offset: {
+    left: 'left',
+    top: 'top'
+  },
+
+  // 自动计算范围
+  autoCalcRange: false,
 
   // 克隆拖拽，boolean 或 function
   clone: false,
@@ -121,11 +130,13 @@ class Draggable extends Events {
      * @type {HtmlDocument}
      */
     this.document = document
+    this.parent = el
     /**
      * 需要拖拽的元素
      * @type {HtmlElement}
      */
-    this.el = this.getElement(el, options.host)
+
+    this.el = this.getElement(el, options.host) || el
     this.init(options)
   }
 
@@ -147,7 +158,7 @@ class Draggable extends Events {
 
     this.handles = []
     if (!o.disabled) {
-      addClass(this.el, o.relativePosition ? DRAGGABLE_RELATIVE_CLASS : DRAGGABLE_CLASS)
+      addClass(this.el, DRAGGABLE_CLASS)
       if (o.handle) {
         const type = this.getType(o.handle)
         if (type === 'array') {
@@ -172,6 +183,7 @@ class Draggable extends Events {
         this.on(handle, 'mousedown', this.handleMouseDown)
       })
     }
+
     this.setRange()
   }
 
@@ -245,8 +257,21 @@ class Draggable extends Events {
   handleMouseDown(e) {
     // 防止宿主跟随鼠标移动
     e.preventDefault()
+
     // 设置延迟开始拖拽
     this.timer = setTimeout(() => {
+      // 计算拖拽范围
+      if (this.options.autoCalcRange && !(this.options.target instanceof HTMLElement)) {
+        const parentRect = this.parent.getBoundingClientRect()
+        var dialogRect = this.el.getBoundingClientRect()
+        this.options.range = {
+          left: -dialogRect.width + 20,
+          top: 0,
+          width: parentRect.width + dialogRect.width - 40,
+          height: parentRect.height + dialogRect.height - 40
+        }
+      }
+
       this.on(this.document, 'mousemove', this.handleMouseMove)
       this.startDrag(e.clientX, e.clientY)
     }, this.options.delay)
@@ -399,7 +424,7 @@ class Draggable extends Events {
   getDroppables() {
     const o = this.options
     if (!o.group) return []
-    const nodes = Array.from(this.document.querySelectorAll('.xdh-droppable'))
+    const nodes = Array.from(this.document.querySelectorAll('.my-droppable'))
     return nodes.filter(node => {
       // 排除已经隐藏了droppable
       const match = node.style.display !== 'none'
@@ -530,8 +555,8 @@ class Draggable extends Events {
    */
   applyDrag() {
     const data = this.dragData
-    setStyle(this.dragProxy, this.options.relativePosition ? 'marginLeft' : 'left', `${data.left}px`)
-    setStyle(this.dragProxy, this.options.relativePosition ? 'marginTop' : 'top', `${data.top}px`)
+    setStyle(this.dragProxy, this.options.offset.left, `${data.left}px`)
+    setStyle(this.dragProxy, this.options.offset.top, `${data.top}px`)
   }
 
   /**
@@ -554,8 +579,8 @@ class Draggable extends Events {
 
     if (this.options.clone) {
       const data = this.dragData
-      setStyle(this.el, this.options.relativePosition ? 'marginLeft' : 'left', `${data.left}px`)
-      setStyle(this.el, this.options.relativePosition ? 'marginTop' : 'top', `${data.top}px`)
+      setStyle(this.el, this.options.offset.left, `${data.left}px`)
+      setStyle(this.el, this.options.offset.top, `${data.top}px`)
     }
   }
 
@@ -566,7 +591,7 @@ class Draggable extends Events {
     super.destroy()
     this.handleAnimationEnd()
 
-    removeClass(this.el, this.options.relativePosition ? DRAGGABLE_RELATIVE_CLASS : DRAGGABLE_CLASS)
+    removeClass(this.el, DRAGGABLE_CLASS)
     this.handles.forEach(handle => {
       this.off(handle, 'mousedown', this.handleMouseDown)
       removeClass(handle, DRAGGABLE_HANDLE_CLASS)

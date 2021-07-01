@@ -1,8 +1,7 @@
 <template>
-  <!-- v-resizable="{ host:'.el-dialog' }" -->
   <el-dialog
     v-draggable="dragOptions"
-    v-resizable="{ host:'.el-dialog',handles:'e,s,es,se' }"
+    v-resizable="resizeOptions"
     :title="title"
     :visible.sync="visible"
     :modal="modal"
@@ -73,6 +72,10 @@ export default {
       type: Boolean,
       default: false
     },
+    resizable: {
+      type: Boolean,
+      default: true
+    },
     visible: {
       type: Boolean,
       default: false
@@ -115,7 +118,23 @@ export default {
         host: '.el-dialog',
         handle: handles,
         disabled: !this.draggable && !this.footerDraggable,
-        relativePosition: true
+        autoCalcRange: true,
+        offset: {
+          left: 'marginLeft',
+          top: 'marginTop'
+        }
+      }
+    },
+    resizeOptions() {
+      return {
+        host: '.el-dialog',
+        handles: 'e,s,w,es,se,ws,sw',
+        edge: 10,
+        disabled: !this.resizable,
+        offset: {
+          left: 'marginLeft',
+          top: 'marginTop'
+        }
       }
     }
   },

@@ -27,6 +27,7 @@ a, a:focus, a:hover {
 
 .container .aside{
   overflow:hidden;
+  position: relative;
 }
 
 .container .aside .el-menu a {
@@ -83,15 +84,12 @@ a, a:focus, a:hover {
   color:#fff;
   width: 100%;
   overflow: hidden;
-  cursor: pointer;
+  padding-left: 20px;
 }
 .container .el-header .logo img {
   width: 40px;
   float: left;
   margin: 10px 10px 10px 18px;
-}
-.container .el-header .logo .txt {
-  color: #fff;
 }
 
 .navbar{
@@ -105,14 +103,6 @@ a, a:focus, a:hover {
 .navbar .breadcrumb-container{
   float: left;
   margin-left: 8px;
-}
-
-.aside .logo-text{
-  margin-left:20px;
-}
-.container .aside .logo-collapse .logo-text{
-  margin-left:unset;
-  text-align: center;
 }
 
 .container .el-header .fold-btn {
@@ -194,13 +184,6 @@ input:-webkit-autofill {
 //拖拽
 .user-select--none {
   user-select: none;
-}
-.my-draggable{
-  display: inline-block;
-  position: absolute;
-}
-.my-draggable__relative{
-  position: relative;
 }
 .my-draggable__handle{
   cursor:move
