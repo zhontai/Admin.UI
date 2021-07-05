@@ -212,7 +212,7 @@ class Draggable extends Events {
    * @return {HTMLElement}
    */
   getElement(el, selector) {
-    const type = typeof selector
+    const type = this.getType(selector)
     if (type === 'function') {
       return selector()
     } else if (type === 'string') {

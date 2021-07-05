@@ -77,6 +77,11 @@ export default {
       type: Boolean,
       default: false
     },
+    // 更改尺寸方向
+    resizeHandles: {
+      type: Array || String,
+      default: 'all'
+    },
     // 页脚可拖拽
     footerDraggable: {
       type: Boolean,
@@ -144,7 +149,7 @@ export default {
     resizeOptions() {
       return {
         host: '.el-dialog',
-        handles: 'e,s,w,es,se,ws,sw',
+        handles: this.resizeHandles,
         edge: 5,
         disabled: !this.resizable,
         offset: {
