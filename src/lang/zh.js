@@ -14,5 +14,8 @@ export default {
   },
   api: {
     sync: '已同步Api' // 同步Api成功
+  },
+  view: {
+    sync: '已同步视图' // 同步Api成功
   }
 }

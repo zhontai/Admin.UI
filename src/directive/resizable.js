@@ -80,12 +80,21 @@ class Resizable extends Events {
      * @type {HtmlDocument}
      */
     this.document = document
+
+    this.parent = el
+
     /**
      * 需要拖拽的元素
      * @type {HtmlElement}
      */
     this.el = this.getElement(el, options.host) || el
     this.init(options)
+  }
+
+  createDom(innerHTML) {
+    const con = document.createElement('div')
+    con.innerHTML = innerHTML.toString()
+    return con.childNodes[0]
   }
 
   init(options) {
@@ -106,8 +115,53 @@ class Resizable extends Events {
       // this.on(this.el, 'mousedown', this.handleMouseDown)
       // this.on(this.el, 'mouseleave', this.handleMouseLeave)
       // this.on(this.el, 'mouseenter', this.handleMouseEnter)
-      this.off(this.document, 'mousemove', this.handleMouseMove)
-      this.on(this.document, 'mousemove', this.handleMouseMove)
+      // this.off(this.document, 'mousemove', this.handleMouseMove)
+      // this.on(this.document, 'mousemove', this.handleMouseMove)
+      let eDom = this.getElement(this.el, '.my-resize__e')
+      if (!eDom) {
+        eDom = this.createDom(`<div class="my-resize__e" />`)
+        this.off(eDom, 'mousedown', this.handleMouseDown)
+        this.on(eDom, 'mousedown', this.handleMouseDown)
+        this.el.appendChild(eDom)
+      } else {
+        this.off(eDom, 'mousedown', this.handleMouseDown)
+        this.on(eDom, 'mousedown', this.handleMouseDown)
+      }
+      const wDom = this.el.querySelector('.my-resize__w')
+      if (!wDom) {
+        const resizeDom = this.createDom(`<div class="my-resize__w"></div>`)
+        this.el.appendChild(resizeDom)
+      }
+      const nDom = this.el.querySelector('.my-resize__n')
+      if (!nDom) {
+        const resizeDom = this.createDom(`<div class="my-resize__n"></div>`)
+        this.el.appendChild(resizeDom)
+      }
+      const sDom = this.el.querySelector('.my-resize__s')
+      if (!sDom) {
+        const resizeDom = this.createDom(`<div class="my-resize__s"></div>`)
+        this.el.appendChild(resizeDom)
+      }
+      const nwDom = this.el.querySelector('.my-resize__nw')
+      if (!nwDom) {
+        const resizeDom = this.createDom(`<div class="my-resize__nw"></div>`)
+        this.el.appendChild(resizeDom)
+      }
+      const neDom = this.el.querySelector('.my-resize__ne')
+      if (!neDom) {
+        const resizeDom = this.createDom(`<div class="my-resize__ne"></div>`)
+        this.el.appendChild(resizeDom)
+      }
+      const swDom = this.el.querySelector('.my-resize__sw')
+      if (!swDom) {
+        const resizeDom = this.createDom(`<div class="my-resize__sw"></div>`)
+        this.el.appendChild(resizeDom)
+      }
+      const seDom = this.el.querySelector('.my-resize__se')
+      if (!seDom) {
+        const resizeDom = this.createDom(`<div class="my-resize__se"></div>`)
+        this.el.appendChild(resizeDom)
+      }
     }
   }
 
@@ -140,35 +194,18 @@ class Resizable extends Events {
   }
 
   handleMouseDown(e) {
+    e.preventDefault()
+    this.dir = 'e'
     this.startResize(e.clientX, e.clientY)
-    this.off(this.document, 'mouseup', this.handleMouseUp)
-    this.on(this.document, 'mouseup', this.handleMouseUp)
+    // this.off(e.target, 'mouseup', this.handleMouseUp)
+    // this.on(e.target, 'mouseup', this.handleMouseUp)
     return false
   }
 
-  // handleMouseLeave() {
-  //   this.isMouseEnter = false
-  //   !this.isResizing && this.setCursor(null)
-  //   return false
-  // }
-
-  // handleMouseEnter() {
-  //   this.isMouseEnter = true
-  //   return false
-  // }
-
   handleMouseMove(e) {
+    debugger
     if (this.options.disabled) return
 
-    if (!this.isResizing) {
-      const dir = this.getDirection(e)
-      this.dir = dir
-      this.setCursor(dir)
-      if (dir) {
-        this.off(this.document, 'mousedown', this.handleMouseDown)
-        this.on(this.document, 'mousedown', this.handleMouseDown)
-      }
-    }
     if (this.isResizing) {
       this.resize(e)
       this.applyResize()
@@ -176,10 +213,10 @@ class Resizable extends Events {
     return false
   }
 
-  handleMouseUp() {
+  handleMouseUp(e) {
+    debugger
     this.stopResize()
-    this.setCursor(null)
-    this.off(this.document, 'mouseup', this.handleMouseUp)
+    this.off(e, 'mouseup', this.handleMouseUp)
   }
 
   getDirection({ clientX, clientY }) {
@@ -333,11 +370,6 @@ class Resizable extends Events {
       : removeClass(this.document.body, USER_SELECT_NONE)
   }
 
-  setCursor(dir) {
-    const cursor = dir ? `${dir}-resize` : ''
-    setStyle(this.document.body, 'cursor', cursor)
-  }
-
   /**
    * 销毁
    */
@@ -373,8 +405,12 @@ export default {
    * @param {HtmlElement} el 指令的宿主元素
    * @param {Object} binding Vue指令binding对象
    */
-  bind(el, binding) {
+  bind(el, binding, vnode) {
+    // console.log(vnode)
+    // vnode.context.$createElement('div', ['先写一些文字'])
     el.__resizable__ = new Resizable(window.document, el, binding.value)
+  },
+  inserted(el) {
   },
   componentUpdated(el, binding) {
     const instance = el.__resizable__

@@ -42,6 +42,7 @@ a, a:focus, a:hover {
 
 .page-component__scroll .el-scrollbar__wrap{
   overflow-x: auto !important;
+  padding-bottom: 17px;
 }
 
 .container .el-header {
@@ -128,6 +129,9 @@ a, a:focus, a:hover {
   padding: 0px;
   height:100%;
 }
+.container .main{
+  position: relative;
+}
 
 .container .aside .el-menu {
   height: 100%;
@@ -195,4 +199,69 @@ input:-webkit-autofill {
 }
 .my-draggable__clone--translate{
   transition:all .2s
+}
+//更改尺寸
+.my-resize__e{
+  position: absolute;
+  right:-5px;
+  top:5px;
+  bottom:5px;
+  width:10px;
+  cursor: e-resize;
+}
+.my-resize__w{
+  position: absolute;
+  left:-5px;
+  top:5px;
+  bottom:5px;
+  width:10px;
+  cursor: w-resize;
+}
+.my-resize__n{
+  position: absolute;
+  left:5px;
+  right:5px;
+  top:-5px;
+  height:10px;
+  cursor: n-resize;
+}
+.my-resize__s{
+  position: absolute;
+  left:5px;
+  right:5px;
+  bottom:-5px;
+  height:10px;
+  cursor: s-resize;
+}
+.my-resize__nw{
+  position: absolute;
+  left:-5px;
+  top:-5px;
+  width:10px;
+  height:10px;
+  cursor: nw-resize;
+}
+.my-resize__ne{
+  position: absolute;
+  right:-5px;
+  top:-5px;
+  width:10px;
+  height:10px;
+  cursor: ne-resize;
+}
+.my-resize__sw{
+  position: absolute;
+  left:-5px;
+  bottom:-5px;
+  width:10px;
+  height:10px;
+  cursor: sw-resize;
+}
+.my-resize__se{
+  position: absolute;
+  right:-5px;
+  bottom:-5px;
+  width:10px;
+  height:10px;
+  cursor: se-resize;
 }

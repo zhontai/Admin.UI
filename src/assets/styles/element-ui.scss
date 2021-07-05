@@ -222,3 +222,8 @@ padding-left: 5px;
 .el-main .v-modal{
   position:absolute;
 }
+
+/*el-dialog*/
+.el-dialog{
+  pointer-events: auto;
+}

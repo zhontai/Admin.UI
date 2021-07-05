@@ -87,11 +87,10 @@
     </el-table>
 
     <!--新增窗口-->
-    <el-dialog
+    <my-window
       v-if="checkPermission(['api:admin:api:add'])"
       title="新增"
       :visible.sync="addFormVisible"
-      :close-on-click-modal="false"
       @close="onCloseAddForm"
     >
       <el-form ref="addForm" :model="addForm" label-width="80px" :rules="addFormRules">
@@ -134,7 +133,7 @@
           <my-confirm-button type="submit" :validate="addFormValidate" :loading="addLoading" @click="onAddSubmit" />
         </div>
       </template>
-    </el-dialog>
+    </my-window>
 
     <!--编辑窗口-->
     <el-dialog
@@ -200,11 +199,13 @@ import {
   batchRemoveApi,
   getApi
 } from '@/api/admin/api'
+import MyWindow from '@/components/my-window'
 import MyConfirmButton from '@/components/my-confirm-button'
 
 export default {
   name: 'Api',
   components: {
+    MyWindow,
     MyConfirmButton
   },
   data() {

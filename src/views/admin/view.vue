@@ -84,8 +84,8 @@
     <my-window
       v-if="checkPermission(['api:admin:view:add'])"
       title="新增"
+      resizable
       :visible.sync="addFormVisible"
-      :close-on-click-modal="false"
       @close="onCloseAddForm"
     >
       <el-form ref="addForm" :model="addForm" label-width="80px" :rules="addFormRules">
@@ -125,11 +125,10 @@
     </my-window>
 
     <!--编辑窗口-->
-    <el-dialog
+    <my-window
       v-if="checkPermission(['api:admin:view:update'])"
       title="编辑"
       :visible.sync="editFormVisible"
-      :close-on-click-modal="false"
       @close="onCloseEditForm"
     >
       <el-form ref="editForm" :model="editForm" :rules="editFormRules" label-width="80px">
@@ -166,7 +165,7 @@
           <my-confirm-button type="submit" :validate="editFormValidate" :loading="editLoading" @click="onEditSubmit" />
         </div>
       </template>
-    </el-dialog>
+    </my-window>
   </section>
 </template>
 
@@ -187,8 +186,8 @@ import MyConfirmButton from '@/components/my-confirm-button'
 export default {
   name: 'AdminView',
   components: {
-    MyConfirmButton,
-    MyWindow
+    MyWindow,
+    MyConfirmButton
   },
   data() {
     return {

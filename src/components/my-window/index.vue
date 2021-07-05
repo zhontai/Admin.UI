@@ -5,13 +5,14 @@
     :title="title"
     :visible.sync="visible"
     :modal="modal"
-    :modal-append-to-body="modalAppendToBody"
+    :modal-append-to-body="!embed||modalAppendToBody"
+    :append-to-body="appendToBody"
     :top="'8vh'"
     :custom-class="'my-window'"
     :close-on-click-modal="closeOnClickModal"
     :close-on-press-escape="closeOnPressEscape"
     :before-close="onCancel"
-    :style="inline?'position:absolute;':''"
+    :style="dialogStyle"
     @close="onClose"
   >
     <slot />
@@ -29,6 +30,8 @@
 <script>
 import draggable from '@/directive/draggable'
 import resizable from '@/directive/resizable'
+import PopupManager from 'element-ui/src/utils/popup/popup-manager'
+import { setStyle } from 'element-ui/lib/utils/dom'
 /**
  * 窗口 my-window
 
@@ -64,17 +67,20 @@ export default {
       type: String,
       default: ''
     },
+    // 可拖拽
     draggable: {
-      type: Boolean,
-      default: true
-    },
-    footerDraggable: {
       type: Boolean,
       default: false
     },
+    // 可更改尺寸
     resizable: {
       type: Boolean,
-      default: true
+      default: false
+    },
+    // 页脚可拖拽
+    footerDraggable: {
+      type: Boolean,
+      default: false
     },
     visible: {
       type: Boolean,
@@ -84,7 +90,17 @@ export default {
       type: Boolean,
       default: true
     },
-    inline: {
+    // 窗口内嵌
+    embed: {
+      type: Boolean,
+      default: false
+    },
+    // 窗口切换
+    switch: {
+      type: Boolean,
+      default: false
+    },
+    appendToBody: {
       type: Boolean,
       default: false
     },
@@ -94,7 +110,7 @@ export default {
     },
     closeOnClickModal: {
       type: Boolean,
-      default: true
+      default: false
     },
     closeOnPressEscape: {
       type: Boolean,
@@ -136,6 +152,17 @@ export default {
           top: 'marginTop'
         }
       }
+    },
+    dialogStyle() {
+      const style = {
+        pointerEvents: this.switch ? 'none' : '',
+        overflow: this.switch ? 'hidden' : 'auto'
+      }
+      if (this.embed) {
+        style.position = 'absolute'
+      }
+
+      return style
     }
   },
   watch: {
@@ -157,6 +184,10 @@ export default {
     // 确定
     onSure() {
       this.$emit('sure')
+    },
+    // 点击窗口
+    onMousedown() {
+      setStyle(this.$el, 'z-index', PopupManager.nextZIndex())
     }
   }
 }
