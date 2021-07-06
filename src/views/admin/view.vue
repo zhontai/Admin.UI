@@ -84,7 +84,6 @@
     <my-window
       v-if="checkPermission(['api:admin:view:add'])"
       title="新增"
-      resizable
       :visible.sync="addFormVisible"
       @close="onCloseAddForm"
     >

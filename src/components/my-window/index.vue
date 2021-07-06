@@ -1,10 +1,10 @@
 <template>
-  <el-dialog
+  <my-dialog
     v-draggable="dragOptions"
     v-resizable="resizeOptions"
     :title="title"
     :visible.sync="visible"
-    :modal="modal"
+    :modal="currentModal"
     :modal-append-to-body="!embed||modalAppendToBody"
     :append-to-body="appendToBody"
     :top="'8vh'"
@@ -14,6 +14,7 @@
     :before-close="onCancel"
     :style="dialogStyle"
     @close="onClose"
+    @mousedown.native="onMousedown"
   >
     <slot />
     <template #footer>
@@ -24,7 +25,7 @@
         </div>
       </slot>
     </template>
-  </el-dialog>
+  </my-dialog>
 </template>
 
 <script>
@@ -32,6 +33,8 @@ import draggable from '@/directive/draggable'
 import resizable from '@/directive/resizable'
 import PopupManager from 'element-ui/src/utils/popup/popup-manager'
 import { setStyle } from 'element-ui/lib/utils/dom'
+import MyDialog from '@/components/my-dialog'
+
 /**
  * 窗口 my-window
 
@@ -58,6 +61,7 @@ import { setStyle } from 'element-ui/lib/utils/dom'
 */
 export default {
   name: 'MyWindow',
+  components: { MyDialog },
   directives: {
     draggable,
     resizable
@@ -79,7 +83,7 @@ export default {
     },
     // 更改尺寸方向
     resizeHandles: {
-      type: Array || String,
+      type: [String, Array],
       default: 'all'
     },
     // 页脚可拖拽
@@ -124,6 +128,7 @@ export default {
   },
   data() {
     return {
+      currentModal: this.modal && !this.switch
     }
   },
   computed: {
@@ -163,6 +168,7 @@ export default {
         pointerEvents: this.switch ? 'none' : '',
         overflow: this.switch ? 'hidden' : 'auto'
       }
+
       if (this.embed) {
         style.position = 'absolute'
       }

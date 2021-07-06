@@ -1,6 +1,6 @@
 <template>
   <el-container class="container" style="height: 100%;">
-    <el-aside v-resizable="resizeOptions" class="aside" :class="collapsedClass" width>
+    <el-aside ref="navBar" v-resizable="resizeOptions" class="aside" :class="collapsedClass" :width="navBarWidth">
       <div class="logo collapsedLogo" :class="isCollapse ? 'logo-collapse' : ''">
         <router-link to="/">
           {{ isCollapse ? projectNameShort : projectName }}
@@ -191,6 +191,7 @@ import Sortable from 'sortablejs'
 import { isExternalLink } from '@/utils/validate'
 import { toLogout } from '@/router'
 import resizable from '@/directive/resizable'
+// import { setStyle } from 'element-ui/lib/utils/dom'
 
 if (!Element.prototype.closest) {
   if (!Element.prototype.matches) {
@@ -234,7 +235,9 @@ export default {
         selectedTab: {}
       },
       tabPosition: 'top', // top | bottom
-      tabType: 'border-card' // '' | border-card | card
+      tabType: 'border-card', // '' | border-card | card
+      navBarWidth: '',
+      expandNavBarWidth: ''
     }
   },
   computed: {
@@ -423,6 +426,15 @@ export default {
     },
     // 折叠导航栏
     onCollapse: function() {
+      if (this.isCollapse) {
+        // 还原折叠之前的导航栏尺寸
+        this.navBarWidth = this.expandNavBarWidth
+      } else {
+        // 记录折叠之前的导航栏尺寸
+        this.expandNavBarWidth = this.$refs.navBar.$el.getBoundingClientRect().width + 'px'
+        this.navBarWidth = ''
+      }
+
       this.isCollapse = !this.isCollapse
       // this.collapsedClass = this.isCollapse ? 'menu-collapsed':'menu-expanded';
     },

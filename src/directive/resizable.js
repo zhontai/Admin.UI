@@ -347,6 +347,16 @@ class Resizable extends Events {
 
     this.off(this.document, 'mousemove', this.handleMouseMove)
     this.off(this.document, 'mouseup', this.handleMouseUp)
+
+    const dirs = ['e', 's', 'w', 'n', 'nw', 'ne', 'sw', 'se']
+
+    const me = this
+    dirs.forEach(dir => {
+      const resizeDom = me.getElement(me.el, `.my-resize__${dir}`)
+      if (resizeDom) {
+        me.el.removeChild(resizeDom)
+      }
+    })
   }
 }
 
