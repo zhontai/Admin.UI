@@ -5,8 +5,8 @@
     :modal="currentModal"
     :wrapper-closable="wrapperClosable || closeOnClickModal"
     :close-on-press-escape="closeOnPressEscape"
-    :modal-append-to-body="!embed||modalAppendToBody"
-    :append-to-body="appendToBody"
+    :modal-append-to-body="currentModalAppendToBody"
+    :append-to-body="currentAppendToBody"
     :visible.sync="visible"
     destroy-on-close
     :direction="direction"
@@ -37,8 +37,8 @@
     v-resizable="resizeOptions"
     :visible.sync="visible"
     :modal="currentModal"
-    :modal-append-to-body="!embed||modalAppendToBody"
-    :append-to-body="appendToBody"
+    :modal-append-to-body="currentModalAppendToBody"
+    :append-to-body="currentAppendToBody"
     :top="top"
     :custom-class="customClass"
     :close-on-click-modal="closeOnClickModal"
@@ -136,6 +136,7 @@ export default {
       type: Boolean,
       default: false
     },
+    // 遮罩
     modal: {
       type: Boolean,
       default: true
@@ -161,7 +162,7 @@ export default {
     },
     modalAppendToBody: {
       type: Boolean,
-      default: false
+      default: true
     },
     closeOnClickModal: {
       type: Boolean,
@@ -217,9 +218,11 @@ export default {
       }
     }
     return {
-      currentModal: this.modal && !this.switch,
+      currentModal: this.embed ? false : (this.modal && !this.switch),
       currentSize: this.fullscreen ? '100%' : this.size,
-      drawerResizeHandles: drawerResizeHandles
+      drawerResizeHandles: drawerResizeHandles,
+      currentAppendToBody: this.embed ? false : this.appendToBody,
+      currentModalAppendToBody: this.embed ? false : this.modalAppendToBody
     }
   },
   computed: {
@@ -281,7 +284,7 @@ export default {
     drawerStyle() {
       const style = {
         pointerEvents: this.switch ? 'none' : '',
-        overflow: this.switch ? 'hidden' : 'auto'
+        overflow: 'hidden'
       }
 
       if (this.embed) {
@@ -313,7 +316,10 @@ export default {
     },
     // 点击窗口
     onMousedown() {
-      setStyle(this.$el, 'z-index', PopupManager.nextZIndex())
+      if (this.switch) {
+        // 会影响表单弹出层，需要重新考虑
+        // setStyle(this.$el, 'z-index', PopupManager.nextZIndex())
+      }
     }
   }
 }

@@ -93,9 +93,9 @@
     <my-window
       v-if="checkPermission(['api:admin:user:add'])"
       title="新增用户"
-      :visible.sync="addFormVisible"
+      embed
       drawer
-      resizable
+      :visible.sync="addFormVisible"
       @close="closeAddForm"
     >
       <el-form
@@ -153,9 +153,9 @@
     <my-window
       v-if="checkPermission(['api:admin:user:update'])"
       title="编辑用户"
-      :visible.sync="editFormVisible"
+      embed
       drawer
-      resizable
+      :visible.sync="editFormVisible"
       @close="closeEditForm"
     >
       <el-form
