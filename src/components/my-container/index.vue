@@ -1,13 +1,13 @@
 <template>
   <section style="height:100%;">
     <el-container style="height:100%;position:relative;">
-      <el-header v-if="showHeader" height="auto" style="padding:10px 0px 0px 10px;">
+      <el-header v-if="showHeader" height="auto" :style="headerStyle">
         <slot name="header" />
       </el-header>
-      <el-main style="padding:0px 10px;">
+      <el-main :style="mainStyle">
         <slot />
       </el-main>
-      <el-footer v-if="showFooter" height style="padding:5px 0px 10px 10px;">
+      <el-footer v-if="showFooter" height :style="footerStyle">
         <slot name="footer" />
       </el-footer>
     </el-container>
@@ -39,6 +39,18 @@ export default {
     showFooter: {
       type: Boolean,
       default: true
+    },
+    headerStyle: {
+      type: [String, JSON],
+      default: 'padding:10px 0px 0px 10px;'
+    },
+    mainStyle: {
+      type: [String, JSON],
+      default: 'padding:0px 10px;'
+    },
+    footerStyle: {
+      type: [String, JSON],
+      default: 'padding:5px 0px 10px 10px;'
     }
   }
 }

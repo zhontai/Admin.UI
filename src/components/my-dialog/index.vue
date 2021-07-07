@@ -18,7 +18,7 @@
         :class="['el-dialog', { 'is-fullscreen': fullscreen, 'el-dialog--center': center }, customClass]"
         :style="style"
       >
-        <my-container>
+        <my-container header-style="padding:0px;" footer-style="padding:0px;">
           <template #header>
             <div class="el-dialog__header">
               <slot name="title">

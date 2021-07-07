@@ -1,28 +1,64 @@
 <template>
+  <el-drawer
+    v-if="drawer"
+    v-resizable="drawerResizeOptions"
+    :modal="currentModal"
+    :wrapper-closable="wrapperClosable || closeOnClickModal"
+    :close-on-press-escape="closeOnPressEscape"
+    :modal-append-to-body="!embed||modalAppendToBody"
+    :append-to-body="appendToBody"
+    :visible.sync="visible"
+    destroy-on-close
+    :direction="direction"
+    :size="currentSize"
+    :custom-class="customClass"
+    :style="drawerStyle"
+    :before-close="onCancel"
+    @close="onClose"
+  >
+    <template #title>
+      <slot name="title">
+        <span role="heading" :title="title">{{ title }}</span>
+      </slot>
+    </template>
+    <section style="padding:24px 48px 74px 24px;">
+      <slot />
+    </section>
+    <div class="drawer-footer">
+      <slot name="footer">
+        <el-button @click.native="onCancel">取消</el-button>
+        <el-button type="primary" @click="onSure">确定</el-button>
+      </slot>
+    </div>
+  </el-drawer>
   <my-dialog
+    v-else
     v-draggable="dragOptions"
     v-resizable="resizeOptions"
-    :title="title"
     :visible.sync="visible"
     :modal="currentModal"
     :modal-append-to-body="!embed||modalAppendToBody"
     :append-to-body="appendToBody"
-    :top="'8vh'"
-    :custom-class="'my-window'"
+    :top="top"
+    :custom-class="customClass"
     :close-on-click-modal="closeOnClickModal"
     :close-on-press-escape="closeOnPressEscape"
     :before-close="onCancel"
     :style="dialogStyle"
+    :fullscreen="fullscreen"
     @close="onClose"
     @mousedown.native="onMousedown"
   >
+    <template #title>
+      <slot name="title">
+        <span class="el-dialog__title">{{ title }}</span>
+      </slot>
+    </template>
     <slot />
     <template #footer>
       <slot name="footer">
-        <div class="dialog-footer">
-          <el-button @click.native="onCancel">取消</el-button>
-          <el-button type="primary" @click="onSure">确定</el-button>
-        </div>
+        <el-button @click.native="onCancel">取消</el-button>
+        <el-button type="primary" @click="onSure">确定</el-button>
       </slot>
     </template>
   </my-dialog>
@@ -71,6 +107,11 @@ export default {
       type: String,
       default: ''
     },
+    // 抽屉
+    drawer: {
+      type: Boolean,
+      default: false
+    },
     // 可拖拽
     draggable: {
       type: Boolean,
@@ -109,6 +150,11 @@ export default {
       type: Boolean,
       default: false
     },
+    // 全屏
+    fullscreen: {
+      type: Boolean,
+      default: false
+    },
     appendToBody: {
       type: Boolean,
       default: false
@@ -121,14 +167,59 @@ export default {
       type: Boolean,
       default: false
     },
+    wrapperClosable: {
+      type: Boolean,
+      default: false
+    },
     closeOnPressEscape: {
       type: Boolean,
-      default: true
+      default: false
+    },
+    top: {
+      type: String,
+      default: '8vh'
+    },
+    customClass: {
+      type: String,
+      default: 'my-window'
+    },
+    direction: {
+      type: String,
+      default: 'btt',
+      validator(val) {
+        return ['ltr', 'rtl', 'ttb', 'btt'].indexOf(val) !== -1
+      }
+    },
+    size: {
+      type: [Number, String],
+      default: 'auto'
     }
   },
   data() {
+    let drawerResizeHandles = this.currentResizeHandles
+    if (this.drawer) {
+      switch (this.direction) {
+        case 'btt':
+          drawerResizeHandles = 'n'
+          break
+        case 'ttb':
+          drawerResizeHandles = 's'
+          break
+        case 'ltr':
+          drawerResizeHandles = 'e'
+          break
+        case 'rtl':
+          drawerResizeHandles = 'w'
+          break
+        default:
+          drawerResizeHandles = this.currentResizeHandles
+          break
+      }
+    }
     return {
-      currentModal: this.modal && !this.switch
+      currentModal: this.modal && !this.switch,
+      currentSize: this.fullscreen ? '100%' : this.size,
+      drawerResizeHandles: drawerResizeHandles
     }
   },
   computed: {
@@ -143,7 +234,7 @@ export default {
       return {
         host: '.el-dialog',
         handle: handles,
-        disabled: !this.draggable && !this.footerDraggable,
+        disabled: (!this.draggable && !this.footerDraggable) || this.fullscreen,
         autoCalcRange: true,
         offset: {
           left: 'marginLeft',
@@ -156,7 +247,19 @@ export default {
         host: '.el-dialog',
         handles: this.resizeHandles,
         edge: 5,
-        disabled: !this.resizable,
+        disabled: !this.resizable || this.fullscreen,
+        offset: {
+          left: 'marginLeft',
+          top: 'marginTop'
+        }
+      }
+    },
+    drawerResizeOptions() {
+      return {
+        host: '.el-drawer',
+        handles: this.drawerResizeHandles,
+        edge: 5,
+        disabled: !this.resizable || this.fullscreen,
         offset: {
           left: 'marginLeft',
           top: 'marginTop'
@@ -164,6 +267,18 @@ export default {
       }
     },
     dialogStyle() {
+      const style = {
+        pointerEvents: this.switch ? 'none' : '',
+        overflow: this.switch ? 'hidden' : 'auto'
+      }
+
+      if (this.embed) {
+        style.position = 'absolute'
+      }
+
+      return style
+    },
+    drawerStyle() {
       const style = {
         pointerEvents: this.switch ? 'none' : '',
         overflow: this.switch ? 'hidden' : 'auto'

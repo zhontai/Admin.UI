@@ -116,10 +116,8 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button @click.native="addFormVisible = false">取消</el-button>
-          <my-confirm-button type="submit" :validate="addFormValidate" :loading="addLoading" @click="onAddSubmit" />
-        </div>
+        <el-button @click.native="addFormVisible = false">取消</el-button>
+        <my-confirm-button type="submit" :validate="addFormValidate" :loading="addLoading" @click="onAddSubmit" />
       </template>
     </my-window>
 
@@ -159,10 +157,8 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
-          <el-button @click.native="editFormVisible = false">取消</el-button>
-          <my-confirm-button type="submit" :validate="editFormValidate" :loading="editLoading" @click="onEditSubmit" />
-        </div>
+        <el-button @click.native="editFormVisible = false">取消</el-button>
+        <my-confirm-button type="submit" :validate="editFormValidate" :loading="editLoading" @click="onEditSubmit" />
       </template>
     </my-window>
   </section>
