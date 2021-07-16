@@ -36,7 +36,8 @@ import { addResizeListener, removeResizeListener } from 'element-ui/lib/utils/re
 const layouts = {
   full: 'total, slot, sizes, prev, jumper, next',
   fullPager: 'total, slot, sizes, prev, pager, next',
-  simple: 'prev, jumper, next'
+  simple: 'prev, next',
+  simpleJumper: 'prev, jumper, next'
 }
 export default {
   name: 'MyPagination',

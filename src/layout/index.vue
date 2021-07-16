@@ -1,6 +1,6 @@
 <template>
   <el-container class="container" style="height: 100%;">
-    <el-aside ref="navBar" v-resizable="resizeOptions" class="aside" :class="collapsedClass" :width="navBarWidth">
+    <el-aside ref="navBar" v-resizable="resizeOptions" class="aside" :width="navBarWidth">
       <div class="logo collapsedLogo" :class="isCollapse ? 'logo-collapse' : ''">
         <router-link to="/">
           {{ isCollapse ? projectNameShort : projectName }}
@@ -224,7 +224,6 @@ export default {
       projectName: 'Admin',
       projectNameShort: 'AD',
       avatarDefault: require('@/assets/images/avatar.png'),
-      collapsedClass: 'menu-expanded',
       isCollapse: false,
       isPc: false,
       tabsList: [],
@@ -236,7 +235,7 @@ export default {
       },
       tabPosition: 'top', // top | bottom
       tabType: 'border-card', // '' | border-card | card
-      navBarWidth: '',
+      navBarWidth: 'auto',
       expandNavBarWidth: ''
     }
   },
@@ -333,7 +332,6 @@ export default {
   },
   async created() {
     this.isPc = window.innerWidth >= 768
-    this.collapsedClass = 'menu-expanded'
 
     // 还原会话tabs
     let sessionStorageTabs = sessionStorage.getItem('tabs')
@@ -421,7 +419,6 @@ export default {
     onSelectMenu: function() {
       if (!this.isPc && !this.isCollapse) {
         this.isCollapse = true
-        // this.collapsedClass = 'menu-collapsed'
       }
     },
     // 折叠导航栏
@@ -436,7 +433,6 @@ export default {
       }
 
       this.isCollapse = !this.isCollapse
-      // this.collapsedClass = this.isCollapse ? 'menu-collapsed':'menu-expanded';
     },
     // tab打开右键菜单
     onOpenMenu(e) {

@@ -1,7 +1,7 @@
 <template>
   <section style="padding:10px;">
     <el-row :gutter="10">
-      <el-col :span="6" class="toolbar roles">
+      <el-col :xs="24" :sm="6" class="toolbar roles">
         <el-card>
           <template #header>
             <div class="clearfix">
@@ -14,19 +14,27 @@
               >刷新</el-button>
             </div>
           </template>
-          <div
-            v-for="o in roles"
-            :key="o.id"
-            :class="o.id == roleId ? 'active' : ''"
-            class="item role-item"
-            @click="roleSelect(o.id)"
-          >
-            <span>{{ o.name }}</span>
-            <span style="float:right;">{{ o.description }}</span>
+          <div class="role-box">
+            <div
+              v-for="o in roles"
+              :key="o.id"
+              :class="o.id == roleId ? 'active' : ''"
+              class="item role-item"
+              @click="roleSelect(o.id)"
+            >
+              <span>{{ o.name }}</span>
+              <span style="float:right;">{{ o.description }}</span>
+            </div>
           </div>
+          <!--分页-->
+          <my-pagination
+            ref="pager"
+            :total="total"
+            @get-page="getRoles"
+          />
         </el-card>
       </el-col>
-      <el-col :span="18" class="toolbar perms">
+      <el-col :xs="24" :sm="18" class="toolbar perms">
         <el-card>
           <template #header>
             <div class="clearfix">
@@ -100,6 +108,7 @@ export default {
   data() {
     return {
       roles: [],
+      total: 0,
       roleId: 0,
       permissionTree: [],
       apis: [],
@@ -129,9 +138,15 @@ export default {
     },
     // 获取角色列表
     async getRoles() {
+      var pager = this.$refs.pager.getPager()
+      const params = {
+        ...pager
+      }
       this.loadingRoles = true
-      const res = await getRoleListPage()
+      const res = await getRoleListPage(params)
       this.loadingRoles = false
+
+      this.total = res.data.total
       this.roles = res.data?.list
     },
     // 获取权限树
@@ -320,5 +335,10 @@ export default {
 
 .save ::v-deep [_button] {
   padding: 3px 0px;
+}
+
+.role-box{
+  margin-bottom:10px;
+  border-bottom:1px solid #E4E7ED;
 }
 </style>

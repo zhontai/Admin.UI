@@ -43,6 +43,9 @@
 .el-pagination.is-background .btn-prev:hover{
   color:#409EFF;
 }
+.el-pagination.is-background .btn-next.disabled, .el-pagination.is-background .btn-next:disabled, .el-pagination.is-background .btn-prev.disabled, .el-pagination.is-background .btn-prev:disabled, .el-pagination.is-background .el-pager li.disabled{
+  color:#C0C4CC
+}
 
 .el-table .cell{
   text-overflow: unset;
