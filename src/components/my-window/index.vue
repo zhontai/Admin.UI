@@ -14,6 +14,7 @@
     :custom-class="customClass"
     :style="drawerStyle"
     :before-close="onCancel"
+    @open="onOpen"
     @close="onClose"
   >
     <template #title>
@@ -46,6 +47,7 @@
     :before-close="onCancel"
     :style="dialogStyle"
     :fullscreen="fullscreen"
+    @open="onOpen"
     @close="onClose"
     @mousedown.native="onMousedown"
   >
@@ -67,7 +69,6 @@
 <script>
 import draggable from '@/directive/draggable'
 import resizable from '@/directive/resizable'
-import PopupManager from 'element-ui/src/utils/popup/popup-manager'
 import { setStyle } from 'element-ui/lib/utils/dom'
 import MyDialog from '@/components/my-dialog'
 
@@ -298,9 +299,12 @@ export default {
 
   },
   mounted() {
-
   },
   methods: {
+    // 打开
+    onOpen() {
+      this.$emit('open')
+    },
     // 关闭
     onClose() {
       this.$emit('close')
@@ -314,22 +318,46 @@ export default {
     onSure() {
       this.$emit('sure')
     },
-    // 点击窗口
+    // 点击窗口，实现切换窗口切换功能
     onMousedown() {
       if (this.switch) {
-        // 会影响表单弹出层，需要重新考虑
-        // setStyle(this.$el, 'z-index', PopupManager.nextZIndex())
+        const wins = []
+        const wrappers = this.$el.parentNode.querySelectorAll('.el-dialog__wrapper')
+        if (wrappers.length === 1) {
+          return
+        }
+        wrappers.forEach(function(el) {
+          if (el.style.zIndex > 0) {
+            wins.push(el)
+          }
+        })
+        if (wins.length === 1) {
+          return
+        }
+
+        wins.sort(function(a, b) {
+          if (a.style.zIndex > b.style.zIndex) {
+            return 1
+          } else if (a.style.zIndex < b.style.zIndex) {
+            return -1
+          } else {
+            return 0
+          }
+        })
+
+        const zIndexs = wins.map(w => {
+          return w.style.zIndex
+        })
+
+        const currentZIndex = this.$el.style.zIndex
+        const currentIndex = wins.findIndex(w => w.style.zIndex === currentZIndex)
+        const deleteWins = wins.splice(currentIndex, 1)
+        wins.push(deleteWins[0])
+        wins.forEach(function(w, index) {
+          setStyle(w, 'z-index', zIndexs[index])
+        })
       }
     }
   }
 }
 </script>
-
-<style lang="scss" scoped>
-::v-deep .my-search-window{
-  width:60%;
-  .el-dialog__body{
-    padding:10px;
-  }
-}
-</style>
