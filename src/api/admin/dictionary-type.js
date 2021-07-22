@@ -3,18 +3,22 @@ import scope from './scope'
 const apiPrefix = `${process.env.VUE_APP_BASE_API}/${scope}/dictionarytype/`
 
 // 数据字典类型管理
-export const getDictionaryType = (params, config = {}) => {
+export const getPage = (params, config = {}) => {
+  return request.post(apiPrefix + 'getPage', params, config)
+}
+export const get = (params, config = {}) => {
   return request.get(apiPrefix + 'get', { params: params, ...config })
 }
-export const getDictionaryTypeListPage = (params, config = {}) => {
-  return request.post(apiPrefix + 'getpage', params, config)
-}
-export const removeDictionaryType = (params, config = {}) => {
-  return request.delete(apiPrefix + 'softdelete', { params: params, ...config })
-}
-export const editDictionaryType = (params, config = {}) => {
-  return request.put(apiPrefix + 'update', params, config)
-}
-export const addDictionaryType = (params, config = {}) => {
+export const add = (params, config = {}) => {
   return request.post(apiPrefix + 'add', params, config)
 }
+export const update = (params, config = {}) => {
+  return request.put(apiPrefix + 'update', params, config)
+}
+export const softDelete = (params, config = {}) => {
+  return request.delete(apiPrefix + 'softDelete', { params: params, ...config })
+}
+export const batchSoftDelete = (params, config = {}) => {
+  return request.delete(apiPrefix + 'batchSoftDelete', { params: params, ...config })
+}
+

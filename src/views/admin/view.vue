@@ -411,6 +411,9 @@ export default {
         const path = modulePath.replace(/^\.\/(.*)\.\w+$/, '$1')
         const view = viewFiles(modulePath)
         const name = view.default.name
+        if (name === 'DictionaryType') {
+          console.log(view)
+        }
         const excludeNames = ['Login', 'LoginCallback', 'RefreshToken', 'Error404']
         if (!excludeNames.includes(name)) {
           views[views.length] = {
