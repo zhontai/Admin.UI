@@ -99,7 +99,10 @@ export default {
       default: true
     },
 
-    width: String,
+    width: {
+      type: String,
+      default: null
+    },
 
     fullscreen: Boolean,
 
@@ -112,7 +115,10 @@ export default {
       type: String,
       default: '15vh'
     },
-    beforeClose: Function,
+    beforeClose: {
+      type: Function,
+      default: null
+    },
     center: {
       type: Boolean,
       default: false

@@ -411,14 +411,18 @@ export default {
         const path = modulePath.replace(/^\.\/(.*)\.\w+$/, '$1')
         const view = viewFiles(modulePath)
         const name = view.default.name
+        const syncInfo = view.default._sync
         if (name === 'DictionaryType') {
           console.log(view)
         }
         const excludeNames = ['Login', 'LoginCallback', 'RefreshToken', 'Error404']
-        if (!excludeNames.includes(name)) {
+        if (!excludeNames.includes(name) && syncInfo?.disabled !== true) {
           views[views.length] = {
             path: path,
-            name: name
+            name: name,
+            label: syncInfo?.title,
+            description: syncInfo?.desc,
+            cache: syncInfo?.cache !== false
           }
         }
         return views

@@ -4,10 +4,12 @@
   "private": true,
   "description": "中台admin前端解决方案",
   "author": "小雪转中雪",
+  "license": "MIT",
   "scripts": {
     "dev": "vue-cli-service serve",
     "build:prod": "vue-cli-service build",
     "build:stage": "vue-cli-service build --mode staging",
+    "install:nm": "npm install --registry https://registry.npm.taobao.org",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -50,10 +52,13 @@
     "script-ext-html-webpack-plugin": "^2.1.5",
     "vue-template-compiler": "^2.6.12"
   },
+  "engines": {
+    "node": ">=8.9",
+    "npm": ">= 3.0.0"
+  },
   "browserslist": [
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ],
-  "license": "MIT"
+  ]
 }

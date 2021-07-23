@@ -183,13 +183,7 @@
 
 <script>
 import { formatTime, treeToList, listToTree, getTreeParents } from '@/utils'
-import {
-  getDictionaryListPage,
-  removeDictionary,
-  editDictionary,
-  addDictionary,
-  getDictionary
-} from '@/api/admin/dictionary'
+import { getPage, get, add, update, softDelete } from '@/api/admin/dictionary'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 export default {
@@ -271,7 +265,7 @@ export default {
         filter: this.filter
       }
       this.listLoading = true
-      const res = await getDictionaryListPage(para)
+      const res = await getPage(para)
       this.listLoading = false
 
       if (!res?.success) {
@@ -297,7 +291,7 @@ export default {
     async onDelete(index, row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await removeDictionary(para)
+      const res = await softDelete(para)
       row._loading = false
 
       if (!res?.success) {
@@ -313,7 +307,7 @@ export default {
     // 显示编辑界面
     async onEdit(index, row) {
       const loading = this.$loading()
-      const res = await getDictionary({ id: row.id })
+      const res = await get({ id: row.id })
       loading.close()
       if (res && res.success) {
         const parents = getTreeParents(this.dictionaryTree, row.id)
@@ -362,7 +356,7 @@ export default {
         return
       }
 
-      const res = await editDictionary(para)
+      const res = await update(para)
       this.editLoading = false
 
       if (!res?.success) {
@@ -389,7 +383,7 @@ export default {
       const para = _.cloneDeep(this.addForm)
       para.parentId = para.parentIds.pop()
 
-      const res = await addDictionary(para)
+      const res = await add(para)
       this.addLoading = false
 
       if (!res?.success) {
