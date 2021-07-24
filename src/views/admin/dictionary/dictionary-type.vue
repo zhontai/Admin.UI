@@ -61,9 +61,7 @@
       </el-table-column>
       <el-table-column v-if="checkPermission(['api:admin:dictionarytype:update','api:admin:dictionarytype:softdelete'])" label="操作" width="180">
         <template #default="{ $index, row }">
-          <el-dropdown v-if="checkPermission(['api:admin:dictionarytype:update'])" split-button type="primary" style="margin-left:10px;" @click="onEdit($index, row)">
-            编辑
-          </el-dropdown>
+          <el-button v-if="checkPermission(['api:admin:dictionarytype:update'])" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
             v-if="checkPermission(['api:admin:dictionarytype:softdelete'])"
             type="delete"
