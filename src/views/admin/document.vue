@@ -12,7 +12,7 @@
           </div>
         </el-main>
       </el-container>
-      <el-aside v-resizable="resizeOptions" width="300px" style="padding:0px;border-left: 1px solid #e6e6e6;">
+      <el-aside v-resizable="resizeOptions" width="300px" style="padding:0px;border-left: 1px solid #e6e6e6;position: relative;">
         <el-container style="height:100%;overflow:hidden;">
           <el-header class="header" height="auto" style="padding:5px 10px 6px 10px;border-bottom: 1px solid #e6e6e6;text-align:right;">
             <div v-show="isDocTab">
@@ -276,6 +276,9 @@ let prevOverflow = ''
 export default {
   name: 'Document',
   components: { MyMarkdownEditor, MyConfirmButton },
+  directives: {
+    resizable
+  },
   data() {
     const tabs = { doc: 'docTab', img: 'imgTab' }
     return {
