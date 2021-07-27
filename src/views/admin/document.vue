@@ -12,7 +12,7 @@
           </div>
         </el-main>
       </el-container>
-      <el-aside width="300px" style="padding:0px;border-left: 1px solid #e6e6e6;">
+      <el-aside v-resizable="resizeOptions" width="300px" style="padding:0px;border-left: 1px solid #e6e6e6;">
         <el-container style="height:100%;overflow:hidden;">
           <el-header class="header" height="auto" style="padding:5px 10px 6px 10px;border-bottom: 1px solid #e6e6e6;text-align:right;">
             <div v-show="isDocTab">
@@ -252,9 +252,10 @@
 </template>
 
 <script>
+import { listToTree, getTreeParents } from '@/utils'
 import MyMarkdownEditor from '@/components/my-markdown-editor'
 import MyConfirmButton from '@/components/my-confirm-button'
-import { listToTree, getTreeParents } from '@/utils'
+import resizable from '@/directive/resizable'
 import {
   getDocuments,
   getDocumentImages,
@@ -363,6 +364,15 @@ export default {
     },
     imageUrls() {
       return this.document.images.map(a => a.src)
+    },
+    resizeOptions() {
+      return {
+        handles: 'w',
+        edge: 5,
+        onlySize: true,
+        minWidth: 201,
+        maxWidth: 500
+      }
     }
   },
   watch: {

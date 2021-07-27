@@ -8,35 +8,27 @@
 
 import 'codemirror/lib/codemirror.css' // Editor's Dependency Style
 import '@toast-ui/editor/dist/toastui-editor.css' // Editor's Style
-import 'tui-color-picker/dist/tui-color-picker.css'
-import 'highlight.js/styles/vs.css'
-
 import Editor from '@toast-ui/editor'
 import '@toast-ui/editor/dist/i18n/zh-cn'
+
+import 'tui-color-picker/dist/tui-color-picker.css'
+import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css'
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax'
 import tableMergedCell from '@toast-ui/editor-plugin-table-merged-cell'
 
+import 'prismjs/themes/prism.css'
+import Prism from 'prismjs'
+import 'prismjs/components/prism-csharp'
+import 'prismjs/components/prism-aspnet'
+import 'prismjs/components/prism-scss'
+import 'prismjs/components/prism-json'
+// import 'prismjs/components/prism-markup'
+// import 'prismjs/components/prism-javascript'
+// import 'prismjs/components/prism-css'
+// import 'prismjs/components/prism-xml-doc'
+
+import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight.css'
 import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight'
-// all
-// import hljs from 'highlight.js'
-// part
-import hljs from 'highlight.js/lib/highlight'
-import cs from 'highlight.js/lib/languages/cs'
-import xml from 'highlight.js/lib/languages/xml'
-import json from 'highlight.js/lib/languages/json'
-import html from 'highlight.js/lib/languages/htmlbars'
-import css from 'highlight.js/lib/languages/css'
-import scss from 'highlight.js/lib/languages/scss'
-import javascript from 'highlight.js/lib/languages/javascript'
-hljs.registerLanguage('cs', cs)
-hljs.registerLanguage('html', html)
-hljs.registerLanguage('javascript', javascript)
-hljs.registerLanguage('css', css)
-hljs.registerLanguage('scss', scss)
-hljs.registerLanguage('json', json)
-hljs.registerLanguage('xml', xml)
-// import typescript from 'highlight.js/lib/languages/typescript'
-// hljs.registerLanguage('typescript', typescript)
 
 import defaultOptions from './default-options'
 
@@ -115,9 +107,9 @@ export default {
   methods: {
     initEditor() {
       this.editor = new Editor({
-        el: document.getElementById(this.id),
-        plugins: [colorSyntax, tableMergedCell, [codeSyntaxHighlight, { hljs }]],
-        ...this.editorOptions
+        el: document.querySelector('#' + this.id),
+        ...this.editorOptions,
+        plugins: [colorSyntax, tableMergedCell, [codeSyntaxHighlight, { highlighter: Prism }]]
       })
       if (this.value) {
         this.editor.setMarkdown(this.value)
