@@ -185,9 +185,9 @@ class Resizable extends Events {
     e.preventDefault()
     this.dir = e.target.attributes['_dir'].value
     this.startResize(e.clientX, e.clientY)
+    this.setCursor(this.dir)
     this.off(this.document, 'mousemove', this.handleMouseMove).on(this.document, 'mousemove', this.handleMouseMove)
     this.off(this.document, 'mouseup', this.handleMouseUp).on(this.document, 'mouseup', this.handleMouseUp)
-
     return false
   }
 
@@ -201,10 +201,16 @@ class Resizable extends Events {
     return false
   }
 
+  setCursor(dir) {
+    const cursor = dir ? `${dir}-resize` : ''
+    setStyle(this.document.body, 'cursor', cursor)
+  }
+
   handleMouseUp(e) {
     this.isResizing && this.stopResize()
     this.off(e.target, 'mousemove', this.handleMouseMove)
     this.off(e.target, 'mouseup', this.handleMouseUp)
+    this.setCursor(null)
   }
 
   startResize(clientX, clientY) {
