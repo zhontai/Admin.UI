@@ -84,7 +84,7 @@ export default {
   watch: {
     value(newValue, oldValue) {
       if (newValue !== oldValue && newValue !== this.editor.getMarkdown()) {
-        this.editor.setMarkdown(newValue)
+        this.editor.setMarkdown(newValue ?? '')
       }
     },
     language(val) {
@@ -121,7 +121,7 @@ export default {
     destroyEditor() {
       if (!this.editor) return
       this.editor.off('change')
-      this.editor.remove()
+      this.editor.destroy()
     },
     setMarkdown(value) {
       this.editor.setMarkdown(value)
@@ -130,24 +130,24 @@ export default {
       return this.editor.getMarkdown()
     },
     setHtml(value) {
-      this.editor.setHtml(value)
+      this.editor.setHTML(value)
     },
     getHtml() {
-      return this.editor.getHtml()
+      return this.editor.getHTML()
     },
     setImg(src) {
       const isMarkdownMode = this.editor.isMarkdownMode()
       if (isMarkdownMode) {
-        this.editor.getCodeMirror().replaceSelection(`![img](${src})`)
+        this.editor.replaceSelection(`![img](${src})`)
       } else {
-        const range = this.editor.getRange()
-        if (range && range.startContainer && (range.startContainer.className.indexOf('el-main') > -1)) {
-          return
-        }
-        const img = document.createElement('img')
-        img.src = src
-        img.alt = ''
-        range.insertNode(img)
+        // const range = this.editor.getEditorElements()
+        // if (range && range.startContainer && (range.startContainer.className.indexOf('el-main') > -1)) {
+        //   return
+        // }
+        // const img = document.createElement('img')
+        // img.src = src
+        // img.alt = ''
+        // range.insertNode(img)
       }
     }
   }

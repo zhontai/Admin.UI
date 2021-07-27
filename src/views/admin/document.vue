@@ -253,6 +253,7 @@
 
 <script>
 import { listToTree, getTreeParents } from '@/utils'
+import ImageViewer from 'element-ui/packages/image/src/image-viewer'
 import MyMarkdownEditor from '@/components/my-markdown-editor'
 import MyConfirmButton from '@/components/my-confirm-button'
 import resizable from '@/directive/resizable'
@@ -275,7 +276,7 @@ let prevOverflow = ''
 
 export default {
   name: 'Document',
-  components: { MyMarkdownEditor, MyConfirmButton },
+  components: { ImageViewer, MyMarkdownEditor, MyConfirmButton },
   directives: {
     resizable
   },
