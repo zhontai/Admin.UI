@@ -414,6 +414,9 @@ export default {
   mounted() {
     this.getDocuments()
   },
+  activated() {
+    window.dispatchEvent(new Event('resize'))
+  },
   beforeDestroy() {
     this.clearTimer()
   },
