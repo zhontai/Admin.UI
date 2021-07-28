@@ -376,10 +376,7 @@ export default {
         edge: 5,
         onlySize: true,
         minWidth: 201,
-        maxWidth: 400,
-        onResize: function() {
-          window.dispatchEvent(new Event('resize'))
-        }
+        maxWidth: 400
       }
     }
   },

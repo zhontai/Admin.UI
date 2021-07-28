@@ -124,6 +124,7 @@ class Resizable extends Events {
         }
       }
       if (dirs.length > 0) {
+        this.resizeEvent = new Event('resize')
         dirs.forEach(dir => {
           let resizeDom = this.getElement(this.el, `.my-resize__${dir}`)
           if (!resizeDom) {
@@ -326,6 +327,7 @@ class Resizable extends Events {
         !onlySize && setStyle(this.el, this.options.offset.top, `${data.top}px`)
         break
     }
+    window.dispatchEvent(this.resizeEvent)
     this.options.onResize(this.resizeData)
   }
 
