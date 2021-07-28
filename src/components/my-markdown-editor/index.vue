@@ -140,14 +140,9 @@ export default {
       if (isMarkdownMode) {
         this.editor.replaceSelection(`![img](${src})`)
       } else {
-        // const range = this.editor.getEditorElements()
-        // if (range && range.startContainer && (range.startContainer.className.indexOf('el-main') > -1)) {
-        //   return
-        // }
-        // const img = document.createElement('img')
-        // img.src = src
-        // img.alt = ''
-        // range.insertNode(img)
+        this.editor.exec('addImage', {
+          imageUrl: src
+        })
       }
     }
   }
