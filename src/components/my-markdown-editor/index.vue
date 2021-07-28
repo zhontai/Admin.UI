@@ -64,7 +64,7 @@ export default {
     },
     mode: {
       type: String,
-      default: 'wysiwyg'
+      default: 'wysiwyg' // markdown wysiwyg
     }
   },
   data() {
@@ -128,6 +128,9 @@ export default {
     },
     getMarkdown() {
       return this.editor.getMarkdown()
+    },
+    getEditor() {
+      return this.editor
     },
     setHtml(value) {
       this.editor.setHTML(value)

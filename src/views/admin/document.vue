@@ -12,7 +12,7 @@
           </div>
         </el-main>
       </el-container>
-      <el-aside v-resizable="resizeOptions" width="300px" style="padding:0px;border-left: 1px solid #e6e6e6;position: relative;overflow:unset;">
+      <el-aside v-resizable="resizeOptions" :width="rightPanelWidth" style="padding:0px;border-left: 1px solid #e6e6e6;position: relative;overflow:unset;">
         <el-container style="height:100%;overflow:hidden;">
           <el-header class="header" height="auto" style="padding:5px 10px 6px 10px;border-bottom: 1px solid #e6e6e6;text-align:right;">
             <div v-show="isDocTab">
@@ -283,6 +283,7 @@ export default {
   data() {
     const tabs = { doc: 'docTab', img: 'imgTab' }
     return {
+      rightPanelWidth: '300px',
       documentTree: [],
       expandRowKeys: [],
       pageLoading: false,
@@ -375,7 +376,10 @@ export default {
         edge: 5,
         onlySize: true,
         minWidth: 201,
-        maxWidth: 400
+        maxWidth: 400,
+        onResize: function() {
+          window.dispatchEvent(new Event('resize'))
+        }
       }
     }
   },
