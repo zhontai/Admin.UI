@@ -6,7 +6,7 @@
           <span style="float:left;font-size:14px;line-height: 28px;">{{ document.form.label }}</span>
           <el-button v-if="checkPermission(['api:admin:document:updatecontent'])" type="primary" :disabled="!hasDocument" :loading="document.loadingSave" @click="save(false)">保存文档</el-button>
         </el-header>
-        <el-main class="main" style="padding:0px 5px 5px 5px;">
+        <el-main class="main" style="padding:0px 5px 5px 5px;overflow:unset">
           <div style="height:calc(100% - 2px);">
             <my-markdown-editor ref="markdownEditor" v-model="document.form.content" :height="'100%'" />
           </div>

@@ -141,7 +141,8 @@ export default {
         this.editor.replaceSelection(`![img](${src})`)
       } else {
         this.editor.exec('addImage', {
-          imageUrl: src
+          imageUrl: src,
+          altText: 'img'
         })
       }
     }
@@ -155,5 +156,9 @@ export default {
 }
 .ad-markdown ::v-deep .tui-editor-defaultUI .te-switch-button.markdown{
   vertical-align: 1px;
+}
+.ad-markdown ::v-deep .toastui-editor-ww-container{
+  position: absolute;
+  width: 100%;
 }
 </style>
