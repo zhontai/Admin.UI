@@ -1,6 +1,6 @@
 <template>
-  <section v-loading="loading" :class="isPc ? 'pc' : ''">
-    <el-tabs :tab-position="tabsPosition" style="padding: 20px;">
+  <section v-loading="loading" :class="['my-flex',{ pc: isPc }]" style="padding: 20px;height:100%;">
+    <el-tabs :tab-position="tabsPosition" style="height:100%;">
       <el-tab-pane label="基本设置" style="padding: 8px 30px;">
         <div class="title">基本设置</div>
         <el-form
@@ -330,5 +330,10 @@ export default {
 .avatar-uploader ::v-deep .el-loading-spinner .circular{
   width:26px;
   height:26px;
+}
+
+.pc ::v-deep .el-tabs__content{
+    overflow: auto;
+    height: 100%;
 }
 </style>
