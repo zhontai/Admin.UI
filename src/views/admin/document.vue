@@ -371,12 +371,16 @@ export default {
       return this.document.images.map(a => a.src)
     },
     resizeOptions() {
+      const me = this
       return {
         handles: 'w',
         edge: 5,
         onlySize: true,
         minWidth: 201,
-        maxWidth: 400
+        maxWidth: 400,
+        onStopResize({ width }) {
+          me.rightPanelWidth = width + 'px'
+        }
       }
     }
   },

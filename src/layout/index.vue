@@ -235,7 +235,7 @@ export default {
       },
       tabPosition: 'top', // top | bottom
       tabType: 'border-card', // '' | border-card | card
-      navBarWidth: 'auto',
+      navBarWidth: '201px',
       expandNavBarWidth: ''
     }
   },
