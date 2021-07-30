@@ -93,11 +93,7 @@
 <script>
 import { treeToList, listToTree, getTreeParentsWithSelf } from '@/utils'
 import { getRoleListPage } from '@/api/admin/role'
-import {
-  getPermissions,
-  getPermissionIds,
-  addRolePermission
-} from '@/api/admin/permission'
+import { getPermissions, getPermissionIds, addRolePermission } from '@/api/admin/permission'
 import MyConfirmButton from '@/components/my-confirm-button'
 
 export default {

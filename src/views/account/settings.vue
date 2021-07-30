@@ -135,9 +135,7 @@ import MyConfirmButton from '@/components/my-confirm-button'
 import { getBasic, changePassword, updateBasicUser } from '@/api/admin/user'
 export default {
   name: 'Settins',
-  components: {
-    MyConfirmButton
-  },
+  components: { MyConfirmButton },
   data() {
     const validateNewPassword = (rule, value, callback) => {
       if (value === '') {

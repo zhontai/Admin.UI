@@ -5,7 +5,7 @@
     @after-leave="afterLeave"
   >
     <div
-      v-show="visible"
+      v-if="visible"
       class="el-dialog__wrapper"
       @click.self="handleWrapperClick"
     >

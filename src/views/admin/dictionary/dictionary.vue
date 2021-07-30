@@ -202,10 +202,10 @@ import MyWindow from '@/components/my-window'
  * 数据字典类型
  */
 export default {
-  name: 'Dictionary',
+  name: 'DictionaryData',
   _sync: {
     disabled: false,
-    title: '数据字典',
+    title: '字典小类',
     desc: '字典小类',
     cache: true
   },

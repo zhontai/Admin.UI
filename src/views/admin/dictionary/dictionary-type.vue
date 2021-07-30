@@ -194,7 +194,7 @@ export default {
   name: 'DictionaryType',
   _sync: {
     disabled: false,
-    title: '数据字典类型',
+    title: '字典大类',
     desc: '字典大类',
     cache: true
   },

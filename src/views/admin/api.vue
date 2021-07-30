@@ -136,11 +136,10 @@
     </my-window>
 
     <!--编辑窗口-->
-    <el-dialog
+    <my-window
       v-if="checkPermission(['api:admin:api:update'])"
       title="编辑"
       :visible.sync="editFormVisible"
-      :close-on-click-modal="false"
       @close="onCloseEditForm"
     >
       <el-form ref="editForm" :model="editForm" :rules="editFormRules" label-width="80px">
@@ -183,31 +182,19 @@
           <my-confirm-button type="submit" :validate="editFormValidate" :loading="editLoading" @click="onEditSubmit" />
         </div>
       </template>
-    </el-dialog>
+    </my-window>
   </section>
 </template>
 
 <script>
 import { formatTime, treeToList, listToTree, getTreeParents } from '@/utils'
-import {
-  removeApi,
-  editApi,
-  addApi,
-  getV2SwaggerJson,
-  syncApi,
-  getApiList,
-  batchRemoveApi,
-  getApi
-} from '@/api/admin/api'
+import { removeApi, editApi, addApi, getV2SwaggerJson, syncApi, getApiList, batchRemoveApi, getApi } from '@/api/admin/api'
 import MyWindow from '@/components/my-window'
 import MyConfirmButton from '@/components/my-confirm-button'
 
 export default {
   name: 'Api',
-  components: {
-    MyWindow,
-    MyConfirmButton
-  },
+  components: { MyWindow, MyConfirmButton },
   data() {
     return {
       filters: {

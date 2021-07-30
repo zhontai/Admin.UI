@@ -110,125 +110,112 @@
     <my-select-permission :role-id="roleId" :title="title" :visible.sync="selectPermissionVisible" @click="onSelectPermission" />
 
     <!--新增窗口-->
-    <el-drawer
+    <my-window
       v-if="checkPermission(['api:admin:role:add'])"
       title="新增角色"
-      :modal="false"
-      :wrapper-closable="true"
-      :modal-append-to-body="false"
+      embed
+      drawer
       :visible.sync="addFormVisible"
-      direction="btt"
-      size="'auto'"
-      class="el-drawer__wrapper"
-      style="position:absolute;"
       @close="closeAddForm"
     >
-      <section style="padding:24px 48px 74px 24px;">
-        <el-form
-          ref="addForm"
-          :model="addForm"
-          :rules="addFormRules"
-          label-width="80px"
-          :inline="false"
-        >
-          <el-row>
-            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-              <el-form-item label="角色名" prop="name">
-                <el-input v-model="addForm.name" auto-complete="off" />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-              <el-form-item label="编码" prop="code">
-                <el-input v-model="addForm.code" auto-complete="off" />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-              <el-form-item label="状态" prop="enabled">
-                <el-select v-model="addForm.enabled" placeholder="请选择角色状态" style="width:100%;">
-                  <el-option
-                    v-for="item in statusList"
-                    :key="item.value"
-                    :label="item.name"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
-              <el-form-item label="说明" prop="description">
-                <el-input v-model="addForm.description" type="textarea" :rows="2" auto-complete="off" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-      </section>
+      <el-form
+        ref="addForm"
+        :model="addForm"
+        :rules="addFormRules"
+        label-width="80px"
+        :inline="false"
+      >
+        <el-row>
+          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+            <el-form-item label="角色名" prop="name">
+              <el-input v-model="addForm.name" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+            <el-form-item label="编码" prop="code">
+              <el-input v-model="addForm.code" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+            <el-form-item label="状态" prop="enabled">
+              <el-select v-model="addForm.enabled" placeholder="请选择角色状态" style="width:100%;">
+                <el-option
+                  v-for="item in statusList"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
+            <el-form-item label="说明" prop="description">
+              <el-input v-model="addForm.description" type="textarea" :rows="2" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
       <div class="drawer-footer">
         <el-button @click.native="addFormVisible = false">取消</el-button>
         <my-confirm-button type="submit" :validate="addFormValidate" :loading="addLoading" @click="onAddSubmit" />
       </div>
-    </el-drawer>
+    </my-window>
 
     <!--编辑窗口-->
-    <el-drawer
+    <my-window
       v-if="checkPermission(['api:admin:role:update'])"
       title="编辑角色"
-      :modal="false"
-      :wrapper-closable="true"
-      :modal-append-to-body="false"
+      embed
+      drawer
       :visible.sync="editFormVisible"
-      direction="btt"
-      size="'auto'"
-      style="position:absolute;"
       @close="closeEditForm"
     >
-      <section style="padding:24px 48px 74px 24px;">
-        <el-form
-          ref="editForm"
-          :model="editForm"
-          :rules="editFormRules"
-          label-width="80px"
-          :inline="false"
-        >
-          <el-row>
-            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-              <el-form-item label="角色名" prop="name">
-                <el-input v-model="editForm.name" auto-complete="off" />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-              <el-form-item label="编码" prop="code">
-                <el-input v-model="editForm.code" auto-complete="off" />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-              <el-form-item label="状态" prop="enabled">
-                <el-select v-model="editForm.enabled" placeholder="请选择角色状态" style="width:100%;">
-                  <el-option
-                    v-for="item in statusList"
-                    :key="item.value"
-                    :label="item.name"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
-              <el-form-item label="说明" prop="description">
-                <el-input v-model="editForm.description" type="textarea" :rows="2" auto-complete="off" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-      </section>
+      <el-form
+        ref="editForm"
+        :model="editForm"
+        :rules="editFormRules"
+        label-width="80px"
+        :inline="false"
+      >
+        <el-row>
+          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+            <el-form-item label="角色名" prop="name">
+              <el-input v-model="editForm.name" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+            <el-form-item label="编码" prop="code">
+              <el-input v-model="editForm.code" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+            <el-form-item label="状态" prop="enabled">
+              <el-select v-model="editForm.enabled" placeholder="请选择角色状态" style="width:100%;">
+                <el-option
+                  v-for="item in statusList"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
+            <el-form-item label="说明" prop="description">
+              <el-input v-model="editForm.description" type="textarea" :rows="2" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
       <div class="drawer-footer">
         <el-button @click.native="editFormVisible = false">取消</el-button>
         <my-confirm-button type="submit" :validate="editFormValidate" :loading="editLoading" @click="onEditSubmit" />
       </div>
-    </el-drawer>
+    </my-window>
   </my-container>
 </template>
 
@@ -239,10 +226,11 @@ import { addRolePermission } from '@/api/admin/permission'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySelectPermission from '@/components/my-select-window/permission'
+import MyWindow from '@/components/my-window'
 
 export default {
   name: 'Role',
-  components: { MyContainer, MyConfirmButton, MySelectPermission },
+  components: { MyContainer, MyConfirmButton, MySelectPermission, MyWindow },
   data() {
     return {
       filter: {

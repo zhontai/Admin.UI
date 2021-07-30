@@ -123,11 +123,10 @@
     </el-table>
 
     <!--分组-->
-    <el-dialog
+    <my-window
       v-if="checkPermission(['api:admin:permission:addgroup','api:admin:permission:updategroup'])"
       :title="(permissionGroup.form.id > 0 ? '编辑':'新增')+'分组'"
       :visible.sync="permissionGroup.visible"
-      :close-on-click-modal="false"
       @close="onCloseGroup"
     >
       <el-form ref="permissionGroupForm" :model="permissionGroup.form" label-width="100px" :rules="formRules">
@@ -167,14 +166,13 @@
           <my-confirm-button type="submit" :validate="validateGroup" :loading="permissionGroup.loading" @click="onSubmitGroup" />
         </div>
       </template>
-    </el-dialog>
+    </my-window>
 
     <!--菜单-->
-    <el-dialog
+    <my-window
       v-if="checkPermission(['api:admin:permission:addmenu','api:admin:permission:updatemenu'])"
       :title="(permissionMenu.form.id > 0 ? '编辑':'新增')+'菜单'"
       :visible.sync="permissionMenu.visible"
-      :close-on-click-modal="false"
       @close="onCloseMenu"
     >
       <el-form ref="menuForm" :model="permissionMenu.form" label-width="100px" :rules="formRules">
@@ -242,14 +240,13 @@
           <my-confirm-button type="submit" :validate="validateMenu" :loading="permissionMenu.loading" @click="onSubmitMenu" />
         </div>
       </template>
-    </el-dialog>
+    </my-window>
 
     <!--权限点-->
-    <el-dialog
+    <my-window
       v-if="checkPermission(['api:admin:permission:adddot','api:admin:permission:updatedot'])"
       :title="(permissionDot.form.id > 0 ? '编辑':'新增')+'权限点'"
       :visible.sync="permissionDot.visible"
-      :close-on-click-modal="false"
       @close="onCloseDot"
     >
       <el-form ref="dotForm" :model="permissionDot.form" label-width="100px" :rules="formRules">
@@ -298,7 +295,7 @@
           <my-confirm-button type="submit" :validate="validateDot" :loading="permissionDot.loading" @click="onSubmitDot" />
         </div>
       </template>
-    </el-dialog>
+    </my-window>
   </section>
 </template>
 
@@ -320,12 +317,11 @@ import {
   getDot
 } from '@/api/admin/permission'
 import MyConfirmButton from '@/components/my-confirm-button'
+import MyWindow from '@/components/my-window'
 
 export default {
   name: 'Permission',
-  components: {
-    MyConfirmButton
-  },
+  components: { MyConfirmButton, MyWindow },
   data() {
     return {
       filters: {

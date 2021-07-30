@@ -165,11 +165,10 @@
     </el-container>
 
     <!--分组-->
-    <el-dialog
+    <my-window
       v-if="checkPermission(['api:admin:document:addgroup','api:admin:document:updategroup'])"
       :title="(documentGroup.form.id > 0 ? '编辑':'新增')+'分组'"
       :visible.sync="documentGroup.visible"
-      :close-on-click-modal="false"
       @close="onCloseGroup"
     >
       <el-form ref="documentGroupForm" :model="documentGroup.form" label-width="100px" :rules="formRules">
@@ -200,14 +199,13 @@
           <my-confirm-button type="submit" :validate="validateGroup" :loading="documentGroup.loading" @click="onSubmitGroup" />
         </div>
       </template>
-    </el-dialog>
+    </my-window>
 
     <!--菜单-->
-    <el-dialog
+    <my-window
       v-if="checkPermission(['api:admin:document:addmenu','api:admin:document:updatemenu'])"
       :title="(documentMenu.form.id > 0 ? '编辑':'新增')+'菜单'"
       :visible.sync="documentMenu.visible"
-      :close-on-click-modal="false"
       @close="onCloseMenu"
     >
       <el-form ref="menuForm" :model="documentMenu.form" label-width="100px" :rules="formRules">
@@ -238,7 +236,7 @@
           <my-confirm-button type="submit" :validate="validateMenu" :loading="documentMenu.loading" @click="onSubmitMenu" />
         </div>
       </template>
-    </el-dialog>
+    </my-window>
 
     <!--图片查看器-->
     <image-viewer
@@ -257,6 +255,8 @@ import ImageViewer from 'element-ui/packages/image/src/image-viewer'
 import MyMarkdownEditor from '@/components/my-markdown-editor'
 import MyConfirmButton from '@/components/my-confirm-button'
 import resizable from '@/directive/resizable'
+import MyWindow from '@/components/my-window'
+
 import {
   getDocuments,
   getDocumentImages,
@@ -276,7 +276,7 @@ let prevOverflow = ''
 
 export default {
   name: 'Document',
-  components: { ImageViewer, MyMarkdownEditor, MyConfirmButton },
+  components: { ImageViewer, MyMarkdownEditor, MyConfirmButton, MyWindow },
   directives: {
     resizable
   },
