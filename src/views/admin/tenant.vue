@@ -217,10 +217,10 @@
           </el-col>
         </el-row>
       </el-form>
-      <div class="drawer-footer">
+      <template #footer>
         <el-button @click.native="addFormVisible = false">取消</el-button>
         <my-confirm-button type="submit" :validate="addFormValidate" :loading="addLoading" @click="onAddSubmit" />
-      </div>
+      </template>
     </my-window>
 
     <!--编辑窗口-->
@@ -326,10 +326,10 @@
           </el-col>
         </el-row>
       </el-form>
-      <div class="drawer-footer">
+      <template #footer>
         <el-button @click.native="editFormVisible = false">取消</el-button>
         <my-confirm-button type="submit" :validate="editFormValidate" :loading="editLoading" @click="onEditSubmit" />
-      </div>
+      </template>
     </my-window>
   </my-container>
 </template>

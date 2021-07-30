@@ -634,6 +634,6 @@ export default {
    */
   unbind(el) {
     const instance = el.__draggable__
-    instance.destroy()
+    instance?.destroy()
   }
 }

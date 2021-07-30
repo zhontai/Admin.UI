@@ -5,7 +5,7 @@
     @after-leave="afterLeave"
   >
     <div
-      v-if="visible"
+      v-show="visible"
       class="el-dialog__wrapper"
       @click.self="handleWrapperClick"
     >
@@ -54,7 +54,7 @@ import emitter from 'element-ui/src/mixins/emitter'
 import MyContainer from '@/components/my-container'
 
 export default {
-  name: 'ElDialog',
+  name: 'MyDialog',
   components: { MyContainer },
   mixins: [Popup, emitter, Migrating],
 

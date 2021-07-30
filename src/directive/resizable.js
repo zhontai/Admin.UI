@@ -403,6 +403,6 @@ export default {
    */
   unbind(el) {
     const instance = el.__resizable__
-    instance.destroy()
+    instance?.destroy()
   }
 }
