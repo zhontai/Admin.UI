@@ -1,5 +1,5 @@
 <template>
-  <el-pagination
+  <my-el-pagination
     :layout="currentLayout"
     :page-sizes="sizes"
     :current-page="page"
@@ -15,7 +15,7 @@
     <template #default>
       <span v-if="checkedCount>0" class="ad-pagination__selection">，已选 {{ checkedCount }} 条</span>
     </template>
-  </el-pagination>
+  </my-el-pagination>
 </template>
 
 <script>
@@ -32,6 +32,7 @@
     this.total = res.data.total
 */
 import { addResizeListener, removeResizeListener } from 'element-ui/lib/utils/resize-event'
+import MyElPagination from '@/components/element-ui/pagination'
 
 const layouts = {
   full: 'total, slot, sizes, prev, jumper, next',
@@ -41,6 +42,7 @@ const layouts = {
 }
 export default {
   name: 'MyPagination',
+  components: { MyElPagination },
   props: {
     layout: {
       type: String,

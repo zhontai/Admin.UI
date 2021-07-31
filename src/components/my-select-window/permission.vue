@@ -1,57 +1,54 @@
 <template>
-  <el-drawer
+  <my-window
+    v-loading="loadingPermissions"
     :title="title"
     :modal="modal"
     :wrapper-closable="true"
     :modal-append-to-body="modalAppendToBody"
     :visible.sync="visible"
-    destroy-on-close
-    direction="btt"
-    size="100%"
-    class="el-drawer__wrapper"
-    style="position:absolute;"
     :before-close="onCancel"
+    embed
+    drawer
+    size="100%"
     @opened="onSearch"
   >
-    <my-container v-loading="loadingPermissions" :show-header="false" :show-footer="false" style="height: calc(100% - 61px);padding:0px;">
-      <el-table
-        ref="multipleTable"
-        :data="permissionTree"
-        :default-expand-all="true"
-        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-        row-key="id"
-        highlight-current-row
-        style="width: 100%;"
-        @select-all="onSelectAll"
-        @select="onSelect"
-      >
-        <el-table-column type="selection" width="50" />
-        <el-table-column prop="label" label="导航菜单" width="200" />
-        <el-table-column label="菜单操作" width>
-          <template #default="{ row }">
-            <el-checkbox-group v-if="row.apis && row.apis.length > 0" v-model="chekedApis">
-              <el-checkbox v-for="api in row.apis" :key="api.id" :label="api.id" @change="(value)=>onChange(value, row.id)">{{ api.label }}</el-checkbox>
-            </el-checkbox-group>
-          </template>
-        </el-table-column>
-      </el-table>
-    </my-container>
-    <div class="drawer-footer">
+    <el-table
+      ref="multipleTable"
+      :data="permissionTree"
+      :default-expand-all="true"
+      :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+      row-key="id"
+      highlight-current-row
+      style="width: 100%;"
+      @select-all="onSelectAll"
+      @select="onSelect"
+    >
+      <el-table-column type="selection" width="50" />
+      <el-table-column prop="label" label="导航菜单" width="200" />
+      <el-table-column label="菜单操作" width>
+        <template #default="{ row }">
+          <el-checkbox-group v-if="row.apis && row.apis.length > 0" v-model="chekedApis">
+            <el-checkbox v-for="api in row.apis" :key="api.id" :label="api.id" @change="(value)=>onChange(value, row.id)">{{ api.label }}</el-checkbox>
+          </el-checkbox-group>
+        </template>
+      </el-table-column>
+    </el-table>
+    <template #footer>
       <el-button @click.native="onCancel">取消</el-button>
       <my-confirm-button type="submit" :loading="setPermissionLoading" @click="onSure" />
-    </div>
-  </el-drawer>
+    </template>
+  </my-window>
 </template>
 
 <script>
 import { treeToList, listToTree, getTreeParentsWithSelf } from '@/utils'
 import { getPermissions, getPermissionIds, GetTenantPermissionIds } from '@/api/admin/permission'
-import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
+import MyWindow from '@/components/my-window'
 
 export default {
   name: 'MySelectPermission',
-  components: { MyContainer, MyConfirmButton },
+  components: { MyConfirmButton, MyWindow },
   props: {
     visible: {
       type: Boolean,

@@ -48,6 +48,8 @@ const defaultOptions = {
   minHeight: 20,
   maxWidth: 10000,
   maxHeight: 10000,
+  // 自动计算范围
+  autoCalcRange: false,
   // 是否只改变width和height的值，在layout组件不需要改变left 和 top
   onlySize: false,
   // 距离边缘多少时显示鼠标Cursor
@@ -111,6 +113,12 @@ class Resizable extends Events {
     this.isResizing = false
     this.isMouseEnter = false
     if (!o.disabled) {
+      if (this.options.autoCalcRange) {
+        const parentRect = this.parent.getBoundingClientRect()
+        this.options.maxWidth = parentRect.width
+        this.options.maxHeight = parentRect.height
+      }
+
       addClass(this.el, RESIZABLE_CLASS)
 
       const type = this.getType(o.handles)
@@ -184,6 +192,7 @@ class Resizable extends Events {
 
   handleMouseDown(e) {
     e.preventDefault()
+
     this.dir = e.target.attributes['_dir'].value
     this.startResize(e.clientX, e.clientY)
     this.setCursor(this.dir)

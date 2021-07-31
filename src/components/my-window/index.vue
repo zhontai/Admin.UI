@@ -1,6 +1,7 @@
 <template>
   <el-drawer
     v-if="drawer"
+    ref="mydrawer"
     v-resizable="drawerResizeOptions"
     :modal="currentModal"
     :wrapper-closable="wrapperClosable || closeOnClickModal"
@@ -16,6 +17,8 @@
     :before-close="onCancel"
     @open="onOpen"
     @close="onClose"
+    @opened="onOpened"
+    @closed="onClosed"
   >
     <template #title>
       <slot name="title">
@@ -32,7 +35,7 @@
       </slot>
     </div>
   </el-drawer>
-  <my-dialog
+  <my-el-dialog
     v-else
     v-draggable="dragOptions"
     v-resizable="resizeOptions"
@@ -63,14 +66,15 @@
         <el-button type="primary" @click="onSure">确定</el-button>
       </slot>
     </template>
-  </my-dialog>
+  </my-el-dialog>
 </template>
 
 <script>
+import { addResizeListener, removeResizeListener } from 'element-ui/lib/utils/resize-event'
 import draggable from '@/directive/draggable'
 import resizable from '@/directive/resizable'
 import { setStyle } from 'element-ui/lib/utils/dom'
-import MyDialog from '@/components/my-dialog'
+import MyElDialog from '@/components/element-ui/my-el-dialog'
 
 /**
  * 窗口 my-window
@@ -91,14 +95,15 @@ import MyDialog from '@/components/my-dialog'
   </my-window>
 
   import MyWindow from '@/components/my-window'
+  import MyConfirmButton from '@/components/my-confirm-button'
 
   export default {
-    components: { MyWindow }
+    components: { MyWindow, MyConfirmButton }
   }
 */
 export default {
   name: 'MyWindow',
-  components: { MyDialog },
+  components: { MyElDialog },
   directives: {
     draggable,
     resizable
@@ -116,12 +121,12 @@ export default {
     // 可拖拽
     draggable: {
       type: Boolean,
-      default: false
+      default: true
     },
     // 可更改尺寸
     resizable: {
       type: Boolean,
-      default: false
+      default: true
     },
     // 更改尺寸方向
     resizeHandles: {
@@ -131,7 +136,7 @@ export default {
     // 页脚可拖拽
     footerDraggable: {
       type: Boolean,
-      default: false
+      default: true
     },
     visible: {
       type: Boolean,
@@ -299,15 +304,40 @@ export default {
 
   },
   mounted() {
+    if (this.drawer) {
+      this.proxyChangeLayout = this.changeLayout.bind(this)
+      addResizeListener(this.$el, this.proxyChangeLayout)
+    }
+  },
+  beforeDestroy() {
+    this.proxyChangeLayout && removeResizeListener(this.$el, this.proxyChangeLayout)
   },
   methods: {
+    changeLayout() {
+      this.currentSize = 'auto'
+      this.$nextTick(function() {
+        const rect = document.querySelector('.main').getBoundingClientRect()
+        const drawerRect = this.$refs.mydrawer.$refs.drawer.getBoundingClientRect()
+        if (drawerRect.height >= rect.height || drawerRect.width > rect.width) {
+          this.currentSize = '100%'
+        } else {
+          this.currentSize = 'auto'
+        }
+      })
+    },
     // 打开
     onOpen() {
       this.$emit('open')
     },
+    onOpened() {
+      this.$emit('opened')
+    },
     // 关闭
     onClose() {
       this.$emit('close')
+    },
+    onClosed() {
+      this.$emit('closed')
     },
     // 取消
     onCancel() {
