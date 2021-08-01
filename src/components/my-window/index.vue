@@ -2,7 +2,7 @@
   <el-drawer
     v-if="drawer"
     ref="mydrawer"
-    v-resizable="drawerResizeOptions"
+    v-resizable="currentDrawerResizeOptions"
     :modal="currentModal"
     :wrapper-closable="wrapperClosable || closeOnClickModal"
     :close-on-press-escape="closeOnPressEscape"
@@ -37,8 +37,8 @@
   </el-drawer>
   <my-el-dialog
     v-else
-    v-draggable="dragOptions"
-    v-resizable="resizeOptions"
+    v-draggable="currentDragOptions"
+    v-resizable="cuurentResizeOptions"
     :visible.sync="visible"
     :modal="currentModal"
     :modal-append-to-body="currentModalAppendToBody"
@@ -133,6 +133,20 @@ export default {
       type: [String, Array],
       default: 'all'
     },
+    // resize选项
+    resizeOptions: {
+      type: Object,
+      default: null
+    },
+    // drag选项
+    dragOptions: {
+      type: Object,
+      default: null
+    },
+    drawerResizeOptions: {
+      type: Object,
+      default: null
+    },
     // 页脚可拖拽
     footerDraggable: {
       type: Boolean,
@@ -164,7 +178,7 @@ export default {
     },
     appendToBody: {
       type: Boolean,
-      default: false
+      default: true
     },
     modalAppendToBody: {
       type: Boolean,
@@ -232,7 +246,7 @@ export default {
     }
   },
   computed: {
-    dragOptions() {
+    currentDragOptions() {
       const handles = []
       if (this.draggable) {
         handles.push('.el-dialog__header')
@@ -248,10 +262,11 @@ export default {
         offset: {
           left: 'marginLeft',
           top: 'marginTop'
-        }
+        },
+        ...this.dragOptions
       }
     },
-    resizeOptions() {
+    cuurentResizeOptions() {
       return {
         host: '.el-dialog',
         handles: this.resizeHandles,
@@ -260,10 +275,14 @@ export default {
         offset: {
           left: 'marginLeft',
           top: 'marginTop'
-        }
+        },
+        minWidth: 200,
+        minHeight: 190,
+        autoCalcRange: true,
+        ...this.resizeOptions
       }
     },
-    drawerResizeOptions() {
+    currentDrawerResizeOptions() {
       return {
         host: '.el-drawer',
         handles: this.drawerResizeHandles,
@@ -272,7 +291,12 @@ export default {
         offset: {
           left: 'marginLeft',
           top: 'marginTop'
-        }
+        },
+        minWidth: 200,
+        minHeight: 190,
+        autoCalcRange: true,
+        rangeDom: this.embed ? '.el-main.main' : null,
+        ...this.drawerResizeOptions
       }
     },
     dialogStyle() {
@@ -316,7 +340,7 @@ export default {
     changeLayout() {
       this.currentSize = 'auto'
       this.$nextTick(function() {
-        const rect = document.querySelector('.main').getBoundingClientRect()
+        const rect = this.embed ? document.querySelector('.el-main.main').getBoundingClientRect() : document.body.getBoundingClientRect()
         const drawerRect = this.$refs.mydrawer.$refs.drawer.getBoundingClientRect()
         if (drawerRect.height >= rect.height || drawerRect.width > rect.width) {
           this.currentSize = '100%'

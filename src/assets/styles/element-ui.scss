@@ -101,6 +101,7 @@ padding-left: 5px;
 
 .el-drawer{
   outline: none;
+  overflow: unset;
 }
 .el-drawer__header>:first-child{
   outline: none;
@@ -229,4 +230,5 @@ padding-left: 5px;
 /*el-dialog*/
 .el-dialog{
   pointer-events: auto;
+  margin-bottom: 0px;
 }

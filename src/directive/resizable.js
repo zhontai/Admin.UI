@@ -44,12 +44,14 @@ const defaultOptions = {
   disabled: false,
   // 可resize的方向，可选值 e,s,w,n,nw,ne,sw,se,all
   handles: 'all',
-  minWidth: 20,
-  minHeight: 20,
+  minWidth: 100,
+  minHeight: 100,
   maxWidth: 10000,
   maxHeight: 10000,
   // 自动计算范围
   autoCalcRange: false,
+  // 范围元素选择器
+  rangeDom: null,
   // 是否只改变width和height的值，在layout组件不需要改变left 和 top
   onlySize: false,
   // 距离边缘多少时显示鼠标Cursor
@@ -84,13 +86,14 @@ class Resizable extends Events {
      */
     this.document = document
 
-    this.parent = el
+    this.targetDom = el
 
     /**
      * 需要拖拽的元素
      * @type {HtmlElement}
      */
     this.el = this.getElement(el, options.host) || el
+    this.rangeDom = this.getElement(document, options.rangeDom)
     this.init(options)
   }
 
@@ -113,12 +116,6 @@ class Resizable extends Events {
     this.isResizing = false
     this.isMouseEnter = false
     if (!o.disabled) {
-      if (this.options.autoCalcRange) {
-        const parentRect = this.parent.getBoundingClientRect()
-        this.options.maxWidth = parentRect.width
-        this.options.maxHeight = parentRect.height
-      }
-
       addClass(this.el, RESIZABLE_CLASS)
 
       const type = this.getType(o.handles)
@@ -192,6 +189,12 @@ class Resizable extends Events {
 
   handleMouseDown(e) {
     e.preventDefault()
+
+    if (this.options.autoCalcRange) {
+      const rangeDomRect = this.rangeDom ? this.rangeDom.getBoundingClientRect() : this.targetDom.parentNode.getBoundingClientRect()
+      this.options.maxWidth = rangeDomRect.width - 10
+      this.options.maxHeight = rangeDomRect.height - 10
+    }
 
     this.dir = e.target.attributes['_dir'].value
     this.startResize(e.clientX, e.clientY)
