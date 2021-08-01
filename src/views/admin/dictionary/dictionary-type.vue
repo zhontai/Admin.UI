@@ -193,7 +193,7 @@ import MyWindow from '@/components/my-window'
 export default {
   name: 'DictionaryType',
   _sync: {
-    disabled: false,
+    disabled: true,
     title: '字典大类',
     desc: '字典大类',
     cache: true

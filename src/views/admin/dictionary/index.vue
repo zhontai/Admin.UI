@@ -1,11 +1,17 @@
 <template>
   <el-container class="container" style="height: 100%;">
-    <el-aside class="aside" />
-    <el-main class="main" style="height:100%;" />
+    <el-aside class="aside">
+      <dictionary-type />
+    </el-aside>
+    <el-main class="main" style="height:100%;">
+      <dictionary-data />
+    </el-main>
   </el-container>
 </template>
 
 <script>
+import DictionaryType from './dictionary-type'
+import DictionaryData from './dictionary'
 
 /**
  * 数据字典类型
@@ -18,7 +24,7 @@ export default {
     desc: '数据字典',
     cache: true
   },
-  components: { },
+  components: { DictionaryType, DictionaryData },
   data() {
     return {
 

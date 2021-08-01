@@ -204,7 +204,7 @@ import MyWindow from '@/components/my-window'
 export default {
   name: 'DictionaryData',
   _sync: {
-    disabled: false,
+    disabled: true,
     title: '字典小类',
     desc: '字典小类',
     cache: true

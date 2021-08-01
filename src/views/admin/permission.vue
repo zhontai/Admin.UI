@@ -730,7 +730,7 @@ export default {
         this.permissionMenu.form.label = view.label
       }
       if (view && view.path) {
-        this.permissionMenu.form.path = view.path
+        this.permissionMenu.form.path = `/${view.path}`
       }
     },
 
