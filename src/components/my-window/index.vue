@@ -338,14 +338,14 @@ export default {
   },
   methods: {
     changeLayout() {
-      this.currentSize = 'auto'
+      this.currentSize = this.size
       this.$nextTick(function() {
         const rect = this.embed ? document.querySelector('.el-main.main').getBoundingClientRect() : document.body.getBoundingClientRect()
         const drawerRect = this.$refs.mydrawer.$refs.drawer.getBoundingClientRect()
-        if (drawerRect.height >= rect.height || drawerRect.width > rect.width) {
+        if (drawerRect.height > rect.height || drawerRect.width > rect.width) {
           this.currentSize = '100%'
         } else {
-          this.currentSize = 'auto'
+          this.currentSize = this.size
         }
       })
     },

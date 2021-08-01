@@ -93,7 +93,6 @@ class Resizable extends Events {
      * @type {HtmlElement}
      */
     this.el = this.getElement(el, options.host) || el
-    this.rangeDom = this.getElement(document, options.rangeDom)
     this.init(options)
   }
 
@@ -191,7 +190,7 @@ class Resizable extends Events {
     e.preventDefault()
 
     if (this.options.autoCalcRange) {
-      const rangeDomRect = this.rangeDom ? this.rangeDom.getBoundingClientRect() : this.targetDom.parentNode.getBoundingClientRect()
+      const rangeDomRect = this.options.rangeDom ? this.getElement(this.document, this.options.rangeDom).getBoundingClientRect() : this.targetDom.parentNode.getBoundingClientRect()
       this.options.maxWidth = rangeDomRect.width - 10
       this.options.maxHeight = rangeDomRect.height - 10
     }
