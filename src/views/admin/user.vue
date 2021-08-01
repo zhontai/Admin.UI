@@ -95,7 +95,6 @@
       title="新增用户"
       embed
       drawer
-      direction="ltr"
       :visible.sync="addFormVisible"
       @close="closeAddForm"
     >
