@@ -156,29 +156,29 @@
         :inline="false"
       >
         <el-row>
-          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+          <el-col :xs="24" :sm="12">
             <el-form-item label="名称" prop="name">
               <el-input v-model="editForm.name" auto-complete="off" />
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+          <el-col :xs="24" :sm="12">
             <el-form-item label="编码" prop="code">
               <el-input v-model="editForm.code" auto-complete="off" />
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+          <el-col :xs="24" :sm="12">
             <el-form-item label="值" prop="value">
               <el-input v-model="editForm.value" auto-complete="off" />
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+          <el-col :xs="24" :sm="12">
             <el-form-item label="启用" prop="enabled">
               <el-switch v-model="editForm.enabled" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
-          <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
+          <el-col :xs="24">
             <el-form-item label="说明" prop="description">
               <el-input v-model="editForm.description" type="textarea" :rows="2" auto-complete="off" />
             </el-form-item>

@@ -1,6 +1,6 @@
 <template>
   <el-container class="container" style="height: 100%;">
-    <el-aside v-resizable="resizeOptions" class="aside" style="border-right: 1px solid #e6e6e6;position: relative;overflow:unset;">
+    <el-aside v-resizable="resizeOptions" width="45%" class="aside" style="border-right: 1px solid #e6e6e6;position: relative;overflow:unset;">
       <my-dictionary-type @current-change="onCurrentChange" />
     </el-aside>
     <el-main class="main" style="height:100%;">
@@ -37,8 +37,8 @@ export default {
       return {
         handles: 'e',
         onlySize: true,
-        minWidth: 201,
-        maxWidth: 500
+        minWidth: 280,
+        maxWidth: 700
       }
     }
   },

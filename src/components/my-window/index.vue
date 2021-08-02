@@ -183,7 +183,7 @@ export default {
     },
     closeOnClickModal: {
       type: Boolean,
-      default: false
+      default: true
     },
     wrapperClosable: {
       type: Boolean,
