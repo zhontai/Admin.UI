@@ -305,7 +305,7 @@ import { getApiList } from '@/api/admin/api'
 import { getViewList } from '@/api/admin/view'
 import {
   getPermissionList,
-  removePermission,
+  deletePermission,
   addGroup,
   addMenu,
   addDot,
@@ -514,7 +514,7 @@ export default {
     async onDelete(index, row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await removePermission(para)
+      const res = await deletePermission(para)
       row._loading = false
 
       if (!res?.success) {

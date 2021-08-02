@@ -18,10 +18,10 @@
         <el-form-item>
           <el-button type="primary" @click="onSearch">查询</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:admin:dictionarytype:add'])">
+        <el-form-item v-if="checkPermission(['api:admin:dictionary:add'])">
           <el-button type="primary" @click="onAdd">新增</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:admin:dictionarytype:batchsoftdelete'])">
+        <el-form-item v-if="checkPermission(['api:admin:dictionary:batchsoftdelete'])">
           <my-confirm-button
             :disabled="sels.length === 0"
             :type="'delete'"
@@ -61,11 +61,11 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="checkPermission(['api:admin:dictionarytype:update','api:admin:dictionarytype:softdelete'])" label="操作" width="180">
+      <el-table-column v-if="checkPermission(['api:admin:dictionary:update','api:admin:dictionary:softdelete'])" label="操作" width="180">
         <template #default="{ $index, row }">
-          <el-button v-if="checkPermission(['api:admin:dictionarytype:update'])" @click="onEdit($index, row)">编辑</el-button>
+          <el-button v-if="checkPermission(['api:admin:dictionary:update'])" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
-            v-if="checkPermission(['api:admin:dictionarytype:softdelete'])"
+            v-if="checkPermission(['api:admin:dictionary:softdelete'])"
             type="delete"
             :loading="row._loading"
             :validate="deleteValidate"
@@ -90,7 +90,7 @@
 
     <!--新增窗口-->
     <my-window
-      v-if="checkPermission(['api:admin:dictionarytype:add'])"
+      v-if="checkPermission(['api:admin:dictionary:add'])"
       title="新增数据大类"
       drawer
       embed
@@ -137,7 +137,7 @@
 
     <!--编辑窗口-->
     <my-window
-      v-if="checkPermission(['api:admin:dictionarytype:update'])"
+      v-if="checkPermission(['api:admin:dictionary:update'])"
       title="编辑数据大类"
       drawer
       embed

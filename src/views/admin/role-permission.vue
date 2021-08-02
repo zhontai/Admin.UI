@@ -30,6 +30,8 @@
           <my-pagination
             ref="pager"
             :total="total"
+            :auto-layout="false"
+            layout="simpleJumper"
             @get-page="getRoles"
           />
         </el-card>

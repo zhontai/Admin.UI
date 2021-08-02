@@ -9,6 +9,9 @@ export const getPermissionList = (params, config = {}) => {
 export const removePermission = (params, config = {}) => {
   return request.delete(apiPrefix + 'softdelete', { params: params, ...config })
 }
+export const deletePermission = (params, config = {}) => {
+  return request.delete(apiPrefix + 'delete', { params: params, ...config })
+}
 export const getPermissions = (params, config = {}) => {
   return request.get(apiPrefix + 'getpermissionlist', { params: params, ...config })
 }
