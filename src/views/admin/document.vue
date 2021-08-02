@@ -277,9 +277,7 @@ let prevOverflow = ''
 export default {
   name: 'Document',
   components: { ImageViewer, MyMarkdownEditor, MyConfirmButton, MyWindow },
-  directives: {
-    resizable
-  },
+  directives: { resizable },
   data() {
     const tabs = { doc: 'docTab', img: 'imgTab' }
     return {
@@ -374,7 +372,6 @@ export default {
       const me = this
       return {
         handles: 'w',
-        edge: 5,
         onlySize: true,
         minWidth: 201,
         maxWidth: 400,

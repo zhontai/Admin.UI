@@ -305,7 +305,6 @@ export default {
     resizeOptions() {
       return {
         handles: 'e',
-        edge: 5,
         onlySize: true,
         minWidth: 201,
         maxWidth: 500,

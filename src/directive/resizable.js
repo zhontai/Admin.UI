@@ -30,7 +30,6 @@ const noop = function() {
  * @property {number} [minHeight=20] 可resize最小高度
  * @property {number} [maxWidth=10000] 可resize最大宽度
  * @property {number} [maxHeight=10000] 可resize最大高度
- * @property {number} [edge=5] 距离边缘多少时显示鼠标Cursor
  * @property {Object} [offset={}] 位置定义
  * @property {string} [offset.left=left] x位置名称
  * @property {string} [offset.top=top] y位置名称
@@ -54,8 +53,6 @@ const defaultOptions = {
   rangeDom: null,
   // 是否只改变width和height的值，在layout组件不需要改变left 和 top
   onlySize: false,
-  // 距离边缘多少时显示鼠标Cursor
-  edge: 5,
   // 位置定义
   offset: {
     left: 'left',
@@ -367,15 +364,14 @@ class Resizable extends Events {
     this.off(this.document, 'mousemove', this.handleMouseMove)
     this.off(this.document, 'mouseup', this.handleMouseUp)
 
-    const dirs = ['e', 's', 'w', 'n', 'nw', 'ne', 'sw', 'se']
-
-    const me = this
-    dirs.forEach(dir => {
-      const resizeDom = me.getElement(me.el, `.my-resize__${dir}`)
-      if (resizeDom) {
-        me.el.removeChild(resizeDom)
-      }
-    })
+    // const dirs = ['e', 's', 'w', 'n', 'nw', 'ne', 'sw', 'se']
+    // const me = this
+    // dirs.forEach(dir => {
+    //   const resizeDom = me.getElement(me.el, `.my-resize__${dir}`)
+    //   if (resizeDom) {
+    //     me.el.removeChild(resizeDom)
+    //   }
+    // })
   }
 }
 

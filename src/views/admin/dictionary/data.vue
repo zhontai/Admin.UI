@@ -18,10 +18,10 @@
         <el-form-item>
           <el-button type="primary" @click="onSearch">查询</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:admin:dictionarytype:add'])">
+        <el-form-item v-if="checkPermission(['api:admin:dictionary:add'])">
           <el-button type="primary" @click="onAdd">新增</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:admin:dictionarytype:batchsoftdelete'])">
+        <el-form-item v-if="checkPermission(['api:admin:dictionary:batchsoftdelete'])">
           <my-confirm-button
             :disabled="sels.length === 0"
             :type="'delete'"
@@ -47,23 +47,24 @@
       highlight-current-row
       height="'100%'"
       style="width: 100%;height:100%;"
-      @selection-change="selsChange"
+      @selection-change="onSelectionChange"
     >
       <el-table-column type="selection" width="50" />
       <el-table-column prop="name" label="名称" width />
       <el-table-column prop="code" label="编码" width />
-      <el-table-column prop="enabled" label="状态" width="200">
+      <el-table-column prop="value" label="值" width />
+      <el-table-column prop="enabled" label="状态" width>
         <template #default="{row}">
           <el-tag :type="row.enabled ? 'success' : 'danger'" disable-transitions>
             {{ row.enabled ? '启用' : '禁用' }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="checkPermission(['api:admin:dictionarytype:update','api:admin:dictionarytype:softdelete'])" label="操作" width="180">
+      <el-table-column v-if="checkPermission(['api:admin:dictionary:update','api:admin:dictionary:softdelete'])" label="操作" width="180">
         <template #default="{ $index, row }">
-          <el-button v-if="checkPermission(['api:admin:dictionarytype:update'])" @click="onEdit($index, row)">编辑</el-button>
+          <el-button v-if="checkPermission(['api:admin:dictionary:update'])" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
-            v-if="checkPermission(['api:admin:dictionarytype:softdelete'])"
+            v-if="checkPermission(['api:admin:dictionary:softdelete'])"
             type="delete"
             :loading="row._loading"
             :validate="deleteValidate"
@@ -80,14 +81,16 @@
         ref="pager"
         :total="total"
         :checked-count="sels.length"
+        :auto-layout="false"
+        layout="simpleJumper"
         @get-page="getDataList"
       />
     </template>
 
     <!--新增窗口-->
     <my-window
-      v-if="checkPermission(['api:admin:dictionarytype:add'])"
-      title="新增数据大类"
+      v-if="checkPermission(['api:admin:dictionary:add'])"
+      title="新增数据小类"
       drawer
       embed
       :visible.sync="addFormVisible"
@@ -101,24 +104,29 @@
         :inline="false"
       >
         <el-row>
-          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+          <el-col :xs="24" :sm="12">
             <el-form-item label="名称" prop="name">
               <el-input v-model="addForm.name" auto-complete="off" />
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+          <el-col :xs="24" :sm="12">
             <el-form-item label="编码" prop="code">
               <el-input v-model="addForm.code" auto-complete="off" />
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+          <el-col :xs="24" :sm="12">
+            <el-form-item label="值" prop="value">
+              <el-input v-model="addForm.value" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12">
             <el-form-item label="启用" prop="enabled">
               <el-switch v-model="addForm.enabled" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
-          <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
+          <el-col :xs="24">
             <el-form-item label="说明" prop="description">
               <el-input v-model="addForm.description" type="textarea" :rows="2" auto-complete="off" />
             </el-form-item>
@@ -133,8 +141,8 @@
 
     <!--编辑窗口-->
     <my-window
-      v-if="checkPermission(['api:admin:dictionarytype:update'])"
-      title="编辑数据大类"
+      v-if="checkPermission(['api:admin:dictionary:update'])"
+      title="编辑数据小类"
       drawer
       embed
       :visible.sync="editFormVisible"
@@ -156,6 +164,11 @@
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="编码" prop="code">
               <el-input v-model="editForm.code" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+            <el-form-item label="值" prop="value">
+              <el-input v-model="editForm.value" auto-complete="off" />
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
@@ -182,7 +195,7 @@
 
 <script>
 import { formatTime } from '@/utils'
-import { getPage, get, add, update, softDelete, batchSoftDelete } from '@/api/admin/dictionary-type'
+import { getPage, get, add, update, softDelete, batchSoftDelete } from '@/api/admin/dictionary'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyWindow from '@/components/my-window'
@@ -191,18 +204,22 @@ import MyWindow from '@/components/my-window'
  * 数据字典类型
  */
 export default {
-  name: 'DictionaryType',
+  name: 'MyDictionaryData',
   _sync: {
-    disabled: true,
-    title: '字典大类',
-    desc: '字典大类',
-    cache: true
+    disabled: true
   },
   components: { MyContainer, MyConfirmButton, MyWindow },
+  props: {
+    dictionaryTypeId: {
+      type: Number,
+      default: null
+    }
+  },
   data() {
     return {
       filter: {
-        name: ''
+        name: '',
+        dictionaryTypeId: this.dictionaryTypeId
       },
       dataList: [],
       total: 0,
@@ -220,7 +237,8 @@ export default {
       addForm: {
         name: '',
         description: '',
-        enabled: true
+        enabled: true,
+        dictionaryTypeId: this.dictionaryTypeId
       },
       addFormRef: null,
 
@@ -246,8 +264,15 @@ export default {
   },
   computed: {
   },
+  watch: {
+    dictionaryTypeId(val) {
+      this.filter.dictionaryTypeId = val
+      this.addForm.dictionaryTypeId = val
+      this.getDataList()
+    }
+  },
   mounted() {
-    this.getDataList()
+    // this.getDataList()
   },
   beforeUpdate() {
     // console.log('update')
@@ -425,7 +450,7 @@ export default {
 
       this.getDataList()
     },
-    selsChange: function(sels) {
+    onSelectionChange: function(sels) {
       this.sels = sels
     }
   }

@@ -104,10 +104,7 @@ import MyElDialog from '@/components/element-ui/my-el-dialog'
 export default {
   name: 'MyWindow',
   components: { MyElDialog },
-  directives: {
-    draggable,
-    resizable
-  },
+  directives: { draggable, resizable },
   props: {
     title: {
       type: String,
@@ -270,7 +267,6 @@ export default {
       return {
         host: '.el-dialog',
         handles: this.resizeHandles,
-        edge: 5,
         disabled: !this.resizable || this.fullscreen,
         offset: {
           left: 'marginLeft',
@@ -286,7 +282,6 @@ export default {
       return {
         host: '.el-drawer',
         handles: this.drawerResizeHandles,
-        edge: 5,
         disabled: !this.resizable || this.fullscreen,
         offset: {
           left: 'marginLeft',
