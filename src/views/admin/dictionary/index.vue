@@ -1,9 +1,9 @@
 <template>
   <el-container class="container" style="height: 100%;">
-    <el-aside v-resizable="resizeOptions" width="45%" class="aside" style="border-right: 1px solid #e6e6e6;position: relative;overflow:unset;">
+    <el-aside v-resizable="resizeOptions" width="45%" style="border-right: 1px solid #e6e6e6;position: relative;overflow:unset;">
       <my-dictionary-type @current-change="onCurrentChange" />
     </el-aside>
-    <el-main class="main" style="height:100%;">
+    <el-main style="height:100%;">
       <my-dictionary-data :dictionary-type-id="dictionaryTypeId" />
     </el-main>
   </el-container>

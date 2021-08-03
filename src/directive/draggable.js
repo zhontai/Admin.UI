@@ -623,10 +623,8 @@ export default {
     el.__draggable__ = new Draggable(window.document, el, binding.value)
   },
   componentUpdated(el, binding) {
-    const instance = el.__draggable__
-    instance.options = Object.assign({},
-      defaultOptions, instance.options,
-      binding.value === false ? { disabled: true } : binding.value || {})
+    const instance = el.__resizable__
+    instance?.reset(binding.value)
   },
   /**
    * 元素在页面销毁时回调，在这里销毁Draggable实例

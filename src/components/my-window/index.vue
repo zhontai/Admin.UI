@@ -49,7 +49,7 @@
     :close-on-press-escape="closeOnPressEscape"
     :before-close="onCancel"
     :style="dialogStyle"
-    :fullscreen="fullscreen"
+    :fullscreen="currentFullscreen"
     @open="onOpen"
     @close="onClose"
     @mousedown.native="onMousedown"
@@ -235,6 +235,7 @@ export default {
       }
     }
     return {
+      currentFullscreen: this.fullscreen,
       currentModal: this.embed ? false : (this.modal && !this.switch),
       currentSize: this.fullscreen ? '100%' : this.size,
       drawerResizeHandles: drawerResizeHandles,
@@ -254,7 +255,7 @@ export default {
       return {
         host: '.el-dialog',
         handle: handles,
-        disabled: (!this.draggable && !this.footerDraggable) || this.fullscreen,
+        disabled: (!this.draggable && !this.footerDraggable) || this.currentFullscreen,
         autoCalcRange: true,
         offset: {
           left: 'marginLeft',
@@ -267,7 +268,7 @@ export default {
       return {
         host: '.el-dialog',
         handles: this.resizeHandles,
-        disabled: !this.resizable || this.fullscreen,
+        disabled: !this.resizable || this.currentFullscreen,
         offset: {
           left: 'marginLeft',
           top: 'marginTop'
@@ -282,7 +283,7 @@ export default {
       return {
         host: '.el-drawer',
         handles: this.drawerResizeHandles,
-        disabled: !this.resizable || this.fullscreen,
+        disabled: !this.resizable || this.currentFullscreen,
         offset: {
           left: 'marginLeft',
           top: 'marginTop'
@@ -338,8 +339,10 @@ export default {
         const rect = this.embed ? document.querySelector('.el-main.main').getBoundingClientRect() : document.body.getBoundingClientRect()
         const drawerRect = this.$refs.mydrawer.$refs.drawer.getBoundingClientRect()
         if (drawerRect.height > rect.height || drawerRect.width > rect.width) {
+          this.currentFullscreen = true
           this.currentSize = '100%'
         } else {
+          this.currentFullscreen = false
           this.currentSize = this.size
         }
       })

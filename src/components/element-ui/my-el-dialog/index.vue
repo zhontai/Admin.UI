@@ -15,7 +15,7 @@
         role="dialog"
         aria-modal="true"
         :aria-label="title || 'dialog'"
-        :class="['el-dialog', { 'is-fullscreen': fullscreen, 'el-dialog--center': center }, customClass]"
+        :class="['el-dialog', { 'is-fullscreen': maximized, 'el-dialog--center': center }, customClass]"
         :style="style"
       >
         <my-container header-style="padding:0px;" footer-style="padding:0px;">
@@ -129,6 +129,7 @@ export default {
 
   data() {
     return {
+      maximized: this.fullscreen,
       closed: false,
       key: 0
     }
@@ -137,7 +138,7 @@ export default {
   computed: {
     style() {
       const style = {}
-      if (!this.fullscreen) {
+      if (!this.max) {
         style.marginTop = this.top
         if (this.width) {
           style.width = this.width

@@ -115,18 +115,18 @@ class Resizable extends Events {
       addClass(this.el, RESIZABLE_CLASS)
 
       const type = this.getType(o.handles)
-      let dirs = ['e', 's', 'w', 'n', 'nw', 'ne', 'sw', 'se']
+      this.dirs = ['e', 's', 'w', 'n', 'nw', 'ne', 'sw', 'se']
 
       if (type === 'array') {
-        dirs = o.handles
+        this.dirs = o.handles
       } else {
         if (o.handles !== 'all') {
-          dirs = o.handles.split(',')
+          this.dirs = o.handles.split(',')
         }
       }
-      if (dirs.length > 0) {
+      if (this.dirs.length > 0) {
         this.resizeEvent = new Event('resize')
-        dirs.forEach(dir => {
+        this.dirs.forEach(dir => {
           let resizeDom = this.getElement(this.el, `.my-resize__${dir}`)
           if (!resizeDom) {
             resizeDom = this.createDom(`<div class="my-resize__${dir}" _dir="${dir}" />`)
@@ -179,7 +179,7 @@ class Resizable extends Events {
    * @param {object} [options] 参数选项, 参考：[defaultOptions]{@link module:@/directive/reizable~defaultOptions}
    */
   reset(options) {
-    this.destroy()
+    this?.destroy()
     this.init(options)
   }
 
@@ -364,14 +364,16 @@ class Resizable extends Events {
     this.off(this.document, 'mousemove', this.handleMouseMove)
     this.off(this.document, 'mouseup', this.handleMouseUp)
 
-    // const dirs = ['e', 's', 'w', 'n', 'nw', 'ne', 'sw', 'se']
-    // const me = this
-    // dirs.forEach(dir => {
-    //   const resizeDom = me.getElement(me.el, `.my-resize__${dir}`)
-    //   if (resizeDom) {
-    //     me.el.removeChild(resizeDom)
-    //   }
-    // })
+    this.dirs.forEach(dir => {
+      const resizeDom = this.el.querySelector(`.my-resize__${dir}`)
+      if (resizeDom) {
+        try {
+          this.el.removeChild(resizeDom)
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    })
   }
 }
 
@@ -402,7 +404,7 @@ export default {
   },
   componentUpdated(el, binding) {
     const instance = el.__resizable__
-    instance.reset(binding.value)
+    instance?.reset(binding.value)
   },
   /**
    * 元素在页面销毁时回调，在这里销毁Resizable实例
