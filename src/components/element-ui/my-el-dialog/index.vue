@@ -15,7 +15,7 @@
         role="dialog"
         aria-modal="true"
         :aria-label="title || 'dialog'"
-        :class="['el-dialog', { 'is-fullscreen': maximized, 'el-dialog--center': center }, customClass]"
+        :class="['el-dialog', { 'is-fullscreen': fullscreen, 'el-dialog--center': center }, customClass]"
         :style="style"
       >
         <my-container header-style="padding:0px;" footer-style="padding:0px;">
@@ -24,15 +24,22 @@
               <slot name="title">
                 <span class="el-dialog__title">{{ title }}</span>
               </slot>
-              <button
-                v-if="showClose"
-                type="button"
-                class="el-dialog__headerbtn"
-                aria-label="Close"
-                @click="handleClose"
-              >
-                <i class="el-dialog__close el-icon el-icon-close" />
-              </button>
+              <div class="el-dialog__headertool">
+                <i
+                  v-if="showMaximize"
+                  type="button"
+                  aria-label="Close"
+                  @click="handleMaximize"
+                  :class="['el-dialog__close', 'el-icon', fullscreen ? 'el-icon-copy-document' : 'el-icon-full-screen']" 
+                />
+                <i
+                  v-if="showClose"
+                  type="button"
+                  aria-label="Close"
+                  @click="handleClose"
+                  class="el-dialog__close el-icon el-icon-close" 
+                />
+              </div>
             </div>
           </template>
           <div v-if="rendered" class="el-dialog__body"><slot /></div>
@@ -94,6 +101,11 @@ export default {
       default: true
     },
 
+    showMaximize: {
+      type: Boolean,
+      default: true
+    },
+
     showClose: {
       type: Boolean,
       default: true
@@ -129,20 +141,32 @@ export default {
 
   data() {
     return {
-      maximized: this.fullscreen,
       closed: false,
-      key: 0
+      key: 0,
+      cacheStyle: {
+        left: null,
+        top: null,
+        marginLeft: null,
+        marginTop: this.top,
+        width: this.width,
+        height: null
+      }
     }
   },
 
   computed: {
     style() {
-      const style = {}
-      if (!this.max) {
-        style.marginTop = this.top
-        if (this.width) {
-          style.width = this.width
-        }
+      let style = {}
+      if (!this.fullscreen) {
+        style = { ...this.cacheStyle }
+      } else {
+        const dialogStyle = this.$refs.dialog.style
+        this.cacheStyle.left = dialogStyle.left
+        this.cacheStyle.top = dialogStyle.top
+        this.cacheStyle.marginLeft = dialogStyle.marginLeft
+        this.cacheStyle.marginTop = dialogStyle.marginTop
+        this.cacheStyle.width = dialogStyle.width
+        this.cacheStyle.height = dialogStyle.height
       }
       return style
     }
@@ -200,6 +224,9 @@ export default {
     handleWrapperClick() {
       if (!this.closeOnClickModal) return
       this.handleClose()
+    },
+    handleMaximize(){
+      this.$emit('update:fullscreen', !this.fullscreen)
     },
     handleClose() {
       if (typeof this.beforeClose === 'function') {

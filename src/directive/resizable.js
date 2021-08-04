@@ -179,7 +179,7 @@ class Resizable extends Events {
    * @param {object} [options] 参数选项, 参考：[defaultOptions]{@link module:@/directive/reizable~defaultOptions}
    */
   reset(options) {
-    this?.destroy()
+    this.destroy()
     this.init(options)
   }
 
@@ -364,7 +364,7 @@ class Resizable extends Events {
     this.off(this.document, 'mousemove', this.handleMouseMove)
     this.off(this.document, 'mouseup', this.handleMouseUp)
 
-    this.dirs.forEach(dir => {
+    this.dirs && this.dirs.forEach(dir => {
       const resizeDom = this.el.querySelector(`.my-resize__${dir}`)
       if (resizeDom) {
         try {

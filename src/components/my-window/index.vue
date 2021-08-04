@@ -49,7 +49,7 @@
     :close-on-press-escape="closeOnPressEscape"
     :before-close="onCancel"
     :style="dialogStyle"
-    :fullscreen="currentFullscreen"
+    :fullscreen.sync="currentFullscreen"
     @open="onOpen"
     @close="onClose"
     @mousedown.native="onMousedown"
@@ -255,7 +255,7 @@ export default {
       return {
         host: '.el-dialog',
         handle: handles,
-        disabled: (!this.draggable && !this.footerDraggable) || this.currentFullscreen,
+        disabled: this.currentFullscreen || (!this.draggable && !this.footerDraggable),
         autoCalcRange: true,
         offset: {
           left: 'marginLeft',
@@ -268,7 +268,7 @@ export default {
       return {
         host: '.el-dialog',
         handles: this.resizeHandles,
-        disabled: !this.resizable || this.currentFullscreen,
+        disabled: this.currentFullscreen || !this.resizable,
         offset: {
           left: 'marginLeft',
           top: 'marginTop'
@@ -283,7 +283,7 @@ export default {
       return {
         host: '.el-drawer',
         handles: this.drawerResizeHandles,
-        disabled: !this.resizable || this.currentFullscreen,
+        disabled: this.currentFullscreen || !this.resizable,
         offset: {
           left: 'marginLeft',
           top: 'marginTop'

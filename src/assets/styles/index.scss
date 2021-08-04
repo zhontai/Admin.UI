@@ -287,3 +287,18 @@ input:-webkit-autofill {
   -webkit-box-sizing:border-box;
   box-sizing:border-box;
 }
+
+/*dialog*/
+.el-dialog__headertool{
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  i{
+    margin-left:10px;
+    font-size: 16px;
+    cursor: pointer;
+    &:hover{
+      color:#409eff;
+    }
+  }
+}

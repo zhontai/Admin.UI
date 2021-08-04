@@ -6,7 +6,7 @@
         <el-form-item>
           <el-input
             v-model="filter.name"
-            placeholder="角色名"
+            placeholder="岗位名称"
             clearable
             @keyup.enter.native="onSearch"
           >
@@ -18,10 +18,10 @@
         <el-form-item>
           <el-button type="primary" @click="onSearch">查询</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:admin:role:add'])">
+        <el-form-item v-if="checkPermission(['api:personnel:position:add'])">
           <el-button type="primary" @click="onAdd">新增</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:admin:role:batchsoftdelete'])">
+        <el-form-item v-if="checkPermission(['api:personnel:position:batchsoftdelete'])">
           <my-confirm-button
             :disabled="sels.length === 0"
             :type="'delete'"
@@ -43,19 +43,17 @@
     <!--列表-->
     <el-table
       v-loading="listLoading"
-      :data="roles"
+      :data="positions"
       highlight-current-row
       height="'100%'"
       style="width: 100%;height:100%;"
       @selection-change="selsChange"
     >
       <el-table-column type="selection" width="50" />
-      <el-table-column prop="name" label="角色名" width />
+      <el-table-column prop="name" label="岗位名称" width />
       <el-table-column prop="code" label="编码" width />
       <el-table-column prop="description" label="说明" width />
       <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width />
-      <!--<el-table-column prop="CreatedUserName" label="创建者" width="" >-->
-      <!--</el-table-column>-->
       <el-table-column prop="enabled" label="状态" width="200">
         <template #default="{row}">
           <el-tag
@@ -64,28 +62,11 @@
           >{{ row.enabled ? '正常' : '禁用' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="checkPermission(['api:admin:role:update','api:admin:role:softdelete'])" label="操作" width="180">
+      <el-table-column v-if="checkPermission(['api:personnel:position:update','api:personnel:position:softdelete'])" label="操作" width="180">
         <template #default="{ $index, row }">
-          <el-dropdown v-if="checkPermission(['api:admin:role:update'])" split-button type="primary" style="margin-left:10px;" @click="onEdit($index, row)" @command="(command)=>onCommand(command,row)">
-            编辑
-            <template #dropdown>
-              <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:90px;text-align:right;">
-                <el-dropdown-item v-if="checkPermission(['api:admin:permission:assign'])" command="setPermission">设置权限</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-          <el-dropdown v-else-if="checkPermission(['api:admin:permission:assign'])" style="margin-left:10px;" @command="(command)=>onCommand(command,row)">
-            <el-button type="primary">
-              更多 <i class="el-icon-arrow-down el-icon--right" />
-            </el-button>
-            <template #dropdown>
-              <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:90px;text-align:right;">
-                <el-dropdown-item v-if="checkPermission(['api:admin:permission:assign'])" command="setPermission">设置权限</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+          <el-button v-if="checkPermission(['api:personnel:position:update'])" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
-            v-if="checkPermission(['api:admin:role:softdelete'])"
+            v-if="checkPermission(['api:personnel:position:softdelete'])"
             type="delete"
             :loading="row._loading"
             :validate="deleteValidate"
@@ -102,153 +83,136 @@
         ref="pager"
         :total="total"
         :checked-count="sels.length"
-        @get-page="getRoles"
+        @get-page="getPositions"
       />
     </template>
 
-    <!--选择权限-->
-    <my-select-permission :role-id="roleId" :title="title" :visible.sync="selectPermissionVisible" @click="onSelectPermission" />
-
     <!--新增窗口-->
-    <el-drawer
-      v-if="checkPermission(['api:admin:role:add'])"
-      title="新增角色"
-      :modal="false"
-      :wrapper-closable="true"
-      :modal-append-to-body="false"
+    <my-window
+      v-if="checkPermission(['api:personnel:position:add'])"
+      title="新增岗位"
+      embed
+      drawer
       :visible.sync="addFormVisible"
-      direction="btt"
-      size="'auto'"
-      class="el-drawer__wrapper"
-      style="position:absolute;"
       @close="closeAddForm"
     >
-      <section style="padding:24px 48px 74px 24px;">
-        <el-form
-          ref="addForm"
-          :model="addForm"
-          :rules="addFormRules"
-          label-width="80px"
-          :inline="false"
-        >
-          <el-row>
-            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-              <el-form-item label="角色名" prop="name">
-                <el-input v-model="addForm.name" auto-complete="off" />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-              <el-form-item label="编码" prop="code">
-                <el-input v-model="addForm.code" auto-complete="off" />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-              <el-form-item label="状态" prop="enabled">
-                <el-select v-model="addForm.enabled" placeholder="请选择角色状态" style="width:100%;">
-                  <el-option
-                    v-for="item in statusList"
-                    :key="item.value"
-                    :label="item.name"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
-              <el-form-item label="说明" prop="description">
-                <el-input v-model="addForm.description" type="textarea" :rows="2" auto-complete="off" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-      </section>
-      <div class="drawer-footer">
+      <el-form
+        ref="addForm"
+        :model="addForm"
+        :rules="addFormRules"
+        label-width="80px"
+        :inline="false"
+      >
+        <el-row>
+          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+            <el-form-item label="岗位名称" prop="name">
+              <el-input v-model="addForm.name" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+            <el-form-item label="编码" prop="code">
+              <el-input v-model="addForm.code" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+            <el-form-item label="状态" prop="enabled">
+              <el-select v-model="addForm.enabled" placeholder="请选择岗位状态" style="width:100%;">
+                <el-option
+                  v-for="item in statusList"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
+            <el-form-item label="说明" prop="description">
+              <el-input v-model="addForm.description" type="textarea" :rows="2" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <template #footer>
         <el-button @click.native="addFormVisible = false">取消</el-button>
         <my-confirm-button type="submit" :validate="addFormValidate" :loading="addLoading" @click="onAddSubmit" />
-      </div>
-    </el-drawer>
+      </template>
+    </my-window>
 
     <!--编辑窗口-->
-    <el-drawer
-      v-if="checkPermission(['api:admin:role:update'])"
-      title="编辑角色"
-      :modal="false"
-      :wrapper-closable="true"
-      :modal-append-to-body="false"
+    <my-window
+      v-if="checkPermission(['api:personnel:position:update'])"
+      title="编辑岗位"
+      embed
+      drawer
       :visible.sync="editFormVisible"
-      direction="btt"
-      size="'auto'"
-      style="position:absolute;"
       @close="closeEditForm"
     >
-      <section style="padding:24px 48px 74px 24px;">
-        <el-form
-          ref="editForm"
-          :model="editForm"
-          :rules="editFormRules"
-          label-width="80px"
-          :inline="false"
-        >
-          <el-row>
-            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-              <el-form-item label="角色名" prop="name">
-                <el-input v-model="editForm.name" auto-complete="off" />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-              <el-form-item label="编码" prop="code">
-                <el-input v-model="editForm.code" auto-complete="off" />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-              <el-form-item label="状态" prop="enabled">
-                <el-select v-model="editForm.enabled" placeholder="请选择角色状态" style="width:100%;">
-                  <el-option
-                    v-for="item in statusList"
-                    :key="item.value"
-                    :label="item.name"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
-              <el-form-item label="说明" prop="description">
-                <el-input v-model="editForm.description" type="textarea" :rows="2" auto-complete="off" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-      </section>
-      <div class="drawer-footer">
+      <el-form
+        ref="editForm"
+        :model="editForm"
+        :rules="editFormRules"
+        label-width="80px"
+        :inline="false"
+      >
+        <el-row>
+          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+            <el-form-item label="岗位名称" prop="name">
+              <el-input v-model="editForm.name" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+            <el-form-item label="编码" prop="code">
+              <el-input v-model="editForm.code" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+            <el-form-item label="状态" prop="enabled">
+              <el-select v-model="editForm.enabled" placeholder="请选择岗位状态" style="width:100%;">
+                <el-option
+                  v-for="item in statusList"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
+            <el-form-item label="说明" prop="description">
+              <el-input v-model="editForm.description" type="textarea" :rows="2" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <template #footer>
         <el-button @click.native="editFormVisible = false">取消</el-button>
         <my-confirm-button type="submit" :validate="editFormValidate" :loading="editLoading" @click="onEditSubmit" />
-      </div>
-    </el-drawer>
+      </template>
+    </my-window>
   </my-container>
 </template>
 
 <script>
 import { formatTime } from '@/utils'
-import { getRoleListPage, removeRole, editRole, addRole, batchRemoveRole, getRole } from '@/api/admin/role'
-import { addRolePermission } from '@/api/admin/permission'
+import { getPositionListPage, removePosition, editPosition, addPosition, batchRemovePosition, getPosition } from '@/api/personnel/position'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
-import MySelectPermission from '@/components/my-select-window/permission'
+import MyWindow from '@/components/my-window'
 
 export default {
   name: 'Position',
-  components: { MyContainer, MyConfirmButton, MySelectPermission },
+  components: { MyContainer, MyConfirmButton, MyWindow },
   data() {
     return {
       filter: {
         name: ''
       },
-      roles: [],
+      positions: [],
       total: 0,
       sels: [], // 列表选中列
       statusList: [
@@ -262,7 +226,7 @@ export default {
       editFormVisible: false, // 编辑界面是否显示
       editLoading: false,
       editFormRules: {
-        name: [{ required: true, message: '请输入角色名', trigger: 'blur' }],
+        name: [{ required: true, message: '请输入岗位名称', trigger: 'blur' }],
         code: [{ required: true, message: '请输入编码', trigger: 'blur' }],
         enabled: [{ required: true, message: '请输入状态', trigger: 'change' }]
       },
@@ -278,7 +242,7 @@ export default {
       addFormVisible: false, // 新增界面是否显示
       addLoading: false,
       addFormRules: {
-        name: [{ required: true, message: '请输入角色名', trigger: 'blur' }],
+        name: [{ required: true, message: '请输入岗位名称', trigger: 'blur' }],
         code: [{ required: true, message: '请输入编码', trigger: 'blur' }],
         enabled: [{ required: true, message: '请输入状态', trigger: 'change' }]
       },
@@ -296,7 +260,7 @@ export default {
     }
   },
   computed: {
-    roleId() {
+    positionId() {
       return this.currentRow?.id
     },
     title() {
@@ -304,7 +268,7 @@ export default {
     }
   },
   mounted() {
-    this.getRoles()
+    this.getPositions()
   },
   beforeUpdate() {
     // console.log('update')
@@ -315,17 +279,17 @@ export default {
     },
     onSearch() {
       this.$refs.pager.setPage(1)
-      this.getRoles()
+      this.getPositions()
     },
-    // 获取角色列表
-    async getRoles() {
+    // 获取岗位列表
+    async getPositions() {
       var pager = this.$refs.pager.getPager()
       const params = {
         ...pager,
         filter: this.filter
       }
       this.listLoading = true
-      const res = await getRoleListPage(params)
+      const res = await getPositionListPage(params)
       this.listLoading = false
 
       if (!res?.success) {
@@ -337,12 +301,12 @@ export default {
       data.forEach(d => {
         d._loading = false
       })
-      this.roles = data
+      this.positions = data
     },
     // 显示编辑界面
     async onEdit(index, row) {
       this.pageLoading = true
-      const res = await getRole({ id: row.id })
+      const res = await getPosition({ id: row.id })
       this.pageLoading = false
       if (res && res.success) {
         const data = res.data
@@ -373,7 +337,7 @@ export default {
       this.editLoading = true
       const para = _.cloneDeep(this.editForm)
 
-      const res = await editRole(para)
+      const res = await editPosition(para)
       this.editLoading = false
 
       if (!res?.success) {
@@ -386,7 +350,7 @@ export default {
       })
       this.$refs['editForm'].resetFields()
       this.editFormVisible = false
-      this.getRoles()
+      this.getPositions()
     },
     // 新增验证
     addFormValidate: function() {
@@ -401,7 +365,7 @@ export default {
       this.addLoading = true
       const para = _.cloneDeep(this.addForm)
 
-      const res = await addRole(para)
+      const res = await addPosition(para)
       this.addLoading = false
 
       if (!res?.success) {
@@ -414,18 +378,11 @@ export default {
       })
       this.$refs['addForm'].resetFields()
       this.addFormVisible = false
-      this.getRoles()
+      this.getPositions()
     },
     // 删除验证
     deleteValidate(row) {
-      let isValid = true
-      if (row && row.name === 'admin') {
-        this.$message({
-          message: row.description + '，禁止删除！',
-          type: 'warning'
-        })
-        isValid = false
-      }
+      const isValid = true
 
       return isValid
     },
@@ -433,7 +390,7 @@ export default {
     async onDelete(index, row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await removeRole(para)
+      const res = await removePosition(para)
       row._loading = false
 
       if (!res?.success) {
@@ -445,19 +402,11 @@ export default {
         type: 'success'
       })
 
-      this.getRoles()
+      this.getPositions()
     },
     // 批量删除验证
     batchDeleteValidate() {
-      let isValid = true
-      var row = this.sels && this.sels.find(s => s.name === 'admin')
-      if (row && row.name === 'admin') {
-        this.$message({
-          message: row.description + '，禁止删除！',
-          type: 'warning'
-        })
-        isValid = false
-      }
+      const isValid = true
 
       return isValid
     },
@@ -469,7 +418,7 @@ export default {
       })
 
       this.deleteLoading = true
-      const res = await batchRemoveRole(para.ids)
+      const res = await batchRemovePosition(para.ids)
       this.deleteLoading = false
 
       if (!res?.success) {
@@ -480,34 +429,10 @@ export default {
         type: 'success'
       })
 
-      this.getRoles()
+      this.getPositions()
     },
     selsChange: function(sels) {
       this.sels = sels
-    },
-    // 选择权限
-    async onSelectPermission(permissionIds) {
-      const para = { permissionIds, roleId: this.roleId }
-      this.loadingSave = true
-      const res = await addRolePermission(para)
-      this.loadingSave = false
-
-      if (!res?.success) {
-        return
-      }
-
-      this.selectPermissionVisible = false
-      this.$message({
-        message: this.$t('admin.saveOk'),
-        type: 'success'
-      })
-    },
-    // 更多操作
-    onCommand(command, row) {
-      if (command === 'setPermission') {
-        this.currentRow = row
-        this.selectPermissionVisible = true
-      }
     }
   }
 }

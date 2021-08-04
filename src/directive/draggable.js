@@ -156,8 +156,8 @@ class Draggable extends Events {
 
     const o = this.options
 
-    this.handles = []
     if (!o.disabled) {
+      this.handles = []
       addClass(this.el, DRAGGABLE_CLASS)
       if (o.handle) {
         const type = this.getType(o.handle)
@@ -589,10 +589,13 @@ class Draggable extends Events {
    */
   destroy() {
     super.destroy()
-    this.handleAnimationEnd()
+    // this.handleAnimationEnd()
 
-    removeClass(this.el, DRAGGABLE_CLASS)
-    this.handles.forEach(handle => {
+    if (this.el) {
+      removeClass(this.el, DRAGGABLE_CLASS)
+    }
+
+    this.handles && this.handles.forEach(handle => {
       this.off(handle, 'mousedown', this.handleMouseDown)
       removeClass(handle, DRAGGABLE_HANDLE_CLASS)
     })
@@ -623,7 +626,7 @@ export default {
     el.__draggable__ = new Draggable(window.document, el, binding.value)
   },
   componentUpdated(el, binding) {
-    const instance = el.__resizable__
+    const instance = el.__draggable__
     instance?.reset(binding.value)
   },
   /**
