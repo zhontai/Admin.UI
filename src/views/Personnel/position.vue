@@ -206,6 +206,12 @@ import MyWindow from '@/components/my-window'
 
 export default {
   name: 'Position',
+  _sync: {
+    disabled: false,
+    title: '岗位管理',
+    desc: '岗位管理',
+    cache: true
+  },
   components: { MyContainer, MyConfirmButton, MyWindow },
   data() {
     return {

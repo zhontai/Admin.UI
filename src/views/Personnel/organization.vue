@@ -176,6 +176,12 @@ import MyWindow from '@/components/my-window'
 
 export default {
   name: 'Organization',
+  _sync: {
+    disabled: false,
+    title: '部门管理',
+    desc: '组织架构',
+    cache: true
+  },
   components: { MyContainer, MyConfirmButton, MyWindow },
   data() {
     return {
@@ -235,7 +241,6 @@ export default {
       return formatTime(time, 'YYYY-MM-DD HH:mm')
     },
     onSearch() {
-      this.$refs.pager.setPage(1)
       this.getList()
     },
     // 获取列表
@@ -327,7 +332,7 @@ export default {
 
       if (para.id === para.parentId) {
         this.$message({
-          message: '警告，上级部门不能是自己！',
+          message: '上级部门不能是自己！',
           type: 'error'
         })
         this.editLoading = false
