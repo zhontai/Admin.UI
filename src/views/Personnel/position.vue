@@ -226,9 +226,7 @@ export default {
       editFormVisible: false, // 编辑界面是否显示
       editLoading: false,
       editFormRules: {
-        name: [{ required: true, message: '请输入岗位名称', trigger: 'blur' }],
-        code: [{ required: true, message: '请输入编码', trigger: 'blur' }],
-        enabled: [{ required: true, message: '请输入状态', trigger: 'change' }]
+        name: [{ required: true, message: '请输入岗位名称', trigger: 'blur' }]
       },
       // 编辑界面数据
       editForm: {
@@ -242,9 +240,7 @@ export default {
       addFormVisible: false, // 新增界面是否显示
       addLoading: false,
       addFormRules: {
-        name: [{ required: true, message: '请输入岗位名称', trigger: 'blur' }],
-        code: [{ required: true, message: '请输入编码', trigger: 'blur' }],
-        enabled: [{ required: true, message: '请输入状态', trigger: 'change' }]
+        name: [{ required: true, message: '请输入岗位名称', trigger: 'blur' }]
       },
       // 新增界面数据
       addForm: {

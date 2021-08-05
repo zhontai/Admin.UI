@@ -40,7 +40,6 @@
     >
       <el-table-column type="selection" width="50" />
       <el-table-column prop="name" label="部门名称" width="180" />
-      <el-table-column prop="id" label="编号" width="70" />
       <el-table-column prop="code" label="部门编码" width="120" />
       <el-table-column prop="value" label="部门值" width />
       <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width="140" />
@@ -277,7 +276,7 @@ export default {
         return
       }
       this.$message({
-        message: '删除成功',
+        message: this.$t('admin.deleteOk'),
         type: 'success'
       })
 
@@ -328,7 +327,7 @@ export default {
 
       if (para.id === para.parentId) {
         this.$message({
-          message: '警告，父节点不能是自己！',
+          message: '警告，上级部门不能是自己！',
           type: 'error'
         })
         this.editLoading = false
@@ -342,7 +341,7 @@ export default {
         return
       }
       this.$message({
-        message: this.$t('personnel.updateOk'),
+        message: this.$t('admin.updateOk'),
         type: 'success'
       })
       this.$refs['editForm'].resetFields()
@@ -369,7 +368,7 @@ export default {
         return
       }
       this.$message({
-        message: this.$t('personnel.addOk'),
+        message: this.$t('admin.addOk'),
         type: 'success'
       })
       this.$refs['addForm'].resetFields()
