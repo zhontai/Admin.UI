@@ -130,7 +130,7 @@
       @close="onCloseGroup"
     >
       <el-form ref="permissionGroupForm" :model="permissionGroup.form" label-width="100px" :rules="formRules">
-        <el-form-item prop="parentIds" label="父级" width>
+        <el-form-item prop="parentIds" label="上级分组" width>
           <el-cascader
             :key="permissionGroup.key"
             v-model="permissionGroup.form.parentIds"
@@ -176,7 +176,7 @@
       @close="onCloseMenu"
     >
       <el-form ref="menuForm" :model="permissionMenu.form" label-width="100px" :rules="formRules">
-        <el-form-item prop="parentIds" label="父级" width>
+        <el-form-item prop="parentIds" label="上级分组" width>
           <el-cascader
             :key="permissionMenu.key"
             v-model="permissionMenu.form.parentIds"
@@ -250,7 +250,7 @@
       @close="onCloseDot"
     >
       <el-form ref="dotForm" :model="permissionDot.form" label-width="100px" :rules="formRules">
-        <el-form-item prop="parentIds" label="父级" width>
+        <el-form-item prop="parentIds" label="上级菜单" width>
           <el-cascader
             :key="permissionDot.key"
             v-model="permissionDot.form.parentIds"
@@ -371,12 +371,9 @@ export default {
       sels: [], // 列表选中列
 
       formRules: {
-        parentId: [{ required: true, message: '请选择父级', trigger: 'change' }],
-        parentIds: [{ required: true, message: '请选择父级', trigger: 'change' }],
+        parentId: [{ required: true, message: '请选择上级', trigger: 'change' }],
+        parentIds: [{ required: true, message: '请选择上级', trigger: 'change' }],
         apiId: [{ required: true, message: '请选择API接口', trigger: 'change' }],
-        // apiIds: [{ required: true, message: '请选择API接口', trigger: 'change' }],
-        // viewId: [{ required: true, message: '请选择视图组件', trigger: 'change' }],
-        // viewIds: [{ required: true, message: '请选择视图组件', trigger: 'change' }],
         label: [{ required: true, message: '请输入名称', trigger: ['blur'] }],
         code: [{ required: true, message: '请输入编码', trigger: ['blur'] }],
         path: [{ required: true, message: '请输入菜单地址', trigger: ['blur'] }]
@@ -487,7 +484,7 @@ export default {
       this.groupTree = listToTree(_.cloneDeep(groups), {
         id: 0,
         parentId: 0,
-        label: '根节点'
+        label: '顶级'
       })
       ++this.permissionGroup.key
 
@@ -496,7 +493,7 @@ export default {
       this.menuTree = listToTree(_.cloneDeep(menus), {
         id: 0,
         parentId: 0,
-        label: '根节点'
+        label: '顶级'
       })
       ++this.permissionMenu.key
       ++this.permissionDot.key

@@ -88,7 +88,7 @@
       @close="onCloseAddForm"
     >
       <el-form ref="addForm" :model="addForm" label-width="80px" :rules="addFormRules">
-        <el-form-item prop="parentIds" label="所属模块">
+        <el-form-item prop="parentIds" label="上级视图">
           <el-cascader
             :key="addFormKey"
             v-model="addForm.parentIds"
@@ -129,7 +129,7 @@
       @close="onCloseEditForm"
     >
       <el-form ref="editForm" :model="editForm" :rules="editFormRules" label-width="80px">
-        <el-form-item prop="parentIds" label="所属模块">
+        <el-form-item prop="parentIds" label="上级视图">
           <el-cascader
             :key="editFormKey"
             v-model="editForm.parentIds"
@@ -198,7 +198,7 @@ export default {
       editFormVisible: false, // 编辑界面是否显示
       editLoading: false,
       editFormRules: {
-        parentIds: [{ required: true, message: '请选择所属模块', trigger: 'change' }],
+        parentIds: [{ required: true, message: '请选择上级视图', trigger: 'change' }],
         label: [{ required: true, message: '请输入视图名', trigger: 'blur' }]
       },
       // 编辑界面数据
@@ -216,7 +216,7 @@ export default {
       addFormVisible: false, // 新增界面是否显示
       addLoading: false,
       addFormRules: {
-        parentIds: [{ required: true, message: '请选择所属模块', trigger: 'change' }],
+        parentIds: [{ required: true, message: '请选择上级视图', trigger: 'change' }],
         label: [{ required: true, message: '请输入视图名', trigger: 'blur' }]
       },
       // 新增界面数据
@@ -262,7 +262,7 @@ export default {
       this.modules = listToTree(_.cloneDeep(list), {
         id: 0,
         parentId: 0,
-        label: '根节点'
+        label: '顶级'
       })
 
       list.forEach(l => {
@@ -316,7 +316,7 @@ export default {
       para.parentId = para.parentIds.pop()
       if (para.id === para.parentId) {
         this.$message({
-          message: '所属模块不能是自己！',
+          message: '上级视图不能是自己！',
           type: 'error'
         })
         this.editLoading = false

@@ -179,7 +179,7 @@ export default {
   _sync: {
     disabled: false,
     title: '部门管理',
-    desc: '组织架构',
+    desc: '',
     cache: true
   },
   components: { MyContainer, MyConfirmButton, MyWindow },
@@ -261,7 +261,7 @@ export default {
       this.dictionaries = listToTree(_.cloneDeep(list), {
         id: 0,
         parentId: 0,
-        name: '根节点'
+        name: '顶级'
       })
 
       list.forEach(d => {

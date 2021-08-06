@@ -209,7 +209,7 @@ export default {
   _sync: {
     disabled: false,
     title: '岗位管理',
-    desc: '岗位管理',
+    desc: '',
     cache: true
   },
   components: { MyContainer, MyConfirmButton, MyWindow },

@@ -387,7 +387,6 @@ export default {
     // 新增
     async onAddSubmit() {
       this.addLoading = true
-      debugger
       const para = _.cloneDeep(this.addForm)
 
       const res = await addUser(para)

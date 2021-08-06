@@ -9,10 +9,10 @@
         <el-form-item>
           <el-button type="primary" @click="onsearchWindowVisible">高级查询</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:admin:employee:add'])">
+        <el-form-item v-if="checkPermission(['api:personnel:employee:add'])">
           <el-button type="primary" @click="onAdd">新增</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:admin:employee:batchsoftdelete'])">
+        <el-form-item v-if="checkPermission(['api:personnel:employee:batchsoftdelete'])">
           <my-confirm-button
             :disabled="sels.length === 0"
             :type="'delete'"
@@ -42,12 +42,13 @@
       <el-table-column type="selection" width="50" />
       <el-table-column prop="name" label="姓名" width />
       <el-table-column prop="nickName" label="昵称" width />
+      <el-table-column prop="userName" label="账号" width />
       <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width />
-      <el-table-column v-if="checkPermission(['api:admin:employee:update','api:admin:employee:softdelete'])" label="操作" width="180">
+      <el-table-column v-if="checkPermission(['api:personnel:employee:update','api:personnel:employee:softdelete'])" label="操作" width="180">
         <template #default="{ $index, row }">
-          <el-button v-if="checkPermission(['api:admin:employee:update'])" @click="onEdit($index, row)">编辑</el-button>
+          <el-button v-if="checkPermission(['api:personnel:employee:update'])" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
-            v-if="checkPermission(['api:admin:employee:softdelete'])"
+            v-if="checkPermission(['api:personnel:employee:softdelete'])"
             type="delete"
             :loading="row._loading"
             :validate-data="row"
@@ -77,7 +78,7 @@
 
     <!--新增窗口-->
     <my-window
-      v-if="checkPermission(['api:admin:employee:add'])"
+      v-if="checkPermission(['api:personnel:employee:add'])"
       title="新增员工"
       embed
       drawer
@@ -114,7 +115,7 @@
 
     <!--编辑窗口-->
     <my-window
-      v-if="checkPermission(['api:admin:employee:update'])"
+      v-if="checkPermission(['api:personnel:employee:update'])"
       title="编辑员工"
       embed
       drawer
@@ -162,6 +163,12 @@ import MyWindow from '@/components/my-window'
 
 export default {
   name: 'Employee',
+  _sync: {
+    disabled: false,
+    title: '员工管理',
+    desc: '',
+    cache: true
+  },
   components: { MyContainer, MyConfirmButton, MySearch, MySearchWindow, MyWindow },
   data() {
     return {
@@ -260,11 +267,6 @@ export default {
     },
     // 显示新增界面
     async onAdd() {
-      if (this.roles.length === 0) {
-        this.pageLoading = true
-        await this.getRoleListPage()
-        this.pageLoading = false
-      }
       this.addFormVisible = true
     },
     onCloseAddForm() {
@@ -281,7 +283,6 @@ export default {
     // 新增
     async onAddSubmit() {
       this.addLoading = true
-      debugger
       const para = _.cloneDeep(this.addForm)
 
       const res = await addEmployee(para)
@@ -302,9 +303,6 @@ export default {
     // 显示编辑界面
     async onEdit(index, row) {
       this.pageLoading = true
-      if (this.roles.length === 0) {
-        await this.getRoleListPage()
-      }
       const res = await getEmployee({ id: row.id })
       this.pageLoading = false
       if (res && res.success) {

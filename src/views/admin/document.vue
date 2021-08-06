@@ -172,7 +172,7 @@
       @close="onCloseGroup"
     >
       <el-form ref="documentGroupForm" :model="documentGroup.form" label-width="100px" :rules="formRules">
-        <el-form-item prop="parentIds" label="父级" width>
+        <el-form-item prop="parentIds" label="上级分组" width>
           <el-cascader
             :key="documentGroup.key"
             v-model="documentGroup.form.parentIds"
@@ -201,15 +201,15 @@
       </template>
     </my-window>
 
-    <!--菜单-->
+    <!--文档-->
     <my-window
       v-if="checkPermission(['api:admin:document:addmenu','api:admin:document:updatemenu'])"
-      :title="(documentMenu.form.id > 0 ? '编辑':'新增')+'菜单'"
+      :title="(documentMenu.form.id > 0 ? '编辑':'新增')+'文档'"
       :visible.sync="documentMenu.visible"
       @close="onCloseMenu"
     >
       <el-form ref="menuForm" :model="documentMenu.form" label-width="100px" :rules="formRules">
-        <el-form-item prop="parentIds" label="父级" width>
+        <el-form-item prop="parentIds" label="上级分组" width>
           <el-cascader
             :key="documentMenu.key"
             v-model="documentMenu.form.parentIds"
@@ -288,8 +288,8 @@ export default {
       listLoading: false,
 
       formRules: {
-        parentId: [{ required: true, message: '请选择父级', trigger: 'change' }],
-        parentIds: [{ required: true, message: '请选择父级', trigger: 'change' }],
+        parentId: [{ required: true, message: '请选择上级', trigger: 'change' }],
+        parentIds: [{ required: true, message: '请选择上级', trigger: 'change' }],
         label: [{ required: true, message: '请输入名称', trigger: ['blur'] }],
         name: [{ required: true, message: '请输入命名', trigger: ['blur'] }]
       },
