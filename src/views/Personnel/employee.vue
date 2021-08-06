@@ -9,16 +9,15 @@
         <el-form-item>
           <el-button type="primary" @click="onsearchWindowVisible">高级查询</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:admin:user:add'])">
+        <el-form-item v-if="checkPermission(['api:admin:employee:add'])">
           <el-button type="primary" @click="onAdd">新增</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:admin:user:batchsoftdelete'])">
+        <el-form-item v-if="checkPermission(['api:admin:employee:batchsoftdelete'])">
           <my-confirm-button
             :disabled="sels.length === 0"
             :type="'delete'"
             :placement="'bottom-end'"
             :loading="deleteLoading"
-            :validate="batchDeleteValidate"
             style="margin-left: 0px;"
             @click="onBatchDelete"
           >
@@ -34,36 +33,23 @@
     <!--列表-->
     <el-table
       v-loading="listLoading"
-      :data="users"
+      :data="employees"
       highlight-current-row
       height="'100%'"
       style="width: 100%;height:100%;"
       @selection-change="onSelsChange"
     >
       <el-table-column type="selection" width="50" />
-      <el-table-column prop="userName" label="用户名" width />
+      <el-table-column prop="name" label="姓名" width />
       <el-table-column prop="nickName" label="昵称" width />
-      <el-table-column prop="roleNames" label="角色" width>
-        <template #default="{row}">
-          {{ row.roleNames ? row.roleNames.join(','):'' }}
-        </template>
-      </el-table-column>
       <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width />
-      <el-table-column prop="status" label="状态" width>
-        <template #default="{row}">
-          <el-tag :type="row.status == 0 ? 'success' : 'danger'" disable-transitions>
-            {{ row.status == 0 ? '正常' : '禁用' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="checkPermission(['api:admin:user:update','api:admin:user:softdelete'])" label="操作" width="180">
+      <el-table-column v-if="checkPermission(['api:admin:employee:update','api:admin:employee:softdelete'])" label="操作" width="180">
         <template #default="{ $index, row }">
-          <el-button v-if="checkPermission(['api:admin:user:update'])" @click="onEdit($index, row)">编辑</el-button>
+          <el-button v-if="checkPermission(['api:admin:employee:update'])" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
-            v-if="checkPermission(['api:admin:user:softdelete'])"
+            v-if="checkPermission(['api:admin:employee:softdelete'])"
             type="delete"
             :loading="row._loading"
-            :validate="deleteValidate"
             :validate-data="row"
             @click="onDelete($index, row)"
           />
@@ -77,7 +63,7 @@
         ref="pager"
         :total="total"
         :checked-count="sels.length"
-        @get-page="getUsers"
+        @get-page="getEmployees"
       />
     </template>
 
@@ -91,12 +77,12 @@
 
     <!--新增窗口-->
     <my-window
-      v-if="checkPermission(['api:admin:user:add'])"
-      title="新增用户"
+      v-if="checkPermission(['api:admin:employee:add'])"
+      title="新增员工"
       embed
       drawer
       :visible.sync="addFormVisible"
-      @close="closeAddForm"
+      @close="onCloseAddForm"
     >
       <el-form
         ref="addForm"
@@ -108,36 +94,13 @@
         <el-row>
           <el-col :xs="24" :sm="24" :md="24" :lg="18" :xl="18">
             <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-              <el-form-item label="用户名" prop="userName">
-                <el-input
-                  v-model="addForm.userName"
-                  autocomplete="off"
-                  :readonly="userNameReadonly"
-                  @focus="userNameReadonly = false"
-                  @blur="userNameReadonly = true"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-              <el-form-item label="密码" prop="password">
-                <el-input v-model="addForm.password" show-password autocomplete="off" />
+              <el-form-item label="姓名" prop="name">
+                <el-input v-model="addForm.name" autocomplete="off" />
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
               <el-form-item label="昵称" prop="nickName">
                 <el-input v-model="addForm.nickName" autocomplete="off" />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-              <el-form-item label="角色" prop="roleIds">
-                <el-select v-model="addForm.roleIds" multiple placeholder="请选择角色" style="width:100%;">
-                  <el-option
-                    v-for="item in roles"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
-                  />
-                </el-select>
               </el-form-item>
             </el-col>
           </el-col>
@@ -151,12 +114,12 @@
 
     <!--编辑窗口-->
     <my-window
-      v-if="checkPermission(['api:admin:user:update'])"
-      title="编辑用户"
+      v-if="checkPermission(['api:admin:employee:update'])"
+      title="编辑员工"
       embed
       drawer
       :visible.sync="editFormVisible"
-      @close="closeEditForm"
+      @close="onCloseEditForm"
     >
       <el-form
         ref="editForm"
@@ -168,25 +131,13 @@
         <el-row>
           <el-col :xs="24" :sm="24" :md="24" :lg="18" :xl="18">
             <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-              <el-form-item label="用户名" prop="userName">
-                <el-input v-model="editForm.userName" autocomplete="off" />
+              <el-form-item label="姓名" prop="name">
+                <el-input v-model="editForm.name" autocomplete="off" />
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
               <el-form-item label="昵称" prop="nickName">
                 <el-input v-model="editForm.nickName" autocomplete="off" />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-              <el-form-item label="角色" prop="roleIds">
-                <el-select v-model="editForm.roleIds" multiple placeholder="请选择角色" style="width:100%;">
-                  <el-option
-                    v-for="item in roles"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
-                  />
-                </el-select>
               </el-form-item>
             </el-col>
           </el-col>
@@ -202,8 +153,7 @@
 
 <script>
 import { formatTime } from '@/utils'
-import { getRoleListPage } from '@/api/admin/role'
-import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser, getUser } from '@/api/admin/user'
+import { getEmployeeListPage, removeEmployee, batchRemoveEmployee, editEmployee, addEmployee, getEmployee } from '@/api/personnel/employee'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySearch from '@/components/my-search'
@@ -211,13 +161,13 @@ import MySearchWindow from '@/components/my-search-window'
 import MyWindow from '@/components/my-window'
 
 export default {
-  name: 'User',
+  name: 'Employee',
   components: { MyContainer, MyConfirmButton, MySearch, MySearchWindow, MyWindow },
   data() {
     return {
       // 高级查询字段
       fields: [
-        { value: 'userName', label: '用户名', default: true },
+        { value: 'name', label: '姓名', default: true },
         { value: 'nickName', label: '昵称', type: 'string' },
         { value: 'createdTime', label: '创建时间', type: 'date', operator: 'daterange',
           config: { type: 'daterange', format: 'yyyy-MM-dd', valueFormat: 'yyyy-MM-dd' }
@@ -226,8 +176,7 @@ export default {
       searchWindowVisible: false,
       dynamicFilter: null,
 
-      users: [],
-      roles: [],
+      employees: [],
       total: 0,
       sels: [], // 列表选中列
       listLoading: false,
@@ -237,35 +186,31 @@ export default {
       editFormVisible: false, // 编辑界面是否显示
       editLoading: false,
       editFormRules: {
-        userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }]
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
       },
-      userNameReadonly: true,
+      employeeNameReadonly: true,
       // 编辑界面数据
       editForm: {
         id: 0,
-        userName: '',
-        nickName: '',
-        roleIds: []
+        name: '',
+        nickName: ''
       },
 
       addFormVisible: false, // 新增界面是否显示
       addLoading: false,
       addFormRules: {
-        userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-        password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
       },
       // 新增界面数据
       addForm: {
-        userName: '',
-        nickName: '',
-        password: '',
-        roleIds: []
+        name: '',
+        nickName: ''
       },
       deleteLoading: false
     }
   },
   async mounted() {
-    await this.getUsers()
+    await this.getEmployees()
   },
   methods: {
     formatCreatedTime(row, column, time) {
@@ -275,7 +220,7 @@ export default {
     onSearch(dynamicFilter) {
       this.$refs.pager.setPage(1)
       this.dynamicFilter = dynamicFilter
-      this.getUsers()
+      this.getEmployees()
     },
 
     // 高级查询显示
@@ -286,12 +231,12 @@ export default {
     onSearchFilter(dynamicFilter) {
       this.$refs.pager.setPage(1)
       this.dynamicFilter = dynamicFilter
-      this.getUsers()
+      this.getEmployees()
       this.searchWindowVisible = false
     },
 
-    // 获取用户列表
-    async getUsers() {
+    // 获取员工列表
+    async getEmployees() {
       var pager = this.$refs.pager.getPager()
       const params = {
         ...pager,
@@ -299,7 +244,7 @@ export default {
       }
 
       this.listLoading = true
-      const res = await getUserListPage(params)
+      const res = await getEmployeeListPage(params)
       this.listLoading = false
 
       if (!res?.success) {
@@ -311,30 +256,7 @@ export default {
       data.forEach(d => {
         d._loading = false
       })
-      this.users = data
-    },
-    async getRoleListPage() {
-      const res = await getRoleListPage()
-      if (res && res.success) {
-        this.roles = res.data.list
-      }
-    },
-    // 显示编辑界面
-    async onEdit(index, row) {
-      this.pageLoading = true
-      if (this.roles.length === 0) {
-        await this.getRoleListPage()
-      }
-      const res = await getUser({ id: row.id })
-      this.pageLoading = false
-      if (res && res.success) {
-        const data = res.data
-        this.editForm = data
-        this.editFormVisible = true
-      }
-    },
-    closeEditForm() {
-      this.$refs.editForm.resetFields()
+      this.employees = data
     },
     // 显示新增界面
     async onAdd() {
@@ -345,36 +267,8 @@ export default {
       }
       this.addFormVisible = true
     },
-    closeAddForm() {
+    onCloseAddForm() {
       this.$refs.addForm.resetFields()
-    },
-    // 编辑验证
-    editFormvalidate() {
-      let isValid = false
-      this.$refs.editForm.validate(valid => {
-        isValid = valid
-      })
-      return isValid
-    },
-    // 编辑
-    async onEditSubmit() {
-      this.editLoading = true
-      const para = _.cloneDeep(this.editForm)
-
-      const res = await editUser(para)
-      this.editLoading = false
-
-      if (!res?.success) {
-        return
-      }
-
-      this.$message({
-        message: this.$t('admin.updateOk'),
-        type: 'success'
-      })
-      this.$refs['editForm'].resetFields()
-      this.editFormVisible = false
-      this.getUsers()
     },
     // 新增验证
     addFormvalidate() {
@@ -390,7 +284,7 @@ export default {
       debugger
       const para = _.cloneDeep(this.addForm)
 
-      const res = await addUser(para)
+      const res = await addEmployee(para)
       this.addLoading = false
 
       if (!res?.success) {
@@ -403,26 +297,58 @@ export default {
       })
       this.$refs['addForm'].resetFields()
       this.addFormVisible = false
-      this.getUsers()
+      this.getEmployees()
     },
-    // 删除验证
-    deleteValidate(row) {
-      let isValid = true
-      if (row && row.userName === 'admin') {
-        this.$message({
-          message: row.nickName + '，禁止删除！',
-          type: 'warning'
-        })
-        isValid = false
+    // 显示编辑界面
+    async onEdit(index, row) {
+      this.pageLoading = true
+      if (this.roles.length === 0) {
+        await this.getRoleListPage()
+      }
+      const res = await getEmployee({ id: row.id })
+      this.pageLoading = false
+      if (res && res.success) {
+        const data = res.data
+        this.editForm = data
+        this.editFormVisible = true
+      }
+    },
+    onCloseEditForm() {
+      this.$refs.editForm.resetFields()
+    },
+    // 编辑验证
+    editFormvalidate() {
+      let isValid = false
+      this.$refs.editForm.validate(valid => {
+        isValid = valid
+      })
+      return isValid
+    },
+    // 编辑
+    async onEditSubmit() {
+      this.editLoading = true
+      const para = _.cloneDeep(this.editForm)
+
+      const res = await editEmployee(para)
+      this.editLoading = false
+
+      if (!res?.success) {
+        return
       }
 
-      return isValid
+      this.$message({
+        message: this.$t('admin.updateOk'),
+        type: 'success'
+      })
+      this.$refs['editForm'].resetFields()
+      this.editFormVisible = false
+      this.getEmployees()
     },
     // 删除
     async onDelete(index, row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await removeUser(para)
+      const res = await removeEmployee(para)
       row._loading = false
 
       if (!res?.success) {
@@ -432,21 +358,7 @@ export default {
         message: this.$t('admin.deleteOk'),
         type: 'success'
       })
-      this.getUsers()
-    },
-    // 批量删除验证
-    batchDeleteValidate() {
-      let isValid = true
-      var row = this.sels && this.sels.find(s => s.userName === 'admin')
-      if (row && row.userName === 'admin') {
-        this.$message({
-          message: row.nickName + '，禁止删除！',
-          type: 'warning'
-        })
-        isValid = false
-      }
-
-      return isValid
+      this.getEmployees()
     },
     // 批量删除
     async onBatchDelete() {
@@ -456,7 +368,7 @@ export default {
       })
 
       this.deleteLoading = true
-      const res = await batchRemoveUser(para.ids)
+      const res = await batchRemoveEmployee(para.ids)
       this.deleteLoading = false
 
       if (!res?.success) {
@@ -467,7 +379,7 @@ export default {
         type: 'success'
       })
 
-      this.getUsers()
+      this.getEmployees()
     },
     // 选择
     onSelsChange(sels) {
