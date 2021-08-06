@@ -329,7 +329,7 @@ export default {
       this.$store.commit('app/saveTabsData', JSON.stringify(this.tabsList))
     }
   },
-  async created() {
+  created() {
     this.isPc = window.innerWidth >= 768
 
     // 还原会话tabs
@@ -370,7 +370,7 @@ export default {
         return
       }
 
-      const exists = this.tabsList.some(item => item.path === route.fullPath)
+      const exists = this.tabsList.some(item => item.fullPath === route.fullPath)
       if (exists) {
         return
       }
