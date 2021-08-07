@@ -6,6 +6,9 @@ const apiPrefix = `${process.env.VUE_APP_BASE_API}/${scope}/user/`
 export const getUser = (params, config = {}) => {
   return request.get(apiPrefix + 'get', { params: params, ...config })
 }
+export const getSelect = (params, config = {}) => {
+  return request.get(apiPrefix + 'getselect', { params: params, ...config })
+}
 export const getUserListPage = (params, config = {}) => {
   return request.post(apiPrefix + 'getpage', params, config)
 }

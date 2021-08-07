@@ -132,7 +132,7 @@
               <el-form-item label="角色" prop="roleIds">
                 <el-select v-model="addForm.roleIds" multiple placeholder="请选择角色" style="width:100%;">
                   <el-option
-                    v-for="item in roles"
+                    v-for="item in select.roles"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"
@@ -181,7 +181,7 @@
               <el-form-item label="角色" prop="roleIds">
                 <el-select v-model="editForm.roleIds" multiple placeholder="请选择角色" style="width:100%;">
                   <el-option
-                    v-for="item in roles"
+                    v-for="item in select.roles"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"
@@ -202,8 +202,7 @@
 
 <script>
 import { formatTime } from '@/utils'
-import { getRoleListPage } from '@/api/admin/role'
-import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser, getUser } from '@/api/admin/user'
+import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser, getUser, getSelect } from '@/api/admin/user'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySearch from '@/components/my-search'
@@ -228,6 +227,7 @@ export default {
 
       users: [],
       roles: [],
+      select: { roles: [] },
       total: 0,
       sels: [], // 列表选中列
       listLoading: false,
@@ -313,40 +313,20 @@ export default {
       })
       this.users = data
     },
-    async getRoleListPage() {
-      const res = await getRoleListPage()
-      if (res && res.success) {
-        this.roles = res.data.list
-      }
-    },
     // 显示编辑界面
     async onEdit(index, row) {
       this.pageLoading = true
-      if (this.roles.length === 0) {
-        await this.getRoleListPage()
-      }
       const res = await getUser({ id: row.id })
       this.pageLoading = false
       if (res && res.success) {
-        const data = res.data
-        this.editForm = data
+        const { form, select } = res.data
+        this.select = select
+        this.editForm = form
         this.editFormVisible = true
       }
     },
     closeEditForm() {
       this.$refs.editForm.resetFields()
-    },
-    // 显示新增界面
-    async onAdd() {
-      if (this.roles.length === 0) {
-        this.pageLoading = true
-        await this.getRoleListPage()
-        this.pageLoading = false
-      }
-      this.addFormVisible = true
-    },
-    closeAddForm() {
-      this.$refs.addForm.resetFields()
     },
     // 编辑验证
     editFormvalidate() {
@@ -375,6 +355,20 @@ export default {
       this.$refs['editForm'].resetFields()
       this.editFormVisible = false
       this.getUsers()
+    },
+    // 显示新增界面
+    async onAdd() {
+      this.pageLoading = true
+      const res = await getSelect()
+      this.pageLoading = false
+      if (res && res.success) {
+        const { select } = res.data
+        this.select = select
+        this.addFormVisible = true
+      }
+    },
+    closeAddForm() {
+      this.$refs.addForm.resetFields()
     },
     // 新增验证
     addFormvalidate() {
