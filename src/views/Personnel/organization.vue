@@ -35,10 +35,10 @@
       :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       height="'100%'"
       style="width: 100%;height:100%;"
-      @select-all="selectAll"
-      @select="select"
+      @select-all="onSelectAll"
+      @select="onSelect"
     >
-      <el-table-column type="selection" width="50" />
+      <!-- <el-table-column type="selection" width="50" /> -->
       <el-table-column prop="name" label="部门名称" width="180" />
       <el-table-column prop="code" label="部门编码" width="120" />
       <el-table-column prop="value" label="部门值" width />
@@ -77,7 +77,7 @@
           <el-cascader
             :key="addFormKey"
             v-model="addForm.parentIds"
-            :options="dictionaries"
+            :options="organizations"
             :props="{ checkStrictly: true, label: 'name', value: 'id' }"
             filterable
             clearable
@@ -128,7 +128,7 @@
             :key="editFormKey"
             v-model="editForm.parentIds"
             placeholder="请选择，支持搜索功能"
-            :options="dictionaries"
+            :options="organizations"
             :props="{ checkStrictly: true, label: 'name', value: 'id' }"
             filterable
             style="width:100%;"
@@ -189,12 +189,12 @@ export default {
         name: ''
       },
       organizationTree: [],
-      dictionaries: [],
+      organizations: [],
       statusList: [
         { name: '激活', value: true },
         { name: '禁用', value: false }
       ],
-      sels: [], // 列表选中列
+      sels: [],
       listLoading: false,
 
       editFormVisible: false, // 编辑界面是否显示
@@ -258,7 +258,7 @@ export default {
 
       const list = _.cloneDeep(res.data)
 
-      this.dictionaries = listToTree(_.cloneDeep(list), {
+      this.organizations = listToTree(_.cloneDeep(list), {
         id: 0,
         parentId: 0,
         name: '顶级'
@@ -380,7 +380,7 @@ export default {
       this.addFormVisible = false
       this.getList()
     },
-    selectAll: function(selection) {
+    onSelectAll: function(selection) {
       const selections = treeToList(selection)
       const rows = treeToList(this.organizationTree)
       const checked = selections.length === rows.length
@@ -390,7 +390,7 @@ export default {
 
       this.sels = this.$refs.multipleTable.selection
     },
-    select: function(selection, row) {
+    onSelect: function(selection, row) {
       const checked = selection.some(s => s.id === row.id)
       if (row.children && row.children.length > 0) {
         const rows = treeToList(row.children)

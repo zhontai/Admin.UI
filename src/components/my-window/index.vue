@@ -25,7 +25,7 @@
         <span role="heading" :title="title">{{ title }}</span>
       </slot>
     </template>
-    <section style="padding:24px 48px 74px 24px;">
+    <section :style="drawerBodyStyle">
       <slot />
     </section>
     <div class="drawer-footer">
@@ -211,6 +211,10 @@ export default {
     size: {
       type: [Number, String],
       default: 'auto'
+    },
+    drawerBodyStyle: {
+      type: String,
+      default: 'padding:24px 48px 74px 24px;'
     }
   },
   data() {

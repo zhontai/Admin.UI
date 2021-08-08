@@ -41,8 +41,9 @@
     >
       <el-table-column type="selection" width="50" />
       <el-table-column prop="name" label="姓名" width />
-      <el-table-column prop="nickName" label="昵称" width />
-      <el-table-column prop="userName" label="账号" width />
+      <el-table-column prop="organizationName" label="部门" width />
+      <el-table-column prop="positionName" label="岗位" width />
+      <el-table-column prop="entryTime" label="入职时间" :formatter="formatCreatedTime" width />
       <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width />
       <el-table-column v-if="checkPermission(['api:personnel:employee:update','api:personnel:employee:softdelete'])" label="操作" width="180">
         <template #default="{ $index, row }">
@@ -93,17 +94,55 @@
         :inline="false"
       >
         <el-row>
-          <el-col :xs="24" :sm="24" :md="24" :lg="18" :xl="18">
-            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-              <el-form-item label="姓名" prop="name">
-                <el-input v-model="addForm.name" autocomplete="off" />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-              <el-form-item label="昵称" prop="nickName">
-                <el-input v-model="addForm.nickName" autocomplete="off" />
-              </el-form-item>
-            </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+            <el-form-item label="姓名" prop="name">
+              <el-input v-model="addForm.name" autocomplete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+            <el-form-item label="部门" prop="email">
+              <el-input v-model="addForm.organizationName" placeholder="请选择部门" readonly autocomplete="off" class="input-with-select" @click.native="onOpenOrganization('addForm')">
+                <el-button slot="append" icon="el-icon-more" @click="onOpenOrganization('addForm')" />
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+            <el-form-item label="岗位" prop="email">
+              <el-input v-model="addForm.positionName" placeholder="请选择岗位" readonly autocomplete="off" class="input-with-select" @click.native="onOpenPosition('addForm')">
+                <el-button slot="append" icon="el-icon-more" @click="onOpenPosition('addForm')" />
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+            <el-form-item label="昵称" prop="nickName">
+              <el-input v-model="addForm.nickName" autocomplete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+            <el-form-item label="工号" prop="code">
+              <el-input v-model="addForm.code" autocomplete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+            <el-form-item label="手机号码" prop="phone">
+              <el-input v-model="addForm.phone" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+            <el-form-item label="邮箱地址" prop="email">
+              <el-input v-model="addForm.email" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+            <el-form-item label="入职时间" prop="entryTime">
+              <el-date-picker
+                v-model="addForm.entryTime"
+                type="date"
+                format="yyyy-MM-dd"
+                value-format="yyyy-MM-dd"
+                :picker-options="datePickerOptions"
+              />
+            </el-form-item>
           </el-col>
         </el-row>
       </el-form>
@@ -130,17 +169,55 @@
         :inline="false"
       >
         <el-row>
-          <el-col :xs="24" :sm="24" :md="24" :lg="18" :xl="18">
-            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-              <el-form-item label="姓名" prop="name">
-                <el-input v-model="editForm.name" autocomplete="off" />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-              <el-form-item label="昵称" prop="nickName">
-                <el-input v-model="editForm.nickName" autocomplete="off" />
-              </el-form-item>
-            </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+            <el-form-item label="姓名" prop="name">
+              <el-input v-model="editForm.name" autocomplete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+            <el-form-item label="部门" prop="email">
+              <el-input v-model="editForm.organizationName" placeholder="请选择部门" readonly autocomplete="off" class="input-with-select" @click.native="onOpenOrganization('editForm')">
+                <el-button slot="append" icon="el-icon-more" @click="onOpenOrganization('editForm')" />
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+            <el-form-item label="岗位" prop="email">
+              <el-input v-model="editForm.positionName" placeholder="请选择岗位" readonly autocomplete="off" class="input-with-select" @click.native="onOpenPosition('editForm')">
+                <el-button slot="append" icon="el-icon-more" @click="onOpenPosition('editForm')" />
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+            <el-form-item label="昵称" prop="nickName">
+              <el-input v-model="editForm.nickName" autocomplete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+            <el-form-item label="工号" prop="code">
+              <el-input v-model="editForm.code" autocomplete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+            <el-form-item label="手机号码" prop="phone">
+              <el-input v-model="editForm.phone" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+            <el-form-item label="邮箱地址" prop="email">
+              <el-input v-model="editForm.email" auto-complete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+            <el-form-item label="入职时间" prop="entryTime">
+              <el-date-picker
+                v-model="editForm.entryTime"
+                type="date"
+                format="yyyy-MM-dd"
+                value-format="yyyy-MM-dd"
+                :picker-options="datePickerOptions"
+              />
+            </el-form-item>
           </el-col>
         </el-row>
       </el-form>
@@ -149,6 +226,9 @@
         <my-confirm-button type="submit" :validate="editFormvalidate" :loading="editLoading" @click="onEditSubmit" />
       </template>
     </my-window>
+
+    <my-select-position :visible.sync="positionVisible" :form="positionForm" @click="onSelectPosition" />
+    <my-select-organization :visible.sync="organizationVisible" :form="organizationForm" @click="onSelectOrganization" />
   </my-container>
 </template>
 
@@ -160,6 +240,8 @@ import MyConfirmButton from '@/components/my-confirm-button'
 import MySearch from '@/components/my-search'
 import MySearchWindow from '@/components/my-search-window'
 import MyWindow from '@/components/my-window'
+import MySelectPosition from '@/components/my-select-window/position'
+import MySelectOrganization from '@/components/my-select-window/organization'
 
 export default {
   name: 'Employee',
@@ -169,19 +251,39 @@ export default {
     desc: '',
     cache: true
   },
-  components: { MyContainer, MyConfirmButton, MySearch, MySearchWindow, MyWindow },
+  components: { MyContainer, MyConfirmButton, MySearch, MySearchWindow, MyWindow, MySelectPosition, MySelectOrganization },
   data() {
+    const validatePhone = (rule, value, callback) => {
+      if (!value) {
+        callback()
+      }
+      const reg = /^(0|86|17951)?(13[0-9]|15[0123456789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
+      if (!reg.test(value)) {
+        callback(new Error('请输入正确的手机号码!'))
+      } else {
+        callback()
+      }
+    }
+
     return {
       // 高级查询字段
       fields: [
         { value: 'name', label: '姓名', default: true },
         { value: 'nickName', label: '昵称', type: 'string' },
+        { value: 'entryTime', label: '入职时间', type: 'date', operator: 'daterange',
+          config: { type: 'daterange', format: 'yyyy-MM-dd', valueFormat: 'yyyy-MM-dd' }
+        },
         { value: 'createdTime', label: '创建时间', type: 'date', operator: 'daterange',
           config: { type: 'daterange', format: 'yyyy-MM-dd', valueFormat: 'yyyy-MM-dd' }
         }
       ],
       searchWindowVisible: false,
       dynamicFilter: null,
+
+      positionForm: null,
+      positionVisible: false,
+      organizationForm: null,
+      organizationVisible: false,
 
       employees: [],
       total: 0,
@@ -193,9 +295,14 @@ export default {
       editFormVisible: false, // 编辑界面是否显示
       editLoading: false,
       editFormRules: {
-        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+        phone: [
+          { validator: validatePhone, trigger: ['blur', 'change'] }
+        ],
+        email: [
+          { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+        ]
       },
-      employeeNameReadonly: true,
       // 编辑界面数据
       editForm: {
         id: 0,
@@ -206,14 +313,25 @@ export default {
       addFormVisible: false, // 新增界面是否显示
       addLoading: false,
       addFormRules: {
-        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+        phone: [
+          { validator: validatePhone, trigger: ['blur', 'change'] }
+        ],
+        email: [
+          { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+        ]
       },
       // 新增界面数据
       addForm: {
         name: '',
         nickName: ''
       },
-      deleteLoading: false
+      deleteLoading: false,
+      datePickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now()
+        }
+      }
     }
   },
   async mounted() {
@@ -267,6 +385,7 @@ export default {
     },
     // 显示新增界面
     async onAdd() {
+      this.addForm = {}
       this.addFormVisible = true
     },
     onCloseAddForm() {
@@ -382,6 +501,30 @@ export default {
     // 选择
     onSelsChange(sels) {
       this.sels = sels
+    },
+    onOpenPosition(form) {
+      this.positionVisible = true
+      this.positionForm = form
+    },
+    onSelectPosition(form, selectData) {
+      if (selectData) {
+        this[form].positionName = selectData.name
+        this[form].positionId = selectData.id
+      }
+
+      this.positionVisible = false
+    },
+    onOpenOrganization(form) {
+      this.organizationVisible = true
+      this.organizationForm = form
+    },
+    onSelectOrganization(form, selectData) {
+      if (selectData) {
+        this[form].organizationName = selectData.name
+        this[form].organizationId = selectData.id
+      }
+
+      this.organizationVisible = false
     }
   }
 }
@@ -390,5 +533,9 @@ export default {
 <style lang="scss" scoped>
 .my-search ::v-deep .el-input-group__prepend {
   background-color: #fff;
+}
+.el-date-editor.el-input, .el-date-editor.el-input__inner{
+  width:100%;
+  margin-left: 0px;
 }
 </style>

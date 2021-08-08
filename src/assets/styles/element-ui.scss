@@ -50,9 +50,9 @@
 .el-table .cell{
   text-overflow: unset;
 }
-.el-table th>.cell{
-  padding-left: 14px;
-  padding-right: 14px;
+.el-table-column--selection .cell{
+  padding-left: 14px!important;
+  padding-right: 14px!important;
 }
 .el-table--medium td, .el-table--medium th,
 .el-table--mini td, .el-table--mini th{
