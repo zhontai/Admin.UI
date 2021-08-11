@@ -14,7 +14,7 @@
     :size="currentSize"
     :custom-class="customClass"
     :style="drawerStyle"
-    :before-close="onCancel"
+    :before-close="beforeClose?beforeClose:onCancel"
     @open="onOpen"
     @close="onClose"
     @opened="onOpened"
@@ -47,7 +47,7 @@
     :custom-class="customClass"
     :close-on-click-modal="closeOnClickModal"
     :close-on-press-escape="closeOnPressEscape"
-    :before-close="onCancel"
+    :before-close="beforeClose?beforeClose:onCancel"
     :style="dialogStyle"
     :fullscreen.sync="currentFullscreen"
     @open="onOpen"
@@ -215,6 +215,10 @@ export default {
     drawerBodyStyle: {
       type: String,
       default: 'padding:24px 48px 74px 24px;'
+    },
+    beforeClose: {
+      type: Function,
+      default: null
     }
   },
   data() {
