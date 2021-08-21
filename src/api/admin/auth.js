@@ -22,3 +22,9 @@ export const getPassWordEncryptKey = (params, config = {}) => {
 export const getLoginInfo = (params, config = {}) => {
   return request.get(apiPrefix + 'getUserInfo', { params: params, ...config })
 }
+export const getCaptcha = (params, config = {}) => {
+  return request.get(apiPrefix + 'getCaptcha', { params: params, ...{ api: { auth: false }}, ...config })
+}
+export const checkCaptcha = (params, config = {}) => {
+  return request.get(apiPrefix + 'checkCaptcha', { params: params, ...{ api: { auth: false }}, ...config })
+}

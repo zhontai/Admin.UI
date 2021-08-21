@@ -35,7 +35,7 @@
               </template>
             </el-input>
           </el-form-item>
-          <el-form-item prop="verifyCode">
+          <!-- <el-form-item prop="verifyCode">
             <el-input
               ref="verifyCode"
               v-model="form.verifyCode"
@@ -58,7 +58,14 @@
               style="width:33%;cursor: pointer;vertical-align: middle;"
               @click="getLoginVerifyCode"
             >
-          </el-form-item>
+          </el-form-item> -->
+          <my-captcha
+            ref="captcha"
+            :img-size="{ width: '330px', height: '155px' }"
+            :mode="'popup'"
+            @success="onCaptchaSuccess"
+          />
+
           <el-checkbox v-model="checked" checked class="remember">记住密码</el-checkbox>
           <el-form-item style="width:100%;">
             <el-button
@@ -71,15 +78,18 @@
         </el-form>
       </el-card>
       <div style="height:5%;" />
+
     </el-scrollbar>
   </div>
 </template>
 
 <script>
 import { getVerifyCode } from '@/api/admin/auth'
+import MyCaptcha from '@/components/my-captcha'
 
 export default {
   name: 'Login',
+  components: { MyCaptcha },
   data() {
     return {
       form: {
@@ -101,10 +111,10 @@ export default {
     }
   },
   created() {
-    this.getLoginVerifyCode()
+    // this.getLoginVerifyCode()
   },
   mounted() {
-    this.$refs.verifyCode.focus()
+    // this.$refs.verifyCode.focus()
     // window.localStorage.clear()
   },
   methods: {
@@ -116,8 +126,48 @@ export default {
       return isValid
     },
 
-    // 登录获取Token
     async onLogin() {
+      this.$refs.captcha.show()
+    },
+    async getLoginInfo() {
+      const res = await this.$store.dispatch('user/getLoginInfo')
+      this.loginLoading = false
+
+      if (!res?.success) {
+        this.loginLoading = false
+        this.loginText = '重新登录'
+        return
+      }
+
+      if (!(res.data?.menus?.length > 0)) {
+        this.loginLoading = false
+        this.loginText = '重新登录'
+        this.$message({
+          message: '该账号未分配权限，请联系管理员！',
+          type: 'error'
+        })
+        this.getLoginVerifyCode()
+        this.$refs.verifyCode.focus()
+        return
+      }
+
+      const redirect = this.$route.query ? this.$route.query.redirect : ''
+      this.$router.push({ path: redirect || '/' })
+    },
+
+    // 获取验证码
+    async getLoginVerifyCode() {
+      this.form.verifyCode = ''
+      const res = await getVerifyCode({ lastKey: this.form.verifyCodeKey })
+      if (res && res.success) {
+        this.verifyCodeUrl = 'data:image/png;base64,' + res.data.img
+        this.form.verifyCodeKey = res.data.key
+      }
+    },
+    async onCaptchaSuccess(params) {
+      console.log(params)
+
+      // 登录获取Token
       if (!this.loginValidate()) {
         return
       }
@@ -158,41 +208,6 @@ export default {
       }
 
       this.getLoginInfo()
-    },
-    async getLoginInfo() {
-      const res = await this.$store.dispatch('user/getLoginInfo')
-      this.loginLoading = false
-
-      if (!res?.success) {
-        this.loginLoading = false
-        this.loginText = '重新登录'
-        return
-      }
-
-      if (!(res.data?.menus?.length > 0)) {
-        this.loginLoading = false
-        this.loginText = '重新登录'
-        this.$message({
-          message: '该账号未分配权限，请联系管理员！',
-          type: 'error'
-        })
-        this.getLoginVerifyCode()
-        this.$refs.verifyCode.focus()
-        return
-      }
-
-      const redirect = this.$route.query ? this.$route.query.redirect : ''
-      this.$router.push({ path: redirect || '/' })
-    },
-
-    // 获取验证码
-    async getLoginVerifyCode() {
-      this.form.verifyCode = ''
-      const res = await getVerifyCode({ lastKey: this.form.verifyCodeKey })
-      if (res && res.success) {
-        this.verifyCodeUrl = 'data:image/png;base64,' + res.data.img
-        this.form.verifyCodeKey = res.data.key
-      }
     }
   }
 }
