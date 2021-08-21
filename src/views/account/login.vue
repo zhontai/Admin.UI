@@ -136,6 +136,7 @@ export default {
       if (!res?.success) {
         this.loginLoading = false
         this.loginText = '重新登录'
+        this.$refs.captcha.refresh()
         return
       }
 
@@ -146,8 +147,9 @@ export default {
           message: '该账号未分配权限，请联系管理员！',
           type: 'error'
         })
-        this.getLoginVerifyCode()
-        this.$refs.verifyCode.focus()
+        // this.getLoginVerifyCode()
+        // this.$refs.verifyCode.focus()
+        this.$refs.captcha.refresh()
         return
       }
 
@@ -164,9 +166,7 @@ export default {
         this.form.verifyCodeKey = res.data.key
       }
     },
-    async onCaptchaSuccess(params) {
-      console.log(params)
-
+    async onCaptchaSuccess(captchaData) {
       // 登录获取Token
       if (!this.loginValidate()) {
         return
@@ -175,7 +175,7 @@ export default {
       this.loginLoading = true
       this.loginText = '登录中...'
 
-      const paras = { ...this.form }
+      const paras = { ...this.form, captcha: captchaData }
       const res = await this.$store.dispatch('user/login', paras)
       if (!res) {
         this.loginLoading = false
@@ -186,7 +186,7 @@ export default {
       if (!res.success) {
         this.loginLoading = false
         this.loginText = '重新登录'
-
+        /*
         switch (res.data) {
           case 1:
             this.getLoginVerifyCode()
@@ -204,6 +204,8 @@ export default {
             this.$refs.password.focus()
             break
         }
+        */
+       this.$refs.captcha.refresh()
         return
       }
 

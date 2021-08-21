@@ -297,7 +297,7 @@ export default {
         moveLeftDistance = parseInt(moveLeftDistance)
         const data = {
           captchaType: this.captchaType,
-          'point': this.secretKey ? aesEncrypt(JSON.stringify({ x: moveLeftDistance }), this.secretKey) : JSON.stringify({ x: moveLeftDistance }),
+          'data': this.secretKey ? aesEncrypt(JSON.stringify({ x: moveLeftDistance }), this.secretKey) : JSON.stringify({ x: moveLeftDistance }),
           'token': this.backToken
         }
         reqCheck(data).then(res => {
@@ -313,11 +313,10 @@ export default {
             }
             this.passFlag = true
             this.tipWords = `${((this.endMovetime - this.startMoveTime) / 1000).toFixed(2)}s验证成功`
-            var captchaVerification = this.secretKey ? aesEncrypt(this.backToken + '---' + JSON.stringify({ x: moveLeftDistance }), this.secretKey) : this.backToken + '---' + JSON.stringify({ x: moveLeftDistance })
             setTimeout(() => {
               this.tipWords = ''
               this.$parent.closeBox()
-              this.$parent.$emit('success', { captchaVerification })
+              this.$parent.$emit('success', data)
             }, 1000)
           } else {
             this.passFlag = false
