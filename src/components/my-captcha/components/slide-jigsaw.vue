@@ -188,10 +188,10 @@ export default {
 
         if (this.mode === 'hover') {
           const jigsaw = this.$refs.jigsaw
-          off(jigsaw, 'mouseover', this.onBarMouseOver)
-          off(jigsaw, 'mouseout', this.onBarMouseOut)
-          on(jigsaw, 'mouseover', this.onBarMouseOver)
-          on(jigsaw, 'mouseout', this.onBarMouseOut)
+          off(jigsaw, 'mouseenter', this.onBarMouseOver)
+          off(jigsaw, 'mouseleave', this.onBarMouseOut)
+          on(jigsaw, 'mouseenter', this.onBarMouseOver)
+          on(jigsaw, 'mouseleave', this.onBarMouseOut)
         }
 
         this.$parent.$emit('ready', this)

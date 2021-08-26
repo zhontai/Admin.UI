@@ -205,7 +205,7 @@ export default {
             break
         }
         */
-       this.$refs.captcha.refresh()
+        this.$refs.captcha.refresh()
         return
       }
 
