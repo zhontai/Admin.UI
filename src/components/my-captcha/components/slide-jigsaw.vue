@@ -286,9 +286,8 @@ export default {
     end: function() {
       this.endMovetime = +new Date()
       var _this = this
-      this.isDragging = false
       // 判断是否重合
-      if (this.isEnd === false) {
+      if (this.isDragging && this.isEnd === false) {
         var moveLeftDistance = parseInt((this.moveBlockLeft || '').replace('px', ''))
         if (!(moveLeftDistance > 0)) {
           return
@@ -333,6 +332,8 @@ export default {
           }
         })
       }
+
+      this.isDragging = false
     },
 
     refresh: function() {
