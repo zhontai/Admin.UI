@@ -1,6 +1,39 @@
 <template>
   <section class="wrap">
     <el-timeline>
+      <el-timeline-item timestamp="版本 1.7.1" placement="top">
+        <el-card>
+          <h4>前端：</h4>
+          <h4>升级 element-ui到2.15.6</h4>
+          <h4>新增 滑块验证组件，支持浮动式、嵌入式、弹出式，同时兼容移动端体验</h4>
+          <h4>新增 登录使用滑块验证登录</h4>
+          <h4>修复 使用my-window组件点击关闭按钮关闭后无法再次打开的问题</h4>
+          <h4>后端：</h4>
+          <h4>升级 Freesql到2.6.100，更新其它nuget包到最新版本</h4>
+          <h4>新增 Admin.Tools工具库，滑块验证功能，支持干扰图生成，随机6套滑块拼图模型生成</h4>
+          <h4>新增 IFreeSql拓展方法GetRepositoryBase返回自定义拓展仓库基础类</h4>
+          <h4>新增 测试接口GetResult、PostResult、PutResult、DeleteResult便捷方法</h4>
+          <h4>新增 登录使用滑块验证作为安全验证</h4>
+          <h4>新增 允许任何源访问Api策略，暴露验证接口</h4>
+          <h4>新增 测试库使用滑块验证登录</h4>
+          <h4>修复 path同步时做大小写处理，导致组件无法加载的问题</h4>
+          <h4>修复 没有配置跨域异常的问题</h4>
+          <h4>优化 DictionaryExtensions拓展方法</h4>
+          <h4>优化 权限管理更新权限点或者删除权限都将清除权限下关联的用户权限缓存</h4>
+          <p>小雪转中雪 提交于 2021-09-04</p>
+        </el-card>
+      </el-timeline-item>
+       <el-timeline-item timestamp="版本 1.3.0" placement="top">
+        <el-card>
+          <h4>认证端：</h4>
+          <h4>升级 Freesql到2.6.100，更新其它nuget包到最新版本</h4>
+          <h4>新增 Js版滑块验证插件，支持浮动式、嵌入式、弹出式，同时兼容移动端体验</h4>
+          <h4>新增 登录接口使用滑块验证作为安全验证</h4>
+          <h4>新增 切换租户登录演示</h4>
+          <h4>新增 appsettings.json增加滑块验证检查地址配置</h4>
+          <p>小雪转中雪 提交于 2021-09-04</p>
+        </el-card>
+      </el-timeline-item>
       <el-timeline-item timestamp="版本 1.7.0" placement="top">
         <el-card>
           <h4>前端：</h4>
