@@ -20,7 +20,7 @@
     "axios": "^0.21.1",
     "codemirror": "^5.62.2",
     "core-js": "^3.9.1",
-    "crypto-js": "^4.1.1",
+    "crypto-js": "^4.0.0",
     "dayjs": "^1.10.6",
     "element-ui": "^2.15.6",
     "font-awesome": "^4.7.0",
