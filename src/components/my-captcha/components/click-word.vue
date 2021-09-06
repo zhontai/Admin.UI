@@ -168,9 +168,9 @@ export default {
         this.checkPosArr = this.pointTransfrom(this.checkPosArr, this.setSize)
         // 等创建坐标执行完
         setTimeout(() => {
-          // var flag = this.comparePos(this.fontPos, this.checkPosArr);
+          // const flag = this.comparePos(this.fontPos, this.checkPosArr);
           // 发送后端请求
-          var captchaVerification = this.secretKey ? aesEncrypt(this.backToken + '---' + JSON.stringify(this.checkPosArr), this.secretKey) : this.backToken + '---' + JSON.stringify(this.checkPosArr)
+          const captchaVerification = this.secretKey ? aesEncrypt(this.backToken + '---' + JSON.stringify(this.checkPosArr), this.secretKey) : this.backToken + '---' + JSON.stringify(this.checkPosArr)
           const data = {
             captchaType: this.captchaType,
             'pointJson': this.secretKey ? aesEncrypt(JSON.stringify(this.checkPosArr), this.secretKey) : JSON.stringify(this.checkPosArr),
@@ -208,8 +208,8 @@ export default {
 
     // 获取坐标
     getMousePos: function(obj, e) {
-      var x = e.offsetX
-      var y = e.offsetY
+      const x = e.offsetX
+      const y = e.offsetY
       return { x, y }
     },
     // 创建坐标点
@@ -256,7 +256,7 @@ export default {
     },
     // 坐标转换函数
     pointTransfrom(pointArr, imgSize) {
-      var newPointArr = pointArr.map(p => {
+      const newPointArr = pointArr.map(p => {
         const x = Math.round(310 * p.x / parseInt(imgSize.imgWidth))
         const y = Math.round(155 * p.y / parseInt(imgSize.imgHeight))
         return { x, y }

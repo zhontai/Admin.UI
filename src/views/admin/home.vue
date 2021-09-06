@@ -23,7 +23,7 @@
           <p>小雪转中雪 提交于 2021-09-04</p>
         </el-card>
       </el-timeline-item>
-       <el-timeline-item timestamp="版本 1.3.0" placement="top">
+      <el-timeline-item timestamp="版本 1.3.0" placement="top">
         <el-card>
           <h4>认证端：</h4>
           <h4>升级 Freesql到2.6.100，更新其它nuget包到最新版本</h4>

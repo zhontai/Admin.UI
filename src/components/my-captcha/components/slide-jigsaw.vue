@@ -268,8 +268,8 @@ export default {
         } else { // 兼容PC端
           x = e.clientX
         }
-        var bar_area_left = this.barArea.getBoundingClientRect().left
-        var move_block_left = x - bar_area_left // 小方块相对于父元素的left值
+        const bar_area_left = this.barArea.getBoundingClientRect().left
+        let move_block_left = x - bar_area_left // 小方块相对于父元素的left值
         if (move_block_left >= this.barArea.offsetWidth - parseInt(parseInt(this.blockSize.width) / 2) - 2) {
           move_block_left = this.barArea.offsetWidth - parseInt(parseInt(this.blockSize.width) / 2) - 2
         }
@@ -285,10 +285,10 @@ export default {
     // 鼠标松开
     end: function() {
       this.endMovetime = +new Date()
-      var _this = this
+      const _this = this
       // 判断是否重合
       if (this.isDragging && this.isEnd === false) {
-        var moveLeftDistance = parseInt((this.moveBlockLeft || '').replace('px', ''))
+        let moveLeftDistance = parseInt((this.moveBlockLeft || '').replace('px', ''))
         if (!(moveLeftDistance > 0)) {
           return
         }
