@@ -20,7 +20,7 @@
       >
         <my-container header-style="padding:0px;" footer-style="padding:0px;">
           <template #header>
-            <div class="el-dialog__header">
+            <div class="el-dialog__header" @dblclick="handleMaximize">
               <slot name="title">
                 <span class="el-dialog__title">{{ title }}</span>
               </slot>
@@ -28,7 +28,7 @@
                 <i
                   v-if="showMaximize"
                   type="button"
-                  aria-label="Close"
+                  aria-label="Maximize"
                   @click="handleMaximize"
                   :class="['el-dialog__close', 'el-icon', fullscreen ? 'el-icon-copy-document' : 'el-icon-full-screen']" 
                 />
