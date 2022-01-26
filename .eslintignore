@@ -1,6 +1,6 @@
-build/*.js
 src/assets
 public
 dist
 node_modules
 src/components/element-ui
+src/router/index.js

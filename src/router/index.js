@@ -19,7 +19,12 @@ Vue.use(Router)
 
 // 路由懒加载
 export const getComponent = (view) => {
-  return (resolve) => require([`@/views/${view}`], resolve)
+  if (process.env.NODE_ENV === 'development') {
+    return (resolve) => require([`@/views/${view}`], resolve)
+  } else {
+    // 路由懒加载
+    return () => import(`@/views/${view}`)
+  }
 }
 
 const constantRoutes = [
