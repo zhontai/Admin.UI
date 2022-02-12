@@ -9,7 +9,7 @@
     "dev": "vue-cli-service serve",
     "build:prod": "vue-cli-service build",
     "build:stage": "vue-cli-service build --mode staging",
-    "install:pkg": "npm install --registry https://registry.npm.taobao.org --legacy-peer-deps",
+    "install:pkg": "npm install --registry https://registry.npmmirror.com --legacy-peer-deps",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
