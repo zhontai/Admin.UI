@@ -94,8 +94,8 @@
 
 <script>
 import { treeToList, listToTree, getTreeParentsWithSelf } from '@/utils'
-import { getRoleListPage } from '@/api/admin/role'
-import { getPermissions, getPermissionIds, addRolePermission } from '@/api/admin/permission'
+import roleApi from '@/api/admin/role'
+import permissionApi from '@/api/admin/permission'
 import MyConfirmButton from '@/components/my-confirm-button'
 
 export default {
@@ -141,7 +141,7 @@ export default {
         ...pager
       }
       this.loadingRoles = true
-      const res = await getRoleListPage(params)
+      const res = await roleApi.getPage(params)
       this.loadingRoles = false
 
       this.total = res.data.total
@@ -153,7 +153,7 @@ export default {
       this.onSelectAll([])
 
       const para = {}
-      const res = await getPermissions(para)
+      const res = await permissionApi.getPermissionList(para)
       this.loadingPermissions = false
       const tree = listToTree(_.cloneDeep(res.data))
       this.permissionTree = tree
@@ -167,7 +167,7 @@ export default {
 
       this.loadingPermissions = true
       const para = { roleId: this.roleId }
-      const res = await getPermissionIds(para)
+      const res = await permissionApi.getRolePermissionList(para)
 
       this.loadingPermissions = false
       const permissionIds = res.data
@@ -218,7 +218,7 @@ export default {
       const para = { permissionIds, roleId: this.roleId }
 
       this.loadingSave = true
-      const res = await addRolePermission(para)
+      const res = await permissionApi.assign(para)
       this.loadingSave = false
 
       if (!res?.success) {

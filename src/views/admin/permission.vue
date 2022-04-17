@@ -301,21 +301,9 @@
 
 <script>
 import { formatTime, treeToList, listToTree, getTreeParents } from '@/utils'
-import { getApiList } from '@/api/admin/api'
-import { getViewList } from '@/api/admin/view'
-import {
-  getPermissionList,
-  deletePermission,
-  addGroup,
-  addMenu,
-  addDot,
-  updateGroup,
-  updateMenu,
-  updateDot,
-  getGroup,
-  getMenu,
-  getDot
-} from '@/api/admin/permission'
+import apiApi from '@/api/admin/api'
+import viewApi from '@/api/admin/view'
+import permissionApi from '@/api/admin/permission'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyWindow from '@/components/my-window'
 
@@ -451,13 +439,13 @@ export default {
       return formatTime(time, 'YYYY-MM-DD HH:mm')
     },
     async getApiList() {
-      const res = await getApiList()
+      const res = await apiApi.getList()
       if (res && res.success) {
         this.apiTree = listToTree(_.cloneDeep(res.data))
       }
     },
     async getViewList() {
-      const res = await getViewList()
+      const res = await viewApi.getList()
       if (res && res.success) {
         this.viewTree = listToTree(_.cloneDeep(res.data))
       }
@@ -470,7 +458,7 @@ export default {
         end: this.filters.createTime ? this.filters.createTime[1] : ''
       }
       this.listLoading = true
-      const res = await getPermissionList(para)
+      const res = await permissionApi.getList(para)
       this.listLoading = false
 
       if (!res?.success) {
@@ -511,7 +499,7 @@ export default {
     async onDelete(index, row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await deletePermission(para)
+      const res = await permissionApi.deleteAsync(para)
       row._loading = false
 
       if (!res?.success) {
@@ -532,7 +520,7 @@ export default {
       const type = row.type
       const loading = this.$loading()
       if (type === 1) {
-        const res = await getGroup({ id: row.id })
+        const res = await permissionApi.getGroup({ id: row.id })
         loading.close()
         if (res && res.success) {
           const data = res.data
@@ -545,7 +533,7 @@ export default {
         if (this.viewTree.length === 0) {
           await this.getViewList()
         }
-        const res = await getMenu({ id: row.id })
+        const res = await permissionApi.getMenu({ id: row.id })
         loading.close()
         if (res && res.success) {
           const data = res.data
@@ -558,7 +546,7 @@ export default {
         if (this.apiTree.length === 0) {
           await this.getApiList()
         }
-        const res = await getDot({ id: row.id })
+        const res = await permissionApi.getDot({ id: row.id })
         loading.close()
         if (res && res.success) {
           const data = res.data
@@ -594,9 +582,9 @@ export default {
 
       let res
       if (para.id > 0) {
-        res = await updateGroup(para)
+        res = await permissionApi.updateGroup(para)
       } else {
-        res = await addGroup(para)
+        res = await permissionApi.addGroup(para)
       }
       this.permissionGroup.loading = false
 
@@ -643,9 +631,9 @@ export default {
 
       let res
       if (para.id > 0) {
-        res = await updateMenu(para)
+        res = await permissionApi.updateMenu(para)
       } else {
-        res = await addMenu(para)
+        res = await permissionApi.addMenu(para)
       }
       this.permissionMenu.loading = false
 
@@ -691,9 +679,9 @@ export default {
 
       let res
       if (para.id > 0) {
-        res = await updateDot(para)
+        res = await permissionApi.updateDot(para)
       } else {
-        res = await addDot(para)
+        res = await permissionApi.addDot(para)
       }
       this.permissionDot.loading = false
 

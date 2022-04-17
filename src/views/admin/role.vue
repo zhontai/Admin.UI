@@ -221,8 +221,8 @@
 
 <script>
 import { formatTime } from '@/utils'
-import { getRoleListPage, removeRole, editRole, addRole, batchRemoveRole, getRole } from '@/api/admin/role'
-import { addRolePermission } from '@/api/admin/permission'
+import roleApi from '@/api/admin/role'
+import permissionApi from '@/api/admin/permission'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySelectPermission from '@/components/my-select-window/permission'
@@ -313,7 +313,7 @@ export default {
         filter: this.filter
       }
       this.listLoading = true
-      const res = await getRoleListPage(params)
+      const res = await roleApi.getPage(params)
       this.listLoading = false
 
       if (!res?.success) {
@@ -330,7 +330,7 @@ export default {
     // 显示编辑界面
     async onEdit(index, row) {
       this.pageLoading = true
-      const res = await getRole({ id: row.id })
+      const res = await roleApi.get({ id: row.id })
       this.pageLoading = false
       if (res && res.success) {
         const data = res.data
@@ -361,7 +361,7 @@ export default {
       this.editLoading = true
       const para = _.cloneDeep(this.editForm)
 
-      const res = await editRole(para)
+      const res = await roleApi.update(para)
       this.editLoading = false
 
       if (!res?.success) {
@@ -389,7 +389,7 @@ export default {
       this.addLoading = true
       const para = _.cloneDeep(this.addForm)
 
-      const res = await addRole(para)
+      const res = await roleApi.add(para)
       this.addLoading = false
 
       if (!res?.success) {
@@ -421,7 +421,7 @@ export default {
     async onDelete(index, row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await removeRole(para)
+      const res = await roleApi.softDelete(para)
       row._loading = false
 
       if (!res?.success) {
@@ -457,7 +457,7 @@ export default {
       })
 
       this.deleteLoading = true
-      const res = await batchRemoveRole(para.ids)
+      const res = await roleApi.batchSoftDelete(para.ids)
       this.deleteLoading = false
 
       if (!res?.success) {
@@ -477,7 +477,7 @@ export default {
     async onSelectPermission(permissionIds) {
       const para = { permissionIds, roleId: this.roleId }
       this.loadingSave = true
-      const res = await addRolePermission(para)
+      const res = await permissionApi.assign(para)
       this.loadingSave = false
 
       if (!res?.success) {

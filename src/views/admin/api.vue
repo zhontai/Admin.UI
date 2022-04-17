@@ -188,7 +188,8 @@
 
 <script>
 import { formatTime, treeToList, listToTree, getTreeParents } from '@/utils'
-import { removeApi, editApi, addApi, getV2SwaggerJson, syncApi, getApiList, batchRemoveApi, getApi } from '@/api/admin/api'
+import apiApi from '@/api/admin/api'
+import { getV2SwaggerJson } from '@/api/admin/api.extend'
 import MyWindow from '@/components/my-window'
 import MyConfirmButton from '@/components/my-confirm-button'
 
@@ -259,7 +260,7 @@ export default {
         key: this.filters.label
       }
       this.listLoading = true
-      const res = await getApiList(para)
+      const res = await apiApi.getList(para)
       this.listLoading = false
 
       if (!res?.success) {
@@ -284,7 +285,7 @@ export default {
     // 显示编辑界面
     async onEdit(index, row) {
       const loading = this.$loading()
-      const res = await getApi({ id: row.id })
+      const res = await apiApi.get({ id: row.id })
       loading.close()
       if (res && res.success) {
         const parents = getTreeParents(this.apiTree, row.id)
@@ -331,7 +332,7 @@ export default {
         return
       }
 
-      const res = await editApi(para)
+      const res = await apiApi.update(para)
       this.editLoading = false
       if (!res?.success) {
         return
@@ -357,7 +358,7 @@ export default {
       const para = _.cloneDeep(this.addForm)
       para.parentId = para.parentIds.pop()
 
-      const res = await addApi(para)
+      const res = await apiApi.add(para)
       this.addLoading = false
 
       if (!res?.success) {
@@ -375,7 +376,7 @@ export default {
     async onDelete(index, row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await removeApi(para)
+      const res = await apiApi.softDelete(para)
 
       row._loading = false
 
@@ -396,7 +397,7 @@ export default {
       })
 
       this.deleteLoading = true
-      const res = await batchRemoveApi(para.ids)
+      const res = await apiApi.batchSoftDelete(para.ids)
       this.deleteLoading = false
 
       if (!res?.success) {
@@ -448,7 +449,7 @@ export default {
         }
       }
 
-      const syncRes = await syncApi({ apis })
+      const syncRes = await apiApi.sync({ apis })
       this.syncLoading = false
 
       if (!syncRes?.success) {

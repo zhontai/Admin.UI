@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { getPassWordEncryptKey, getLoginInfo, login } from '@/api/admin/auth'
+import authApi from '@/api/admin/auth'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { encryptByDES } from '@/utils/crypto'
 import { resetRouter, addRoutes } from '@/router'
@@ -37,13 +37,13 @@ const mutations = {
 
 const actions = {
   async login({ commit }, paras) {
-    const resPwd = await getPassWordEncryptKey()
+    const resPwd = await authApi.getPasswordEncryptKey()
     if (resPwd && resPwd.success) {
       paras.passwordKey = resPwd.data.key
       paras.password = encryptByDES(paras.password, resPwd.data.encyptKey)
     }
 
-    const res = await login(paras)
+    const res = await authApi.login(paras)
     if (res && res.success) {
       const token = res.data.token
       commit('setToken', token)
@@ -53,7 +53,7 @@ const actions = {
   },
 
   async getLoginInfo({ commit }) {
-    const res = await getLoginInfo()
+    const res = await authApi.getUserInfo()
     if (!res?.success) {
       return res
     }

@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import { getVerifyCode } from '@/api/admin/auth'
+import apiAuth from '@/api/admin/auth'
 import MyCaptcha from '@/components/my-captcha'
 
 export default {
@@ -160,7 +160,7 @@ export default {
     // 获取验证码
     async getLoginVerifyCode() {
       this.form.verifyCode = ''
-      const res = await getVerifyCode({ lastKey: this.form.verifyCodeKey })
+      const res = await apiAuth.getCaptcha({ lastKey: this.form.verifyCodeKey })
       if (res && res.success) {
         this.verifyCodeUrl = 'data:image/png;base64,' + res.data.img
         this.form.verifyCodeKey = res.data.key

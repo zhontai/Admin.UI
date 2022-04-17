@@ -202,7 +202,7 @@
 
 <script>
 import { formatTime } from '@/utils'
-import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser, getUser, getSelect } from '@/api/admin/user'
+import userApi from '@/api/admin/user'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySearch from '@/components/my-search'
@@ -299,7 +299,7 @@ export default {
       }
 
       this.listLoading = true
-      const res = await getUserListPage(params)
+      const res = await userApi.getPage(params)
       this.listLoading = false
 
       if (!res?.success) {
@@ -316,7 +316,7 @@ export default {
     // 显示编辑界面
     async onEdit(index, row) {
       this.pageLoading = true
-      const res = await getUser({ id: row.id })
+      const res = await userApi.get({ id: row.id })
       this.pageLoading = false
       if (res && res.success) {
         const { form, select } = res.data
@@ -341,7 +341,7 @@ export default {
       this.editLoading = true
       const para = _.cloneDeep(this.editForm)
 
-      const res = await editUser(para)
+      const res = await userApi.update(para)
       this.editLoading = false
 
       if (!res?.success) {
@@ -359,7 +359,7 @@ export default {
     // 显示新增界面
     async onAdd() {
       this.pageLoading = true
-      const res = await getSelect()
+      const res = await userApi.getSelect()
       this.pageLoading = false
       if (res && res.success) {
         const { select } = res.data
@@ -383,7 +383,7 @@ export default {
       this.addLoading = true
       const para = _.cloneDeep(this.addForm)
 
-      const res = await addUser(para)
+      const res = await userApi.add(para)
       this.addLoading = false
 
       if (!res?.success) {
@@ -415,7 +415,7 @@ export default {
     async onDelete(index, row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await removeUser(para)
+      const res = await userApi.softDelete(para)
       row._loading = false
 
       if (!res?.success) {
@@ -449,7 +449,7 @@ export default {
       })
 
       this.deleteLoading = true
-      const res = await batchRemoveUser(para.ids)
+      const res = await userApi.batchSoftDelete(para.ids)
       this.deleteLoading = false
 
       if (!res?.success) {

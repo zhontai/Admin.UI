@@ -65,7 +65,7 @@
 
 <script>
 import { formatTime } from '@/utils'
-import { getLoginLogPage } from '@/api/admin/login-log'
+import loginLogApi from '@/api/admin/login-log'
 import MyContainer from '@/components/my-container'
 
 export default {
@@ -100,7 +100,7 @@ export default {
         filter: this.filter
       }
       this.listLoading = true
-      const res = await getLoginLogPage(para)
+      const res = await loginLogApi.getPage(para)
       this.listLoading = false
 
       if (!res?.success) {

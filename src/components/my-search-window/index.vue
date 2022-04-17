@@ -13,7 +13,7 @@
     <template #footer>
       <div class="dialog-footer">
         <my-confirm-button
-          :placement="'bottom-end'"
+          :placement="'top-end'"
           style="margin-left: 0px;float:left;"
           @click="onReset"
         >

@@ -18,7 +18,7 @@
         <el-form-item>
           <el-button type="primary" icon="el-icon-search" @click="onSearch">查询</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:personnel:organization:add'])">
+        <el-form-item v-if="checkPermission(['api:admin:organization:add'])">
           <el-button type="primary" icon="el-icon-plus" @click="handleAdd">新增</el-button>
         </el-form-item>
       </el-form>
@@ -51,11 +51,11 @@
           >{{ row.enabled ? '正常' : '禁用' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="checkPermission(['api:personnel:organization:update','api:personnel:organization:softdelete'])" label="操作" fixed="right" width="180">
-        <template v-if="checkPermission(['api:personnel:organization:add'])" #default="{ $index, row }">
+      <el-table-column v-if="checkPermission(['api:admin:organization:update','api:admin:organization:softdelete'])" label="操作" fixed="right" width="180">
+        <template v-if="checkPermission(['api:admin:organization:add'])" #default="{ $index, row }">
           <el-button icon="el-icon-edit" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
-            v-if="checkPermission(['api:personnel:organization:add'])"
+            v-if="checkPermission(['api:admin:organization:add'])"
             :type="'delete'"
             :loading="row._loading"
             :icon="'el-icon-delete'"
@@ -67,7 +67,7 @@
 
     <!--新增窗口-->
     <my-window
-      v-if="checkPermission(['api:personnel:organization:add'])"
+      v-if="checkPermission(['api:admin:organization:add'])"
       title="新增"
       :visible.sync="addFormVisible"
       @close="closeAddForm"
@@ -117,7 +117,7 @@
 
     <!--编辑窗口-->
     <my-window
-      v-if="checkPermission(['api:personnel:organization:update'])"
+      v-if="checkPermission(['api:admin:organization:update'])"
       title="编辑"
       :visible.sync="editFormVisible"
       @close="closeEditForm"
@@ -169,7 +169,7 @@
 
 <script>
 import { formatTime, treeToList, listToTree, getTreeParents } from '@/utils'
-import { getList, get, add, update, softDelete } from '@/api/personnel/organization'
+import orgApi from '@/api/admin/organization'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyWindow from '@/components/my-window'
@@ -249,7 +249,7 @@ export default {
         key: this.filter.name
       }
       this.listLoading = true
-      const res = await getList(para)
+      const res = await orgApi.getList(para)
       this.listLoading = false
 
       if (!res?.success) {
@@ -274,7 +274,7 @@ export default {
     async onDelete(index, row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await softDelete(para)
+      const res = await orgApi.softDelete(para)
       row._loading = false
 
       if (!res?.success) {
@@ -290,7 +290,7 @@ export default {
     // 显示编辑界面
     async onEdit(index, row) {
       const loading = this.$loading()
-      const res = await get({ id: row.id })
+      const res = await orgApi.get({ id: row.id })
       loading.close()
       if (res && res.success) {
         const parents = getTreeParents(this.organizationTree, row.id)
@@ -339,7 +339,7 @@ export default {
         return
       }
 
-      const res = await update(para)
+      const res = await orgApi.update(para)
       this.editLoading = false
 
       if (!res?.success) {
@@ -366,7 +366,7 @@ export default {
       const para = _.cloneDeep(this.addForm)
       para.parentId = para.parentIds.pop()
 
-      const res = await add(para)
+      const res = await orgApi.add(para)
       this.addLoading = false
 
       if (!res?.success) {

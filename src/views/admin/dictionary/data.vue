@@ -195,7 +195,7 @@
 
 <script>
 import { formatTime } from '@/utils'
-import { getPage, get, add, update, softDelete, batchSoftDelete } from '@/api/admin/dictionary'
+import dictionaryApi from '@/api/admin/dictionary'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyWindow from '@/components/my-window'
@@ -293,7 +293,7 @@ export default {
         filter: this.filter
       }
       this.listLoading = true
-      const res = await getPage(params)
+      const res = await dictionaryApi.getPage(params)
       this.listLoading = false
 
       if (!res?.success) {
@@ -327,7 +327,7 @@ export default {
       this.addLoading = true
       const para = _.cloneDeep(this.addForm)
 
-      const res = await add(para)
+      const res = await dictionaryApi.add(para)
       this.addLoading = false
 
       if (!res?.success) {
@@ -345,7 +345,7 @@ export default {
     // 显示编辑界面
     async onEdit(index, row) {
       this.pageLoading = true
-      const res = await get({ id: row.id })
+      const res = await dictionaryApi.get({ id: row.id })
       this.pageLoading = false
       if (res && res.success) {
         const data = res.data
@@ -369,7 +369,7 @@ export default {
       this.editLoading = true
       const para = _.cloneDeep(this.editForm)
 
-      const res = await update(para)
+      const res = await dictionaryApi.update(para)
       this.editLoading = false
 
       if (!res?.success) {
@@ -401,7 +401,7 @@ export default {
     async onDelete(index, row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await softDelete(para)
+      const res = await dictionaryApi.softDelete(para)
       row._loading = false
 
       if (!res?.success) {
@@ -437,7 +437,7 @@ export default {
       })
 
       this.deleteLoading = true
-      const res = await batchSoftDelete(para.ids)
+      const res = await dictionaryApi.batchSoftDelete(para.ids)
       this.deleteLoading = false
 
       if (!res?.success) {

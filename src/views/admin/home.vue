@@ -1,6 +1,29 @@
 <template>
   <section class="wrap">
     <el-timeline>
+      <el-timeline-item timestamp="版本 2.0.0" placement="top">
+        <el-card>
+          <h4>后端：</h4>
+          <h4>升级 Admin为.Net 6.0项目，FreeSql到3.2.500，其它包更新到最新版本</h4>
+          <h4>新增 ZhonTai.Host站点项目</h4>
+          <h4>新增 动态WebApi，api命名支持camelCase、PascalCase、snake_case、kebab-case和extension.case</h4>
+          <h4>新增 新版Api UI项目ZhonTai.ApiUI，内嵌前端Api代码生成</h4>
+          <h4>新增 除员工、职位、部门服务外，全部服务为动态WebApi</h4>
+          <h4>新增 支持.Net6.0版本启动和集成测试</h4>
+          <h4>新增 SwaggerUI支持性能分析</h4>
+          <h4>优化 实体、仓储、服务和工具项目合并为ZhonTai.Admin项目</h4>
+          <h4>优化 租户和非租户导入、导出数据，将一个数据文件拆分为多个模块数据文件</h4>
+          <h4>优化 ZhonTai.Common项目部分功能迁移到ZhonTai.Admin.Core中</h4>
+          <h4>前端：</h4>
+          <h4>新增 所有api使用新版Api UI项目生成，新增api自定义module.extend.js</h4>
+          <h4>修复 vue版滑块验证组件导致界面文本不能选择的问题，修复拖拽事件触发不合理问题</h4>
+          <h4>认证端：</h4>
+          <h4>升级 IdentityServer为.Net 6.0项目，Freesql到3.2.500，其它包更新到最新版本</h4>
+          <h4>新增 2.0版本滑块获取和检查接口</h4>
+          <h4>修复 jquery版滑块验证组件导致界面文本不能选择的问题，修复拖拽事件触发不合理问题</h4>
+          <p>小雪转中雪 提交于 2022-04-17</p>
+        </el-card>
+      </el-timeline-item>
       <el-timeline-item timestamp="版本 1.7.1" placement="top">
         <el-card>
           <h4>前端：</h4>

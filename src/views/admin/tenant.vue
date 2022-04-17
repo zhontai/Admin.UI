@@ -336,8 +336,8 @@
 
 <script>
 import { formatTime } from '@/utils'
-import { getTenantListPage, removeTenant, editTenant, addTenant, batchRemoveTenant, getTenant, deleteTenant } from '@/api/admin/tenant'
-import { saveTenantPermissions } from '@/api/admin/permission'
+import tenantApi from '@/api/admin/tenant'
+import permissionApi from '@/api/admin/permission'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySelectPermission from '@/components/my-select-window/permission'
@@ -486,7 +486,7 @@ export default {
         filter: this.filter
       }
       this.listLoading = true
-      const res = await getTenantListPage(params)
+      const res = await tenantApi.getPage(params)
       this.listLoading = false
 
       if (!res?.success) {
@@ -503,7 +503,7 @@ export default {
     // 显示编辑界面
     async onEdit(index, row) {
       this.pageLoading = true
-      const res = await getTenant({ id: row.id })
+      const res = await tenantApi.get({ id: row.id })
       this.pageLoading = false
       if (res && res.success) {
         const data = res.data
@@ -534,7 +534,7 @@ export default {
       this.editLoading = true
       const para = _.cloneDeep(this.editForm)
 
-      const res = await editTenant(para)
+      const res = await tenantApi.update(para)
       this.editLoading = false
 
       if (!res?.success) {
@@ -562,7 +562,7 @@ export default {
       this.addLoading = true
       const para = _.cloneDeep(this.addForm)
 
-      const res = await addTenant(para)
+      const res = await tenantApi.add(para)
       this.addLoading = false
 
       if (!res?.success) {
@@ -594,7 +594,7 @@ export default {
     async onDelete(index, row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await removeTenant(para)
+      const res = await tenantApi.softDelete(para)
       row._loading = false
 
       if (!res?.success) {
@@ -630,7 +630,7 @@ export default {
       })
 
       this.deleteLoading = true
-      const res = await batchRemoveTenant(para.ids)
+      const res = await tenantApi.batchSoftDelete(para.ids)
       this.deleteLoading = false
 
       if (!res?.success) {
@@ -650,7 +650,7 @@ export default {
     async onSelectPermission(permissionIds) {
       const para = { permissionIds, tenantId: this.tenantId }
       this.setPermissionLoading = true
-      const res = await saveTenantPermissions(para)
+      const res = await permissionApi.saveTenantPermissions(para)
       this.setPermissionLoading = false
 
       if (!res?.success) {
@@ -667,7 +667,7 @@ export default {
     async deleteAsync() {
       this.pageLoading = true
       const para = { id: this.currentRow?.id }
-      const res = await deleteTenant(para)
+      const res = await tenantApi.deleteAsync(para)
       this.pageLoading = false
       if (!res?.success) {
         return

@@ -25,7 +25,7 @@
                 <el-upload
                   v-loading="avatarLoading"
                   class="avatar-uploader"
-                  action="/api/admin/user/avatarupload"
+                  action="/api/admin/user/avatar-upload"
                   :headers="token"
                   :show-file-list="false"
                   :before-upload="()=>{avatarLoading = true}"
@@ -132,7 +132,7 @@
 
 <script>
 import MyConfirmButton from '@/components/my-confirm-button'
-import { getBasic, changePassword, updateBasicUser } from '@/api/admin/user'
+import userApi from '@/api/admin/user'
 export default {
   name: 'Settins',
   components: { MyConfirmButton },
@@ -210,7 +210,7 @@ export default {
   },
   async mounted() {
     this.loading = true
-    const res = await getBasic()
+    const res = await userApi.getBasic()
     this.loading = false
     if (!res?.success) {
       return
@@ -259,7 +259,7 @@ export default {
     async onSubmit() {
       this.editLoading = true
       const para = { ...this.editForm }
-      const res = await updateBasicUser(para)
+      const res = await userApi.updateBasic(para)
       this.editLoading = false
 
       if (!res?.success) {
@@ -284,7 +284,7 @@ export default {
     async onSubmitPwd() {
       this.editPwdLoading = true
       const para = { ...this.editPwdForm }
-      const res = await changePassword(para)
+      const res = await userApi.changePassword(para)
       this.editPwdLoading = false
 
       if (!res?.success) {

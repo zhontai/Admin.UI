@@ -65,7 +65,7 @@
 
 <script>
 import { formatTime, treeToList, listToTree } from '@/utils'
-import { getList } from '@/api/personnel/organization'
+import { getList } from '@/api/admin/organization'
 import MyContainer from '@/components/my-container'
 import MyWindow from '@/components/my-window'
 

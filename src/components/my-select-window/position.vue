@@ -69,7 +69,7 @@
 
 <script>
 import { formatTime } from '@/utils'
-import { getPositionListPage } from '@/api/personnel/position'
+import positionApi from '@/api/admin/position'
 import MyContainer from '@/components/my-container'
 import MyWindow from '@/components/my-window'
 
@@ -146,7 +146,7 @@ export default {
         filter: this.filter
       }
       this.listLoading = true
-      const res = await getPositionListPage(params)
+      const res = await positionApi.getPage(params)
       this.listLoading = false
 
       if (!res?.success) {

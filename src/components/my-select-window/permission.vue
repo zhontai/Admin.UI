@@ -42,7 +42,7 @@
 
 <script>
 import { treeToList, listToTree, getTreeParentsWithSelf } from '@/utils'
-import { getPermissions, getPermissionIds, GetTenantPermissionIds } from '@/api/admin/permission'
+import permissionApi from '@/api/admin/permission'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyWindow from '@/components/my-window'
 
@@ -187,7 +187,7 @@ export default {
       this.onSelectAll([])
 
       const para = {}
-      const res = await getPermissions(para)
+      const res = await permissionApi.getPermissionList(para)
       this.loadingPermissions = false
       const tree = listToTree(_.cloneDeep(res.data))
       this.permissionTree = tree
@@ -201,7 +201,7 @@ export default {
 
       this.loadingPermissions = true
       const para = { roleId: this.roleId }
-      const res = await (this.tenant ? GetTenantPermissionIds({ tenantId: this.tenantId }) : getPermissionIds(para))
+      const res = await (this.tenant ? permissionApi.getTenantPermissionList({ tenantId: this.tenantId }) : permissionApi.getRolePermissionList(para))
 
       this.loadingPermissions = false
       const permissionIds = res.data

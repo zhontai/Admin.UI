@@ -37,7 +37,7 @@
                 <el-upload
                   v-if="hasDocument && checkPermission(['api:admin:document:uploadimage'])"
                   ref="upload"
-                  action="/api/admin/document/uploadimage"
+                  action="/api/admin/document/upload-image"
                   multiple
                   :headers="token"
                   :data="{id:document.form.id}"
@@ -257,20 +257,7 @@ import MyConfirmButton from '@/components/my-confirm-button'
 import resizable from '@/directive/resizable'
 import MyWindow from '@/components/my-window'
 
-import {
-  getDocuments,
-  getDocumentImages,
-  removeDocument,
-  addGroup,
-  addMenu,
-  updateGroup,
-  updateMenu,
-  updateContent,
-  getGroup,
-  getMenu,
-  getContent,
-  deleteImage
-} from '@/api/admin/document'
+import documentApi from '@/api/admin/document'
 
 let prevOverflow = ''
 
@@ -443,7 +430,7 @@ export default {
       this.document.form.html = this.$refs.markdownEditor.getHtml()
 
       this.document.loadingSave = true
-      const res = await updateContent(this.document.form, { api: { noErrorMsg: autoSave }})
+      const res = await documentApi.updateContent(this.document.form, { api: { noErrorMsg: autoSave }})
       this.document.loadingSave = false
       if (!res?.success) {
         return
@@ -516,7 +503,7 @@ export default {
       this.clearCurrentData()
 
       this.pageLoading = true
-      const res = await getContent({ id: currentRow.id })
+      const res = await documentApi.getContent({ id: currentRow.id })
       this.pageLoading = false
       if (res && res.success) {
         this.document.form = { ...res.data, _first: res.data.content !== '' }
@@ -540,7 +527,7 @@ export default {
       this.$refs.treeTable.setCurrentRow()
 
       this.listLoading = true
-      const res = await getDocuments(para)
+      const res = await documentApi.getList(para)
       this.listLoading = false
 
       if (!res?.success) {
@@ -587,7 +574,7 @@ export default {
       }
 
       this.document.loadingImageList = true
-      const res = await getDocumentImages(para)
+      const res = await documentApi.getImageList(para)
       this.document.loadingImageList = false
 
       if (!res?.success) {
@@ -605,7 +592,7 @@ export default {
 
       const para = { documentId: this.document.form.id, url: src }
       this.pageLoading = true
-      const res = await deleteImage(para)
+      const res = await documentApi.deleteImage(para)
       this.pageLoading = false
 
       if (!res?.success) {
@@ -669,9 +656,9 @@ export default {
 
       let res
       if (para.id > 0) {
-        res = await updateGroup(para)
+        res = await documentApi.updateGroup(para)
       } else {
-        res = await addGroup(para)
+        res = await documentApi.addGroup(para)
       }
 
       this.documentGroup.loading = false
@@ -713,9 +700,9 @@ export default {
 
       let res
       if (para.id > 0) {
-        res = await updateMenu(para)
+        res = await documentApi.updateMenu(para)
       } else {
-        res = await addMenu(para)
+        res = await documentApi.addMenu(para)
       }
       this.documentMenu.loading = false
 
@@ -739,7 +726,7 @@ export default {
       const type = row.type
       const loading = this.$loading()
       if (type === 1) {
-        const res = await getGroup({ id: row.id })
+        const res = await documentApi.getGroup({ id: row.id })
         loading.close()
         if (res && res.success) {
           const data = res.data
@@ -749,7 +736,7 @@ export default {
           ++this.documentGroup.key
         }
       } else if (type === 2) {
-        const res = await getMenu({ id: row.id })
+        const res = await documentApi.getMenu({ id: row.id })
         loading.close()
         if (res && res.success) {
           const data = res.data
@@ -764,7 +751,7 @@ export default {
     async onDelete(index, row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await removeDocument(para)
+      const res = await documentApi.softDelete(para)
       row._loading = false
 
       if (!res?.success) {

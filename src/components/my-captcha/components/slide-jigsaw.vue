@@ -176,6 +176,15 @@ export default {
       return false
     }
   },
+  beforeDestroy() {
+    const jigsaw = this.$refs.jigsaw
+    off(jigsaw, 'mouseenter', this.onBarMouseOver)
+    off(jigsaw, 'mouseleave', this.onBarMouseOut)
+    off(window, 'touchmove', this.move)
+    off(window, 'mousemove', this.move)
+    off(window, 'touchend', this.end)
+    off(window, 'mouseup', this.end)
+  },
   methods: {
     init() {
       this.text = this.explain
@@ -195,36 +204,6 @@ export default {
         }
 
         this.$parent.$emit('ready', this)
-      })
-
-      off(window, 'touchmove', (e) => {
-        this.move(e)
-      })
-      off(window, 'mousemove', (e) => {
-        this.move(e)
-      })
-
-      // 鼠标松开
-      off(window, 'touchend', () => {
-        this.end()
-      })
-      off(window, 'mouseup', () => {
-        this.end()
-      })
-
-      on(window, 'touchmove', (e) => {
-        this.move(e)
-      })
-      on(window, 'mousemove', (e) => {
-        this.move(e)
-      })
-
-      // 鼠标松开
-      on(window, 'touchend', () => {
-        this.end()
-      })
-      on(window, 'mouseup', () => {
-        this.end()
       })
     },
     // 滑动条进入
@@ -250,6 +229,12 @@ export default {
       if (this.isEnd === false) {
         e.stopPropagation()
         this.isDragging = true
+        // 鼠标移动
+        on(window, 'touchmove', this.move)
+        on(window, 'mousemove', this.move)
+        // 鼠标松开
+        on(window, 'touchend', this.end)
+        on(window, 'mouseup', this.end)
       }
     },
     // 鼠标移动
@@ -334,6 +319,10 @@ export default {
       }
 
       this.isDragging = false
+      off(window, 'touchmove', this.move)
+      off(window, 'mousemove', this.move)
+      off(window, 'touchend', this.end)
+      off(window, 'mouseup', this.end)
     },
 
     refresh: function() {

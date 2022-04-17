@@ -18,10 +18,10 @@
         <el-form-item>
           <el-button type="primary" @click="onSearch">查询</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:personnel:position:add'])">
+        <el-form-item v-if="checkPermission(['api:admin:position:add'])">
           <el-button type="primary" @click="onAdd">新增</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:personnel:position:batchsoftdelete'])">
+        <el-form-item v-if="checkPermission(['api:admin:position:batchsoftdelete'])">
           <my-confirm-button
             :disabled="sels.length === 0"
             :type="'delete'"
@@ -62,11 +62,11 @@
           >{{ row.enabled ? '正常' : '禁用' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="checkPermission(['api:personnel:position:update','api:personnel:position:softdelete'])" label="操作" width="180">
+      <el-table-column v-if="checkPermission(['api:admin:position:update','api:admin:position:softdelete'])" label="操作" width="180">
         <template #default="{ $index, row }">
-          <el-button v-if="checkPermission(['api:personnel:position:update'])" @click="onEdit($index, row)">编辑</el-button>
+          <el-button v-if="checkPermission(['api:admin:position:update'])" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
-            v-if="checkPermission(['api:personnel:position:softdelete'])"
+            v-if="checkPermission(['api:admin:position:softdelete'])"
             type="delete"
             :loading="row._loading"
             :validate="deleteValidate"
@@ -89,7 +89,7 @@
 
     <!--新增窗口-->
     <my-window
-      v-if="checkPermission(['api:personnel:position:add'])"
+      v-if="checkPermission(['api:admin:position:add'])"
       title="新增岗位"
       embed
       drawer
@@ -143,7 +143,7 @@
 
     <!--编辑窗口-->
     <my-window
-      v-if="checkPermission(['api:personnel:position:update'])"
+      v-if="checkPermission(['api:admin:position:update'])"
       title="编辑岗位"
       embed
       drawer
@@ -199,7 +199,7 @@
 
 <script>
 import { formatTime } from '@/utils'
-import { getPositionListPage, removePosition, editPosition, addPosition, batchRemovePosition, getPosition } from '@/api/personnel/position'
+import positionApi from '@/api/admin/position'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyWindow from '@/components/my-window'
@@ -291,7 +291,7 @@ export default {
         filter: this.filter
       }
       this.listLoading = true
-      const res = await getPositionListPage(params)
+      const res = await positionApi.getPage(params)
       this.listLoading = false
 
       if (!res?.success) {
@@ -308,7 +308,7 @@ export default {
     // 显示编辑界面
     async onEdit(index, row) {
       this.pageLoading = true
-      const res = await getPosition({ id: row.id })
+      const res = await positionApi.get({ id: row.id })
       this.pageLoading = false
       if (res && res.success) {
         const data = res.data
@@ -339,7 +339,7 @@ export default {
       this.editLoading = true
       const para = _.cloneDeep(this.editForm)
 
-      const res = await editPosition(para)
+      const res = await positionApi.update(para)
       this.editLoading = false
 
       if (!res?.success) {
@@ -367,7 +367,7 @@ export default {
       this.addLoading = true
       const para = _.cloneDeep(this.addForm)
 
-      const res = await addPosition(para)
+      const res = await positionApi.add(para)
       this.addLoading = false
 
       if (!res?.success) {
@@ -392,7 +392,7 @@ export default {
     async onDelete(index, row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await removePosition(para)
+      const res = await positionApi.softDelete(para)
       row._loading = false
 
       if (!res?.success) {
@@ -420,7 +420,7 @@ export default {
       })
 
       this.deleteLoading = true
-      const res = await batchRemovePosition(para.ids)
+      const res = await positionApi.batchSoftDelete(para.ids)
       this.deleteLoading = false
 
       if (!res?.success) {

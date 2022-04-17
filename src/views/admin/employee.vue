@@ -9,10 +9,10 @@
         <el-form-item>
           <el-button type="primary" @click="onsearchWindowVisible">高级查询</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:personnel:employee:add'])">
+        <el-form-item v-if="checkPermission(['api:admin:employee:add'])">
           <el-button type="primary" @click="onAdd">新增</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:personnel:employee:batchsoftdelete'])">
+        <el-form-item v-if="checkPermission(['api:admin:employee:batchsoftdelete'])">
           <my-confirm-button
             :disabled="sels.length === 0"
             :type="'delete'"
@@ -45,11 +45,11 @@
       <el-table-column prop="positionName" label="岗位" width />
       <el-table-column prop="entryTime" label="入职时间" :formatter="formatCreatedTime" width />
       <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width />
-      <el-table-column v-if="checkPermission(['api:personnel:employee:update','api:personnel:employee:softdelete'])" label="操作" width="180">
+      <el-table-column v-if="checkPermission(['api:admin:employee:update','api:admin:employee:softdelete'])" label="操作" width="180">
         <template #default="{ $index, row }">
-          <el-button v-if="checkPermission(['api:personnel:employee:update'])" @click="onEdit($index, row)">编辑</el-button>
+          <el-button v-if="checkPermission(['api:admin:employee:update'])" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
-            v-if="checkPermission(['api:personnel:employee:softdelete'])"
+            v-if="checkPermission(['api:admin:employee:softdelete'])"
             type="delete"
             :loading="row._loading"
             :validate-data="row"
@@ -79,7 +79,7 @@
 
     <!--新增窗口-->
     <my-window
-      v-if="checkPermission(['api:personnel:employee:add'])"
+      v-if="checkPermission(['api:admin:employee:add'])"
       title="新增员工"
       embed
       drawer
@@ -154,7 +154,7 @@
 
     <!--编辑窗口-->
     <my-window
-      v-if="checkPermission(['api:personnel:employee:update'])"
+      v-if="checkPermission(['api:admin:employee:update'])"
       title="编辑员工"
       embed
       drawer
@@ -234,7 +234,7 @@
 
 <script>
 import { formatTime } from '@/utils'
-import { getEmployeeListPage, removeEmployee, batchRemoveEmployee, editEmployee, addEmployee, getEmployee } from '@/api/personnel/employee'
+import employeeApi from '@/api/admin/employee'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySearch from '@/components/my-search'
@@ -328,9 +328,9 @@ export default {
       },
       deleteLoading: false,
       datePickerOptions: {
-        disabledDate(time) {
-          return time.getTime() > Date.now()
-        }
+        // disabledDate(time) {
+        //   return time.getTime() > Date.now()
+        // }
       }
     }
   },
@@ -369,7 +369,7 @@ export default {
       }
 
       this.listLoading = true
-      const res = await getEmployeeListPage(params)
+      const res = await employeeApi.getPage(params)
       this.listLoading = false
 
       if (!res?.success) {
@@ -404,7 +404,7 @@ export default {
       this.addLoading = true
       const para = _.cloneDeep(this.addForm)
 
-      const res = await addEmployee(para)
+      const res = await employeeApi.add(para)
       this.addLoading = false
 
       if (!res?.success) {
@@ -422,7 +422,7 @@ export default {
     // 显示编辑界面
     async onEdit(index, row) {
       this.pageLoading = true
-      const res = await getEmployee({ id: row.id })
+      const res = await employeeApi.get({ id: row.id })
       this.pageLoading = false
       if (res && res.success) {
         const data = res.data
@@ -446,7 +446,7 @@ export default {
       this.editLoading = true
       const para = _.cloneDeep(this.editForm)
 
-      const res = await editEmployee(para)
+      const res = await employeeApi.update(para)
       this.editLoading = false
 
       if (!res?.success) {
@@ -465,7 +465,7 @@ export default {
     async onDelete(index, row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await removeEmployee(para)
+      const res = await employeeApi.softDelete(para)
       row._loading = false
 
       if (!res?.success) {
@@ -485,7 +485,7 @@ export default {
       })
 
       this.deleteLoading = true
-      const res = await batchRemoveEmployee(para.ids)
+      const res = await employeeApi.batchSoftDelete(para.ids)
       this.deleteLoading = false
 
       if (!res?.success) {

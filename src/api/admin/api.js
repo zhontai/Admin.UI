@@ -1,32 +1,83 @@
+/**
+ *  接口服务
+ *  @module @/api/admin/api
+ */
+
 import request from '@/utils/request'
 import scope from './scope'
 const apiPrefix = `${process.env.VUE_APP_BASE_API}/${scope}/api/`
 
-// 接口管理
-export const getApi = (params, config = {}) => {
+/**
+ * 查询接口
+ */
+export const get = (params, config = {}) => {
   return request.get(apiPrefix + 'get', { params: params, ...config })
 }
-export const getApiList = (params, config = {}) => {
-  return request.get(apiPrefix + 'getlist', { params: params, ...config })
+
+/**
+ * 查询列表
+ */
+export const getList = (params, config = {}) => {
+  return request.get(apiPrefix + 'get-list', { params: params, ...config })
 }
-export const removeApi = (params, config = {}) => {
-  return request.delete(apiPrefix + 'softdelete', { params: params, ...config })
+
+/**
+ * 查询分页
+ */
+export const getPage = (params, config = {}) => {
+  return request.post(apiPrefix + 'get-page', params, config)
 }
-export const batchRemoveApi = (params, config = {}) => {
-  return request.put(apiPrefix + 'BatchsoftDelete', params, config)
-}
-export const editApi = (params, config = {}) => {
-  return request.put(apiPrefix + 'update', params, config)
-}
-export const addApi = (params, config = {}) => {
+
+/**
+ * 添加
+ */
+export const add = (params, config = {}) => {
   return request.post(apiPrefix + 'add', params, config)
 }
+
 /**
- * 同步api
+ * 修改
  */
-export const syncApi = (params, config = {}) => {
+export const update = (params, config = {}) => {
+  return request.put(apiPrefix + 'update', params, config)
+}
+
+/**
+ * 彻底删除
+ */
+export const deleteAsync = (params, config = {}) => {
+  return request.delete(apiPrefix + 'delete', { params: params, ...config })
+}
+
+/**
+ * 删除
+ */
+export const softDelete = (params, config = {}) => {
+  return request.delete(apiPrefix + 'soft-delete', { params: params, ...config })
+}
+
+/**
+ * 批量删除
+ */
+export const batchSoftDelete = (params, config = {}) => {
+  return request.put(apiPrefix + 'batch-soft-delete', params, config)
+}
+
+/**
+ * 同步
+ */
+export const sync = (params, config = {}) => {
   return request.post(apiPrefix + 'sync', params, config)
 }
-export const getV2SwaggerJson = (params, config = {}) => {
-  return request.get('/swagger/V2/swagger.json', { params: params, ...config })
+
+export default {
+  get,
+  getList,
+  getPage,
+  add,
+  update,
+  deleteAsync,
+  softDelete,
+  batchSoftDelete,
+  sync
 }

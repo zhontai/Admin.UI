@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { getCacheList, clearCache } from '@/api/admin/cache'
+import cacheApi from '@/api/admin/cache'
 import MyConfirmButton from '@/components/my-confirm-button'
 export default {
   name: 'Cache',
@@ -55,7 +55,7 @@ export default {
     // 获取缓存列表
     async getCaches() {
       this.listLoading = true
-      const res = await getCacheList()
+      const res = await cacheApi.getList()
       this.listLoading = false
 
       if (!res?.success) {
@@ -72,7 +72,7 @@ export default {
     async onClearCache(index, row) {
       row._loading = true
       const para = { cacheKey: row.value }
-      const res = await clearCache(para)
+      const res = await cacheApi.clear(para)
       row._loading = false
 
       if (!res?.success) {

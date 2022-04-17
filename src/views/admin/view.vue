@@ -166,15 +166,7 @@
 
 <script>
 import { formatTime, treeToList, listToTree, getTreeParents } from '@/utils'
-import {
-  removeView,
-  editView,
-  addView,
-  syncView,
-  getViewList,
-  batchRemoveView,
-  getView
-} from '@/api/admin/view'
+import viewApi from '@/api/admin/view'
 import MyWindow from '@/components/my-window'
 import MyConfirmButton from '@/components/my-confirm-button'
 
@@ -247,7 +239,7 @@ export default {
         key: this.filters.label
       }
       this.listLoading = true
-      const res = await getViewList(para)
+      const res = await viewApi.getList(para)
       this.listLoading = false
 
       if (!res?.success) {
@@ -276,7 +268,7 @@ export default {
     // 显示编辑界面
     async onEdit(index, row) {
       const loading = this.$loading()
-      const res = await getView({ id: row.id })
+      const res = await viewApi.get({ id: row.id })
       loading.close()
       if (res && res.success) {
         const parents = getTreeParents(this.viewTree, row.id)
@@ -323,7 +315,7 @@ export default {
         return
       }
 
-      const res = await editView(para)
+      const res = await viewApi.update(para)
       this.editLoading = false
 
       if (!res?.success) {
@@ -351,7 +343,7 @@ export default {
       const para = _.cloneDeep(this.addForm)
       para.parentId = para.parentIds.pop()
 
-      const res = await addView(para)
+      const res = await viewApi.add(para)
       this.addLoading = false
 
       if (!res?.success) {
@@ -369,7 +361,7 @@ export default {
     async onDelete(index, row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await removeView(para)
+      const res = await viewApi.softDelete(para)
 
       row._loading = false
 
@@ -390,7 +382,7 @@ export default {
       })
 
       this.deleteLoading = true
-      const res = await batchRemoveView(para.ids)
+      const res = await viewApi.batchSoftDelete(para.ids)
       this.deleteLoading = false
 
       if (!res?.success) {
@@ -429,7 +421,7 @@ export default {
       }, [])
 
       this.syncLoading = true
-      const syncRes = await syncView({ views })
+      const syncRes = await viewApi.sync({ views })
       this.syncLoading = false
 
       if (!syncRes?.success) {
