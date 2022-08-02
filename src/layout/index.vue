@@ -221,8 +221,8 @@ export default {
     return {
       openeds: [],
       menuTree: [],
-      projectName: 'Admin',
-      projectNameShort: 'AD',
+      projectName: '中台管理后台',
+      projectNameShort: '中台',
       avatarDefault: require('@/assets/images/avatar.png'),
       isCollapse: false,
       isPc: false,
@@ -235,7 +235,7 @@ export default {
       },
       tabPosition: 'top', // top | bottom
       tabType: 'border-card', // '' | border-card | card
-      navBarWidth: '201px',
+      navBarWidth: '221px',
       expandNavBarWidth: ''
     }
   },

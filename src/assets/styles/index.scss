@@ -80,11 +80,15 @@ a, a:focus, a:hover {
 .container .aside .logo {
   height: 50px;
   line-height: 50px;
-  font-size: 22px;
+  font-size: 16px;
   background: #409EFF;
   color:#fff;
   overflow: hidden;
   padding-left: 20px;
+}
+.container .aside .logo-collapse {
+  padding-left: 0px;
+  text-align: center;
 }
 .container .el-header .logo img {
   width: 40px;
