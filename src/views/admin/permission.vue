@@ -62,6 +62,9 @@
       @select-all="onSelectAll"
       @select="onSelect"
     >
+      <template #empty>
+        <el-empty image-size="100" />
+      </template>
       <!-- <el-table-column type="selection" width="50" /> -->
       <el-table-column label="权限" width="220">
         <template #default="{row}">

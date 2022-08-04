@@ -40,6 +40,9 @@
       style="width: 100%;height:100%;"
       @selection-change="onSelsChange"
     >
+      <template #empty>
+        <el-empty image-size="100" />
+      </template>
       <el-table-column type="selection" width="50" />
       <el-table-column prop="userName" label="用户名" width />
       <el-table-column prop="nickName" label="昵称" width />

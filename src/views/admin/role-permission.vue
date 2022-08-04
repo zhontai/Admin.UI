@@ -76,6 +76,9 @@
             @select-all="onSelectAll"
             @select="onSelect"
           >
+            <template #empty>
+              <el-empty image-size="100" />
+            </template>
             <el-table-column type="selection" width="50" />
             <el-table-column prop="label" label="导航菜单" width="200" />
             <el-table-column label="菜单操作" width>

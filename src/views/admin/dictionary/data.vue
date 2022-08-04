@@ -49,6 +49,9 @@
       style="width: 100%;height:100%;"
       @selection-change="onSelectionChange"
     >
+      <template #empty>
+        <el-empty image-size="100" />
+      </template>
       <el-table-column type="selection" width="50" />
       <el-table-column prop="name" label="名称" width />
       <el-table-column prop="code" label="编码" width />

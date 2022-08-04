@@ -1,3 +1,13 @@
+<!--
+ * @Author: OBKoro1
+ * @Date: 2021-08-12 10:05:36
+ * @LastEditors: OBKoro1
+ * @LastEditTime: 2022-08-04 17:06:47
+ * @FilePath: \Admin.UI\src\views\admin\cache.vue
+ * @Description:
+ *
+ * Copyright (c) 2022 by 用户/公司名, All Rights Reserved.
+-->
 <template>
   <section style="padding:10px;">
     <!--列表-->
@@ -7,6 +17,9 @@
       highlight-current-row
       style="width: 100%;height:100%;"
     >
+      <template #empty>
+        <el-empty image-size="100" />
+      </template>
       <el-table-column type="index" width="80" label="#" />
       <el-table-column prop="description" label="缓存名" width />
       <el-table-column prop="name" label="键名" width />

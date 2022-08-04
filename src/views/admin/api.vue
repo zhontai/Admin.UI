@@ -62,6 +62,9 @@
       @select-all="onSelectAll"
       @select="onSelect"
     >
+      <template #empty>
+        <el-empty image-size="100" />
+      </template>
       <el-table-column type="selection" width="50" />
       <el-table-column prop="label" label="接口名" width="180" />
       <el-table-column prop="path" label="接口地址" width />

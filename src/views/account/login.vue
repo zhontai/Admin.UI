@@ -93,7 +93,7 @@ export default {
   data() {
     return {
       form: {
-        userName: 'user',
+        userName: 'admin',
         password: '111111',
         verifyCode: '',
         verifyCodeKey: '',
