@@ -34,7 +34,6 @@ requestAxios.interceptors.request.use(
 requestAxios.interceptors.response.use(
   response => {
     const { config, data } = response
-    data.success = data.code === 1
     if (!data.success && !config.api?.noErrorMsg && data.msg) {
       const duration = config.api?.msgDuration >= 0 ? config.api?.msgDuration : 3000
       Vue.prototype.$message.error({
@@ -66,7 +65,7 @@ requestAxios.interceptors.response.use(
       const { code } = res
       if (code === 401) {
         const resRefresh = await refresh({ token: store.getters.token })
-        if (resRefresh.code === 1) {
+        if (resRefresh.success) {
           store.commit('user/setToken', resRefresh.data.token)
           error.config._request = true
           return requestAxios.request(error.config)

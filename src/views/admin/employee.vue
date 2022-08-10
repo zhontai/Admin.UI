@@ -45,7 +45,7 @@
       <el-table-column type="selection" width="50" />
       <el-table-column prop="name" label="姓名" width />
       <el-table-column prop="organizationName" label="部门" width />
-      <el-table-column prop="positionName" label="岗位" width />
+      <el-table-column prop="position" label="岗位" width />
       <el-table-column prop="entryTime" label="入职时间" :formatter="formatCreatedTime" width />
       <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width />
       <el-table-column v-if="checkPermission(['api:admin:employee:update','api:admin:employee:softdelete'])" label="操作" width="180">
@@ -111,9 +111,7 @@
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
             <el-form-item label="岗位" prop="email">
-              <el-input v-model="addForm.positionName" placeholder="请选择岗位" readonly autocomplete="off" class="input-with-select" @click.native="onOpenPosition('addForm')">
-                <el-button slot="append" icon="el-icon-more" @click="onOpenPosition('addForm')" />
-              </el-input>
+              <el-input v-model="addForm.position" autocomplete="off" />
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
@@ -186,9 +184,7 @@
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
             <el-form-item label="岗位" prop="email">
-              <el-input v-model="editForm.positionName" placeholder="请选择岗位" readonly autocomplete="off" class="input-with-select" @click.native="onOpenPosition('editForm')">
-                <el-button slot="append" icon="el-icon-more" @click="onOpenPosition('editForm')" />
-              </el-input>
+              <el-input v-model="editForm.position" autocomplete="off" />
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
@@ -230,7 +226,6 @@
       </template>
     </my-window>
 
-    <my-select-position :visible.sync="positionVisible" :form="positionForm" @click="onSelectPosition" />
     <my-select-organization :visible.sync="organizationVisible" :form="organizationForm" @click="onSelectOrganization" />
   </my-container>
 </template>
@@ -243,7 +238,6 @@ import MyConfirmButton from '@/components/my-confirm-button'
 import MySearch from '@/components/my-search'
 import MySearchWindow from '@/components/my-search-window'
 import MyWindow from '@/components/my-window'
-import MySelectPosition from '@/components/my-select-window/position'
 import MySelectOrganization from '@/components/my-select-window/organization'
 
 export default {
@@ -254,7 +248,7 @@ export default {
     desc: '',
     cache: true
   },
-  components: { MyContainer, MyConfirmButton, MySearch, MySearchWindow, MyWindow, MySelectPosition, MySelectOrganization },
+  components: { MyContainer, MyConfirmButton, MySearch, MySearchWindow, MyWindow, MySelectOrganization },
   data() {
     const validatePhone = (rule, value, callback) => {
       if (!value) {
@@ -283,8 +277,6 @@ export default {
       searchWindowVisible: false,
       dynamicFilter: null,
 
-      positionForm: null,
-      positionVisible: false,
       organizationForm: null,
       organizationVisible: false,
 
@@ -504,18 +496,6 @@ export default {
     // 选择
     onSelsChange(sels) {
       this.sels = sels
-    },
-    onOpenPosition(form) {
-      this.positionVisible = true
-      this.positionForm = form
-    },
-    onSelectPosition(form, selectData) {
-      if (selectData) {
-        this[form].positionName = selectData.name
-        this[form].positionId = selectData.id
-      }
-
-      this.positionVisible = false
     },
     onOpenOrganization(form) {
       this.organizationVisible = true

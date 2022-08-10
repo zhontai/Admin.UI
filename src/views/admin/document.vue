@@ -461,7 +461,7 @@ export default {
       const img = this.document.images.find(a => a.uid === file.uid)
       img.loading = false
 
-      if (!res?.code === 1) {
+      if (!res?.success) {
         return
       }
       img.src = res.data
@@ -469,7 +469,7 @@ export default {
     // 上传失败
     onUploadError(err, file) {
       const res = err.message ? JSON.parse(err.message) : {}
-      if (!(res?.code === 1)) {
+      if (!(res?.success)) {
         if (res.msg) {
           this.$message({
             message: res.msg,

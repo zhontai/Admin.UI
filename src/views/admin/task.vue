@@ -6,7 +6,7 @@
         <el-form-item>
           <el-input
             v-model="filter.name"
-            placeholder="岗位名称"
+            placeholder="任务名称"
             clearable
             @keyup.enter.native="onSearch"
           >
@@ -18,10 +18,10 @@
         <el-form-item>
           <el-button type="primary" @click="onSearch">查询</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:admin:position:add'])">
+        <el-form-item v-if="checkPermission(['api:admin:task:add'])">
           <el-button type="primary" @click="onAdd">新增</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:admin:position:batchsoftdelete'])">
+        <el-form-item v-if="checkPermission(['api:admin:task:batchsoftdelete'])">
           <my-confirm-button
             :disabled="sels.length === 0"
             :type="'delete'"
@@ -43,7 +43,7 @@
     <!--列表-->
     <el-table
       v-loading="listLoading"
-      :data="positions"
+      :data="tasks"
       highlight-current-row
       height="'100%'"
       style="width: 100%;height:100%;"
@@ -53,7 +53,7 @@
         <el-empty image-size="100" />
       </template>
       <el-table-column type="selection" width="50" />
-      <el-table-column prop="name" label="岗位名称" width />
+      <el-table-column prop="name" label="任务名称" width />
       <el-table-column prop="code" label="编码" width />
       <el-table-column prop="description" label="说明" width />
       <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width />
@@ -65,11 +65,11 @@
           >{{ row.enabled ? '正常' : '禁用' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="checkPermission(['api:admin:position:update','api:admin:position:softdelete'])" label="操作" width="180">
+      <el-table-column v-if="checkPermission(['api:admin:task:update','api:admin:task:softdelete'])" label="操作" width="180">
         <template #default="{ $index, row }">
-          <el-button v-if="checkPermission(['api:admin:position:update'])" @click="onEdit($index, row)">编辑</el-button>
+          <el-button v-if="checkPermission(['api:admin:task:update'])" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
-            v-if="checkPermission(['api:admin:position:softdelete'])"
+            v-if="checkPermission(['api:admin:task:softdelete'])"
             type="delete"
             :loading="row._loading"
             :validate="deleteValidate"
@@ -86,14 +86,14 @@
         ref="pager"
         :total="total"
         :checked-count="sels.length"
-        @get-page="getPositions"
+        @get-page="getTasks"
       />
     </template>
 
     <!--新增窗口-->
     <my-window
-      v-if="checkPermission(['api:admin:position:add'])"
-      title="新增岗位"
+      v-if="checkPermission(['api:admin:task:add'])"
+      title="新增任务"
       embed
       drawer
       :visible.sync="addFormVisible"
@@ -108,7 +108,7 @@
       >
         <el-row>
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-            <el-form-item label="岗位名称" prop="name">
+            <el-form-item label="任务名称" prop="name">
               <el-input v-model="addForm.name" auto-complete="off" />
             </el-form-item>
           </el-col>
@@ -119,7 +119,7 @@
           </el-col>
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="状态" prop="enabled">
-              <el-select v-model="addForm.enabled" placeholder="请选择岗位状态" style="width:100%;">
+              <el-select v-model="addForm.enabled" placeholder="请选择任务状态" style="width:100%;">
                 <el-option
                   v-for="item in statusList"
                   :key="item.value"
@@ -146,8 +146,8 @@
 
     <!--编辑窗口-->
     <my-window
-      v-if="checkPermission(['api:admin:position:update'])"
-      title="编辑岗位"
+      v-if="checkPermission(['api:admin:task:update'])"
+      title="编辑任务"
       embed
       drawer
       :visible.sync="editFormVisible"
@@ -162,7 +162,7 @@
       >
         <el-row>
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-            <el-form-item label="岗位名称" prop="name">
+            <el-form-item label="任务名称" prop="name">
               <el-input v-model="editForm.name" auto-complete="off" />
             </el-form-item>
           </el-col>
@@ -173,7 +173,7 @@
           </el-col>
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="状态" prop="enabled">
-              <el-select v-model="editForm.enabled" placeholder="请选择岗位状态" style="width:100%;">
+              <el-select v-model="editForm.enabled" placeholder="请选择任务状态" style="width:100%;">
                 <el-option
                   v-for="item in statusList"
                   :key="item.value"
@@ -202,16 +202,16 @@
 
 <script>
 import { formatTime } from '@/utils'
-import positionApi from '@/api/admin/position'
+import taskApi from '@/api/admin/task'
 import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyWindow from '@/components/my-window'
 
 export default {
-  name: 'Position',
+  name: 'Task',
   _sync: {
     disabled: false,
-    title: '岗位管理',
+    title: '任务管理',
     desc: '',
     cache: true
   },
@@ -221,7 +221,7 @@ export default {
       filter: {
         name: ''
       },
-      positions: [],
+      tasks: [],
       total: 0,
       sels: [], // 列表选中列
       statusList: [
@@ -235,7 +235,7 @@ export default {
       editFormVisible: false, // 编辑界面是否显示
       editLoading: false,
       editFormRules: {
-        name: [{ required: true, message: '请输入岗位名称', trigger: 'blur' }]
+        name: [{ required: true, message: '请输入任务名称', trigger: 'blur' }]
       },
       // 编辑界面数据
       editForm: {
@@ -249,7 +249,7 @@ export default {
       addFormVisible: false, // 新增界面是否显示
       addLoading: false,
       addFormRules: {
-        name: [{ required: true, message: '请输入岗位名称', trigger: 'blur' }]
+        name: [{ required: true, message: '请输入任务名称', trigger: 'blur' }]
       },
       // 新增界面数据
       addForm: {
@@ -265,7 +265,7 @@ export default {
     }
   },
   computed: {
-    positionId() {
+    taskId() {
       return this.currentRow?.id
     },
     title() {
@@ -273,7 +273,7 @@ export default {
     }
   },
   mounted() {
-    this.getPositions()
+    this.getTasks()
   },
   beforeUpdate() {
     // console.log('update')
@@ -284,17 +284,17 @@ export default {
     },
     onSearch() {
       this.$refs.pager.setPage(1)
-      this.getPositions()
+      this.getTasks()
     },
-    // 获取岗位列表
-    async getPositions() {
+    // 获取任务列表
+    async getTasks() {
       var pager = this.$refs.pager.getPager()
       const params = {
         ...pager,
         filter: this.filter
       }
       this.listLoading = true
-      const res = await positionApi.getPage(params)
+      const res = await taskApi.getPage(params)
       this.listLoading = false
 
       if (!res?.success) {
@@ -306,12 +306,12 @@ export default {
       data.forEach(d => {
         d._loading = false
       })
-      this.positions = data
+      this.tasks = data
     },
     // 显示编辑界面
     async onEdit(index, row) {
       this.pageLoading = true
-      const res = await positionApi.get({ id: row.id })
+      const res = await taskApi.get({ id: row.id })
       this.pageLoading = false
       if (res && res.success) {
         const data = res.data
@@ -342,7 +342,7 @@ export default {
       this.editLoading = true
       const para = _.cloneDeep(this.editForm)
 
-      const res = await positionApi.update(para)
+      const res = await taskApi.update(para)
       this.editLoading = false
 
       if (!res?.success) {
@@ -355,7 +355,7 @@ export default {
       })
       this.$refs['editForm'].resetFields()
       this.editFormVisible = false
-      this.getPositions()
+      this.getTasks()
     },
     // 新增验证
     addFormValidate: function() {
@@ -370,7 +370,7 @@ export default {
       this.addLoading = true
       const para = _.cloneDeep(this.addForm)
 
-      const res = await positionApi.add(para)
+      const res = await taskApi.add(para)
       this.addLoading = false
 
       if (!res?.success) {
@@ -383,7 +383,7 @@ export default {
       })
       this.$refs['addForm'].resetFields()
       this.addFormVisible = false
-      this.getPositions()
+      this.getTasks()
     },
     // 删除验证
     deleteValidate(row) {
@@ -395,7 +395,7 @@ export default {
     async onDelete(index, row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await positionApi.softDelete(para)
+      const res = await taskApi.softDelete(para)
       row._loading = false
 
       if (!res?.success) {
@@ -407,7 +407,7 @@ export default {
         type: 'success'
       })
 
-      this.getPositions()
+      this.getTasks()
     },
     // 批量删除验证
     batchDeleteValidate() {
@@ -423,7 +423,7 @@ export default {
       })
 
       this.deleteLoading = true
-      const res = await positionApi.batchSoftDelete(para.ids)
+      const res = await taskApi.batchSoftDelete(para.ids)
       this.deleteLoading = false
 
       if (!res?.success) {
@@ -434,7 +434,7 @@ export default {
         type: 'success'
       })
 
-      this.getPositions()
+      this.getTasks()
     },
     selsChange: function(sels) {
       this.sels = sels

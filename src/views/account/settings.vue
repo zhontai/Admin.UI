@@ -225,7 +225,7 @@ export default {
     // 上传成功
     onAvatarSuccess(res) {
       this.avatarLoading = false
-      if (!res?.code) {
+      if (!res?.success) {
         if (res.msg) {
           this.$message({
             message: res.msg,
@@ -240,7 +240,7 @@ export default {
     onAvatarError(err, file) {
       this.avatarLoading = false
       const res = err.message ? JSON.parse(err.message) : {}
-      if (!res?.code) {
+      if (!res?.success) {
         if (res.msg) {
           this.$message({
             message: res.msg,

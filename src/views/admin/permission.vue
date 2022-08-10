@@ -1,3 +1,13 @@
+<!--
+ * @Author: OBKoro1
+ * @Date: 2021-08-12 10:05:36
+ * @LastEditors: OBKoro1
+ * @LastEditTime: 2022-08-08 17:46:49
+ * @FilePath: \Admin.UI\src\views\admin\permission.vue
+ * @Description:
+ *
+ * Copyright (c) 2022 by 用户/公司名, All Rights Reserved.
+-->
 <template>
   <section style="padding:10px;">
     <!--查询-->
