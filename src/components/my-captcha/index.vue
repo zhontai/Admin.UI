@@ -7,7 +7,10 @@
           <i class="el-icon-close" />
         </span>
       </div>
-      <div class="verifybox-bottom" :style="{padding:mode==='popup'?'15px':'0'}">
+      <div
+        class="verifybox-bottom"
+        :style="{padding:mode==='popup'?'15px':'0'}"
+      >
         <!-- 验证码容器 -->
         <components
           :is="componentType"
@@ -120,7 +123,7 @@ export default {
       // 所用组件类型
       componentType: 'SlideJigsaw',
       // 默认图片
-      defaultImg: require('@/assets/images/default.jpg')
+      defaultImg: ''// require('@/assets/images/default.jpg')
     }
   },
   computed: {
@@ -202,6 +205,11 @@ export default {
         this.instance.refresh()
       }
     },
+    load() {
+      if (this.instance.load) {
+        this.instance.load()
+      }
+    },
     closeBox() {
       this.clickShow = false
       // this.refresh()
@@ -209,6 +217,7 @@ export default {
     show() {
       if (this.mode === 'popup') {
         this.clickShow = true
+        this.load()
       }
     }
   }
@@ -428,11 +437,10 @@ export default {
     }
 
     .verify-img-panel .verify-refresh {
-        width: 25px;
-        height: 25px;
-        line-height: 25px;
+        width: 34px;
+        height: 30px;
+        line-height: 30px;
         text-align: center;
-        padding: 5px;
         cursor: pointer;
         position: absolute;
         top: 0;
@@ -441,6 +449,7 @@ export default {
         font-size: 20px;
         color: #fff;
         opacity: 0.8;
+        background: rgba(0,0,0,.2);
     }
 
     .verify-img-panel .verify-refresh:hover {

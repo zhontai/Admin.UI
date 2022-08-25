@@ -1,16 +1,18 @@
 <template>
-  <div ref="jigsaw" style="position: relative;">
+  <div ref="jigsaw" class="my-captcha" style="position: relative;">
     <div
       v-if="type === '1'"
       v-show="showJigsaw"
+      v-loading="loading"
+      element-loading-background="rgba(0, 0, 0, 0.7)"
       :class="['verify-img-out', mode === 'hover' ? 'verify-img-out-hover':'']"
       :style="[{height: (parseInt(setSize.imgHeight) + vSpace) + 'px'}, mode === 'hover' ? { 'bottom': barSize.height}:{}]"
     >
       <div
         class="verify-img-panel"
-        :style="{width: setSize.imgWidth, height: setSize.imgHeight}"
+        :style="{width: setSize.imgWidth, height: setSize.imgHeight, background: '#CBCBCB'}"
       >
-        <img :src="backImgBase ? backImgBase : defaultImg" alt="" style="width:100%;height:100%;display:block">
+        <img v-if="backImgBase||defaultImg" :src="backImgBase ? backImgBase : defaultImg" alt="" style="width:100%;height:100%;display:block">
         <div
           v-if="type === '1'"
           class="verify-sub-block"
@@ -18,7 +20,7 @@
           @touchstart="start"
           @mousedown="start"
         >
-          <img :src="blockBackImgBase" alt="" style="width:100%;height:100%;display:block">
+          <img v-if="blockBackImgBase" :src="blockBackImgBase" alt="" style="width:100%;height:100%;display:block">
         </div>
         <div v-show="showRefresh" class="verify-refresh" @click="refresh"><i class="el-icon-refresh-right" />
         </div>
@@ -119,6 +121,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       secretKey: '', // 后端返回的加密秘钥 字段
       passFlag: false, // 是否通过的标识
       backImgBase: '', // 验证码背景图片
@@ -163,18 +166,19 @@ export default {
   },
   watch: {
     // type变化则全面刷新
-    type: {
-      immediate: true,
-      handler() {
-        this.init()
-      }
-    }
+    // type: {
+    //   immediate: true,
+    //   handler() {
+    //     this.init()
+    //   }
+    // }
   },
   mounted() {
     // 禁止拖拽
     this.$el.onselectstart = function() {
       return false
     }
+    this.init()
   },
   beforeDestroy() {
     const jigsaw = this.$refs.jigsaw
@@ -188,7 +192,7 @@ export default {
   methods: {
     init() {
       this.text = this.explain
-      this.getPictrue()
+
       this.$nextTick(() => {
         const setSize = this.resetSize(this)	// 重新设置宽度高度
         for (const key in setSize) {
@@ -205,6 +209,11 @@ export default {
 
         this.$parent.$emit('ready', this)
       })
+    },
+    load() {
+      if (!this.backImgBase) {
+        this.getPictrue()
+      }
     },
     // 滑动条进入
     onBarMouseOver() {
@@ -344,18 +353,22 @@ export default {
       setTimeout(() => {
         this.transitionWidth = ''
         this.transitionLeft = ''
-        this.text = this.explain
+        // this.text = this.explain
       }, 300)
     },
 
     // 请求背景图片和验证图片
     getPictrue() {
+      this.loading = true
+      this.text = '图片加载中'
       const data = {
         captchaType: this.captchaType,
         clientUid: localStorage.getItem('slider'),
         ts: Date.now() // 现在的时间戳
       }
       reqGet(data).then(res => {
+        this.loading = false
+        this.text = this.explain
         if (res.success) {
           this.backImgBase = res.data.data.baseImage
           this.blockBackImgBase = res.data.data.blockImage
@@ -370,9 +383,11 @@ export default {
         //   this.backImgBase = null
         //   this.blockBackImgBase = null
         // }
+      }).catch(() => {
+        this.loading = false
+        this.text = this.explain
       })
     }
   }
 }
 </script>
-
