@@ -311,10 +311,10 @@ export default {
   font-size: 20px;
   line-height: 28px;
 }
-.pc ::v-deep .el-tabs--left .el-tabs__header.is-left {
+.pc :deep(.el-tabs--left .el-tabs__header.is-left) {
   margin-right: -1px;
 }
-.pc ::v-deep .el-tabs__content::before {
+.pc :deep(.el-tabs__content::before) {
   content: "";
   position: absolute;
   bottom: 0;
@@ -325,12 +325,12 @@ export default {
   top: 0;
 }
 
-.avatar-uploader ::v-deep .el-loading-spinner .circular{
+.avatar-uploader :deep(.el-loading-spinner .circular){
   width:26px;
   height:26px;
 }
 
-.pc ::v-deep .el-tabs__content{
+.pc :deep(.el-tabs__content){
     overflow: auto;
     height: 100%;
 }

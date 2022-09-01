@@ -3,12 +3,12 @@
     <div
       v-if="type === '1'"
       v-show="showJigsaw"
-      v-loading="loading"
-      element-loading-background="rgba(0, 0, 0, 0.7)"
       :class="['verify-img-out', mode === 'hover' ? 'verify-img-out-hover':'']"
       :style="[{height: (parseInt(setSize.imgHeight) + vSpace) + 'px'}, mode === 'hover' ? { 'bottom': barSize.height}:{}]"
     >
       <div
+        v-loading="loading"
+        element-loading-background="rgba(0, 0, 0, 0.7)"
         class="verify-img-panel"
         :style="{width: setSize.imgWidth, height: setSize.imgHeight, background: '#CBCBCB'}"
       >

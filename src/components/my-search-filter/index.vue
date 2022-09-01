@@ -335,7 +335,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
- .my-search-filter ::v-deep{
+.my-search-filter :deep(){
   .el-tree-node__content{
     height:30px;
     margin-bottom: 5px;

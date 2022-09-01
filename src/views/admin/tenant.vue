@@ -50,7 +50,7 @@
       @selection-change="selsChange"
     >
       <template #empty>
-        <el-empty image-size="100" />
+        <el-empty :image-size="100" />
       </template>
       <el-table-column type="selection" width="50" />
       <el-table-column prop="name" label="企业名称" width />
@@ -700,7 +700,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-::v-deep .el-input-number .el-input__inner{
+:deep(.el-input-number .el-input__inner){
   text-align: left;
 }
 </style>

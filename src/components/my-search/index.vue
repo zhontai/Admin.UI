@@ -98,7 +98,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-::v-deep .my-search-window{
+:deep(.my-search-window){
   .el-dialog__body{
     padding:10px;
   }

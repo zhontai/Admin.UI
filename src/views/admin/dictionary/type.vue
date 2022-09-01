@@ -52,7 +52,7 @@
       @current-change="onCurrentChange"
     >
       <template #empty>
-        <el-empty image-size="100" />
+        <el-empty :image-size="100" />
       </template>
       <el-table-column type="selection" width="50" />
       <el-table-column prop="name" label="名称" width />

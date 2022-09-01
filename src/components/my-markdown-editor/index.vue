@@ -154,13 +154,13 @@ export default {
 </script>
 
 <style scoped>
-.ad-markdown ::v-deep .tui-editor-defaultUI .te-switch-button{
+.ad-markdown :deep(.tui-editor-defaultUI .te-switch-button){
   border-right-width: 0px;
 }
-.ad-markdown ::v-deep .tui-editor-defaultUI .te-switch-button.markdown{
+.ad-markdown :deep(.tui-editor-defaultUI .te-switch-button.markdown){
   vertical-align: 1px;
 }
-.ad-markdown ::v-deep .toastui-editor-ww-container{
+.ad-markdown :deep(.toastui-editor-ww-container){
   position: absolute;
   width: 100%;
 }

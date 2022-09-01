@@ -39,7 +39,7 @@
       @select="onSelect"
     >
       <template #empty>
-        <el-empty image-size="100" />
+        <el-empty :image-size="100" />
       </template>
       <!-- <el-table-column type="selection" width="50" /> -->
       <el-table-column prop="name" label="部门名称" width="180" />

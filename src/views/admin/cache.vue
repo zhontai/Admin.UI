@@ -18,7 +18,7 @@
       style="width: 100%;height:100%;"
     >
       <template #empty>
-        <el-empty image-size="100" />
+        <el-empty :image-size="100" />
       </template>
       <el-table-column type="index" width="80" label="#" />
       <el-table-column prop="description" label="缓存名" width />

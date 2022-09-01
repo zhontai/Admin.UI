@@ -16,6 +16,23 @@
       <span v-if="checkedCount>0" class="ad-pagination__selection">，已选 {{ checkedCount }} 条</span>
     </template>
   </my-el-pagination>
+  <!-- <el-pagination
+    :layout="currentLayout"
+    :page-sizes="sizes"
+    :current-page="page"
+    :page-size="size"
+    :total="total"
+    :page-count="pageCount"
+    :background="background"
+    :small="small"
+    style="text-align:right;"
+    @size-change="onSizeChange"
+    @current-change="onPageChange"
+  >
+    <template #default>
+      <span v-if="checkedCount>0" class="ad-pagination__selection">，已选 {{ checkedCount }} 条</span>
+    </template>
+  </el-pagination> -->
 </template>
 
 <script>
@@ -32,7 +49,7 @@
     this.total = res.data.total
 */
 import { addResizeListener, removeResizeListener } from 'element-ui/lib/utils/resize-event'
-import MyElPagination from '@/components/element-ui/pagination'
+import MyElPagination from '@/components/element-ui/my-el-pagination'
 
 const layouts = {
   full: 'total, slot, sizes, prev, jumper, next',
@@ -128,7 +145,7 @@ export default {
       if (rect.width >= 800) {
         this.currentLayout = layouts[this.layout] || this.layout
       } else {
-        this.currentLayout = layouts.simple
+        this.currentLayout = layouts.simpleJumper
       }
     },
     setPage(val) {

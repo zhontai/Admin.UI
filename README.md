@@ -1,5 +1,4 @@
-﻿
-一个基于Vue开发的权限管理系统，后续会增加更多实用的功能。
+﻿一个基于Vue开发的权限管理系统，后续会增加更多实用的功能。
 
 ### 在线体验
 演示地址：https://www.admin.zhontai.net/
@@ -16,7 +15,7 @@ npm install --registry=https://registry.npm.taobao.org
 
 ### 安装成功后，运行即可
 ```
-npm run serve
+npm run dev
 ```
 
 #### Tips：
@@ -41,7 +40,12 @@ npm run serve
 npm run lint
 ```
 
-### 想要发布，执行bulid打包成dist
+### 想要发布生产环境，执行build:prod打包成dist
 ```
-npm run build
+npm run build:prod
+```
+
+### 想要发布测试环境，执行build:stage打包成dist
+```
+npm run build:stage
 ```

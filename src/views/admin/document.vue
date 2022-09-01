@@ -781,7 +781,7 @@ export default {
   }
 }
 
-::v-deep .image-slot{
+:deep(.image-slot){
   display: flex;
   justify-content: center;
   align-items: center;

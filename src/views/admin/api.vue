@@ -63,7 +63,7 @@
       @select="onSelect"
     >
       <template #empty>
-        <el-empty image-size="100" />
+        <el-empty :image-size="100" />
       </template>
       <el-table-column type="selection" width="50" />
       <el-table-column prop="label" label="接口名" width="180" />
@@ -192,7 +192,7 @@
 <script>
 import { formatTime, treeToList, listToTree, getTreeParents } from '@/utils'
 import apiApi from '@/api/admin/api'
-import { getV2SwaggerJson } from '@/api/admin/api.extend'
+import { getSwaggerJson } from '@/api/admin/api.extend'
 import MyWindow from '@/components/my-window'
 import MyConfirmButton from '@/components/my-confirm-button'
 
@@ -416,7 +416,7 @@ export default {
     // 同步api
     async onSync() {
       this.syncLoading = true
-      const res = await getV2SwaggerJson()
+      const res = await getSwaggerJson()
 
       if (!res) {
         this.syncLoading = false

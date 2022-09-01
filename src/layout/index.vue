@@ -563,7 +563,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container ::v-deep .el-tabs__item:focus.is-active.is-focus:not(:active) {
+.container :deep(.el-tabs__item:focus.is-active.is-focus:not(:active)) {
   -webkit-box-shadow: none;
   box-shadow: none;
   border-radius: unset;
@@ -582,7 +582,7 @@ export default {
   line-height: 50px !important;
 }
 
-.navbar ::v-deep {
+.navbar :deep() {
   .el-breadcrumb__inner,.el-breadcrumb__separator{
     color: #f4f4f5;
   }

@@ -40,7 +40,7 @@
       @selection-change="onSelsChange"
     >
       <template #empty>
-        <el-empty image-size="100" />
+        <el-empty :image-size="100" />
       </template>
       <el-table-column type="selection" width="50" />
       <el-table-column prop="name" label="姓名" width />
@@ -514,7 +514,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.my-search ::v-deep .el-input-group__prepend {
+.my-search :deep(.el-input-group__prepend) {
   background-color: #fff;
 }
 .el-date-editor.el-input, .el-date-editor.el-input__inner{
