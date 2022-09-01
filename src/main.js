@@ -13,9 +13,11 @@ import i18n from './lang' // 国际化
 import store from './store'
 import router from './router'
 import App from './App.vue'
+import MyContainer from '@/components/my-container'
 import MyPagination from '@/components/my-pagination'
 
 // 全局组件注册
+Vue.component('MyContainer', MyContainer)
 Vue.component('MyPagination', MyPagination)
 
 // 组件尺寸和多语言

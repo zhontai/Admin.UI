@@ -76,11 +76,11 @@ export default {
     },
     leftAsideWidth: {
       type: String,
-      default: '25%'
+      default: '45%'
     },
     rightAsideWidth: {
       type: String,
-      default: '25%'
+      default: '45%'
     },
     leftAsideResizeOptions: {
       type: Object,
@@ -114,7 +114,7 @@ export default {
   computed: {
     currentLeftAsideResizeOptions() {
       return {
-        maxWidth: '45%',
+        maxWidth: '85%',
         disabled: !this.resizable,
         ...this.leftAsideResizeOptions,
         rangeDom: '.my-container',
@@ -124,7 +124,7 @@ export default {
     },
     currentRightAsideResizeOptions() {
       return {
-        maxWidth: '45%',
+        maxWidth: '85%',
         disabled: !this.resizable,
         ...this.rightAsideResizeOptions,
         rangeDom: '.my-container',

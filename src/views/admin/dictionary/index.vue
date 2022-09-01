@@ -1,18 +1,19 @@
 <template>
-  <el-container class="container" style="height: 100%;">
-    <el-aside v-resizable="resizeOptions" width="45%" style="border-right: 1px solid #e6e6e6;position: relative;overflow:unset;">
+  <my-container
+    :left-aside-width="'45%'"
+    :show-left-aside="true"
+    :resizable="true"
+  >
+    <template #left-aside>
       <my-dictionary-type @current-change="onCurrentChange" />
-    </el-aside>
-    <el-main style="height:100%;">
-      <my-dictionary-data :dictionary-type-id="dictionaryTypeId" />
-    </el-main>
-  </el-container>
+    </template>
+    <my-dictionary-data :dictionary-type-id="dictionaryTypeId" />
+  </my-container>
 </template>
 
 <script>
 import MyDictionaryType from './type'
 import MyDictionaryData from './data'
-import resizable from '@/directive/resizable'
 
 /**
  * 数据字典类型
@@ -26,20 +27,9 @@ export default {
     cache: true
   },
   components: { MyDictionaryType, MyDictionaryData },
-  directives: { resizable },
   data() {
     return {
       dictionaryTypeId: null
-    }
-  },
-  computed: {
-    resizeOptions() {
-      return {
-        handles: 'e',
-        onlySize: true,
-        minWidth: 280,
-        maxWidth: 700
-      }
     }
   },
   mounted() {

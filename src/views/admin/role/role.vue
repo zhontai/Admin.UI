@@ -1,13 +1,5 @@
 <template>
-  <my-container
-    v-loading="pageLoading"
-    :resizable="true"
-    :show-right-aside="true"
-    :right-aside-width="'25%'"
-    :right-aside-resize-options="{
-      disabled: true
-    }"
-  >
+  <my-container v-loading="pageLoading">
     <!--查询-->
     <template #header>
       <el-form class="ad-form-query" :inline="true" :model="filter" @submit.native.prevent>
@@ -62,19 +54,6 @@
       </template>
       <el-table-column type="selection" width="50" />
       <el-table-column prop="name" label="角色名" width />
-      <el-table-column prop="code" label="编码" width />
-      <el-table-column prop="description" label="说明" width />
-      <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width />
-      <!--<el-table-column prop="CreatedUserName" label="创建者" width="" >-->
-      <!--</el-table-column>-->
-      <!-- <el-table-column prop="enabled" label="状态" width="200">
-        <template #default="{row}">
-          <el-tag
-            :type="row.enabled ? 'success' : 'danger'"
-            disable-transitions
-          >{{ row.enabled ? '正常' : '禁用' }}</el-tag>
-        </template>
-      </el-table-column> -->
       <el-table-column v-if="checkPermission(['api:admin:role:update','api:admin:role:softdelete'])" label="操作" width="180">
         <template #default="{ $index, row }">
           <el-dropdown v-if="checkPermission(['api:admin:role:update'])" split-button type="primary" style="margin-left:10px;" @click="onEdit($index, row)" @command="(command)=>onCommand(command,row)">
@@ -246,7 +225,10 @@ import MyWindow from '@/components/my-window'
 import resizable from '@/directive/resizable'
 
 export default {
-  name: 'Role',
+  name: 'MyRole',
+  _sync: {
+    disabled: true
+  },
   components: { MyContainer, MyConfirmButton, MySelectPermission, MyWindow },
   directives: { resizable },
   data() {
