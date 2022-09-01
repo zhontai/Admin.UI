@@ -100,6 +100,20 @@ class Resizable extends Events {
   }
 
   init(options) {
+    if (options.rangeDom) {
+      const rangeDomEl = options.rangeDom && this.getElement(this.document, options.rangeDom) || this.targetDom.parentNode
+      const rangeDomRect = rangeDomEl?.getBoundingClientRect()
+      if (rangeDomRect) {
+        const rangeDomWidth = rangeDomRect.width
+        if ((options.minWidth + '').indexOf('%') > -1) {
+          options.minWidth = parseInt(options.minWidth) / 100 * rangeDomWidth
+        }
+        if ((options.maxWidth + '').indexOf('%') > -1) {
+          options.maxWidth = parseInt(options.maxWidth) / 100 * rangeDomWidth
+        }
+      }
+    }
+
     /**
      * 实例化选项参数对象
      * @member {Object}
@@ -187,9 +201,12 @@ class Resizable extends Events {
     e.preventDefault()
 
     if (this.options.autoCalcRange) {
-      const rangeDomRect = this.options.rangeDom ? this.getElement(this.document, this.options.rangeDom).getBoundingClientRect() : this.targetDom.parentNode.getBoundingClientRect()
-      this.options.maxWidth = rangeDomRect.width - 10
-      this.options.maxHeight = rangeDomRect.height - 10
+      const rangeDomEl = this.options.rangeDom && this.getElement(this.document, this.options.rangeDom) || this.targetDom.parentNode
+      const rangeDomRect = rangeDomEl?.getBoundingClientRect()
+      if (rangeDomRect) {
+        this.options.maxWidth = rangeDomRect.width - 10
+        this.options.maxHeight = rangeDomRect.height - 10
+      }
     }
 
     this.dir = e.target.attributes['_dir'].value

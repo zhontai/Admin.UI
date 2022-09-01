@@ -1,5 +1,13 @@
 <template>
-  <my-container v-loading="pageLoading">
+  <my-container
+    v-loading="pageLoading"
+    :resizable="true"
+    :show-right-aside="true"
+    :right-aside-width="'25%'"
+    :right-aside-resize-options="{
+      disabled: true
+    }"
+  >
     <!--查询-->
     <template #header>
       <el-form class="ad-form-query" :inline="true" :model="filter" @submit.native.prevent>
@@ -59,14 +67,14 @@
       <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width />
       <!--<el-table-column prop="CreatedUserName" label="创建者" width="" >-->
       <!--</el-table-column>-->
-      <el-table-column prop="enabled" label="状态" width="200">
+      <!-- <el-table-column prop="enabled" label="状态" width="200">
         <template #default="{row}">
           <el-tag
             :type="row.enabled ? 'success' : 'danger'"
             disable-transitions
           >{{ row.enabled ? '正常' : '禁用' }}</el-tag>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column v-if="checkPermission(['api:admin:role:update','api:admin:role:softdelete'])" label="操作" width="180">
         <template #default="{ $index, row }">
           <el-dropdown v-if="checkPermission(['api:admin:role:update'])" split-button type="primary" style="margin-left:10px;" @click="onEdit($index, row)" @command="(command)=>onCommand(command,row)">
@@ -110,7 +118,12 @@
     </template>
 
     <!--选择权限-->
-    <my-select-permission :role-id="roleId" :title="title" :visible.sync="selectPermissionVisible" @click="onSelectPermission" />
+    <my-select-permission
+      :role-id="roleId"
+      :title="title"
+      :visible.sync="selectPermissionVisible"
+      @click="onSelectPermission"
+    />
 
     <!--新增窗口-->
     <my-window
@@ -230,10 +243,12 @@ import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySelectPermission from '@/components/my-select-window/permission'
 import MyWindow from '@/components/my-window'
+import resizable from '@/directive/resizable'
 
 export default {
   name: 'Role',
   components: { MyContainer, MyConfirmButton, MySelectPermission, MyWindow },
+  directives: { resizable },
   data() {
     return {
       filter: {
@@ -292,6 +307,14 @@ export default {
     },
     title() {
       return `设置${this.currentRow?.name}（${this.currentRow?.code}）权限`
+    },
+    resizeOptions() {
+      return {
+        handles: 'e',
+        onlySize: true,
+        minWidth: 280,
+        maxWidth: 700
+      }
     }
   },
   mounted() {
