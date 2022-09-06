@@ -58,11 +58,9 @@
 import Popup from 'element-ui/src/utils/popup'
 import Migrating from 'element-ui/src/mixins/migrating'
 import emitter from 'element-ui/src/mixins/emitter'
-import MyContainer from '@/components/my-container'
 
 export default {
   name: 'MyElDialog',
-  components: { MyContainer },
   mixins: [Popup, emitter, Migrating],
 
   props: {

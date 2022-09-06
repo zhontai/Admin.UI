@@ -41,7 +41,7 @@
       <template #empty>
         <el-empty :image-size="100" />
       </template>
-      <!-- <el-table-column type="selection" width="50" /> -->
+      <el-table-column type="selection" width="50" />
       <el-table-column prop="name" label="部门名称" width="180" />
       <el-table-column prop="code" label="部门编码" width="120" />
       <el-table-column prop="value" label="部门值" width />
@@ -171,9 +171,9 @@
 </template>
 
 <script>
-import { formatTime, treeToList, listToTree, getTreeParents } from '@/utils'
+import { formatTime, getTreeParents } from '@/utils'
+import { treeToList, listToTree } from '@/utils/tree'
 import orgApi from '@/api/admin/organization'
-import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyWindow from '@/components/my-window'
 
@@ -185,7 +185,7 @@ export default {
     desc: '',
     cache: true
   },
-  components: { MyContainer, MyConfirmButton, MyWindow },
+  components: { MyConfirmButton, MyWindow },
   data() {
     return {
       filter: {
@@ -261,11 +261,12 @@ export default {
 
       const list = _.cloneDeep(res.data)
 
-      this.organizations = listToTree(_.cloneDeep(list), {
+      this.organizations = {
         id: 0,
         parentId: 0,
-        name: '顶级'
-      })
+        name: '顶级',
+        children: listToTree(_.cloneDeep(list))
+      }
 
       list.forEach(d => {
         d._loading = false

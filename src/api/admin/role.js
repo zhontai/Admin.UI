@@ -17,6 +17,13 @@ export const get = (params, config = {}) => {
 /**
  * 查询角色列表
  */
+export const getList = (params, config = {}) => {
+  return request.get(apiPrefix + 'get-list', { params: params, ...config })
+}
+
+/**
+ * 查询角色列表
+ */
 export const getPage = (params, config = {}) => {
   return request.post(apiPrefix + 'get-page', params, config)
 }
@@ -58,6 +65,7 @@ export const batchSoftDelete = (params, config = {}) => {
 
 export default {
   get,
+  getList,
   getPage,
   add,
   update,

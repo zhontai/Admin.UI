@@ -233,7 +233,6 @@
 <script>
 import { formatTime } from '@/utils'
 import employeeApi from '@/api/admin/employee'
-import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySearch from '@/components/my-search'
 import MySearchWindow from '@/components/my-search-window'
@@ -248,7 +247,7 @@ export default {
     desc: '',
     cache: true
   },
-  components: { MyContainer, MyConfirmButton, MySearch, MySearchWindow, MyWindow, MySelectOrganization },
+  components: { MyConfirmButton, MySearch, MySearchWindow, MyWindow, MySelectOrganization },
   data() {
     const validatePhone = (rule, value, callback) => {
       if (!value) {

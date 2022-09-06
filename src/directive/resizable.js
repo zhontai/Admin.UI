@@ -105,11 +105,18 @@ class Resizable extends Events {
       const rangeDomRect = rangeDomEl?.getBoundingClientRect()
       if (rangeDomRect) {
         const rangeDomWidth = rangeDomRect.width
+        const rangeDomHeight = rangeDomRect.height
         if ((options.minWidth + '').indexOf('%') > -1) {
           options.minWidth = parseInt(options.minWidth) / 100 * rangeDomWidth
         }
         if ((options.maxWidth + '').indexOf('%') > -1) {
           options.maxWidth = parseInt(options.maxWidth) / 100 * rangeDomWidth
+        }
+        if ((options.minHeight + '').indexOf('%') > -1) {
+          options.minHeight = parseInt(options.minHeight) / 100 * rangeDomHeight
+        }
+        if ((options.maxHeight + '').indexOf('%') > -1) {
+          options.maxHeight = parseInt(options.maxHeight) / 100 * rangeDomHeight
         }
       }
     }

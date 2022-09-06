@@ -64,14 +64,14 @@
 </template>
 
 <script>
-import { formatTime, treeToList, listToTree } from '@/utils'
+import { formatTime, treeToList } from '@/utils'
+import { listToTree } from '@/utils/tree'
 import { getList } from '@/api/admin/organization'
-import MyContainer from '@/components/my-container'
 import MyWindow from '@/components/my-window'
 
 export default {
   name: 'MySelectPosition',
-  components: { MyContainer, MyWindow },
+  components: { MyWindow },
   props: {
     title: {
       type: String,

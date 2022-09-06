@@ -69,11 +69,9 @@
 <script>
 import { formatTime } from '@/utils'
 import loginLogApi from '@/api/admin/login-log'
-import MyContainer from '@/components/my-container'
 
 export default {
   name: 'LoginLog',
-  components: { MyContainer },
   data() {
     return {
       filter: {

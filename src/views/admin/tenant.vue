@@ -341,14 +341,13 @@
 import { formatTime } from '@/utils'
 import tenantApi from '@/api/admin/tenant'
 import permissionApi from '@/api/admin/permission'
-import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySelectPermission from '@/components/my-select-window/permission'
 import MyWindow from '@/components/my-window'
 
 export default {
   name: 'Tenant',
-  components: { MyContainer, MyConfirmButton, MySelectPermission, MyWindow },
+  components: { MyConfirmButton, MySelectPermission, MyWindow },
   data() {
     const validatePhone = (rule, value, callback) => {
       const reg = /^(0|86|17951)?(13[0-9]|15[0123456789]|17[678]|18[0-9]|14[57])[0-9]{8}$/

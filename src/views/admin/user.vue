@@ -45,7 +45,7 @@
       </template>
       <el-table-column type="selection" width="50" />
       <el-table-column prop="userName" label="用户名" width />
-      <el-table-column prop="nickName" label="昵称" width />
+      <el-table-column prop="name" label="姓名" width />
       <el-table-column prop="roleNames" label="角色" width>
         <template #default="{row}">
           {{ row.roleNames ? row.roleNames.join(','):'' }}
@@ -127,8 +127,8 @@
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-              <el-form-item label="昵称" prop="nickName">
-                <el-input v-model="addForm.nickName" autocomplete="off" />
+              <el-form-item label="姓名" prop="name">
+                <el-input v-model="addForm.name" autocomplete="off" />
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
@@ -176,8 +176,8 @@
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-              <el-form-item label="昵称" prop="nickName">
-                <el-input v-model="editForm.nickName" autocomplete="off" />
+              <el-form-item label="姓名" prop="name">
+                <el-input v-model="editForm.name" autocomplete="off" />
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
@@ -206,7 +206,6 @@
 <script>
 import { formatTime } from '@/utils'
 import userApi from '@/api/admin/user'
-import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySearch from '@/components/my-search'
 import MySearchWindow from '@/components/my-search-window'
@@ -214,13 +213,13 @@ import MyWindow from '@/components/my-window'
 
 export default {
   name: 'User',
-  components: { MyContainer, MyConfirmButton, MySearch, MySearchWindow, MyWindow },
+  components: { MyConfirmButton, MySearch, MySearchWindow, MyWindow },
   data() {
     return {
       // 高级查询字段
       fields: [
         { value: 'userName', label: '用户名', default: true },
-        { value: 'nickName', label: '昵称', type: 'string' },
+        { value: 'name', label: '姓名', type: 'string' },
         { value: 'createdTime', label: '创建时间', type: 'date', operator: 'daterange',
           config: { type: 'daterange', format: 'yyyy-MM-dd', valueFormat: 'yyyy-MM-dd' }
         }
@@ -240,14 +239,15 @@ export default {
       editFormVisible: false, // 编辑界面是否显示
       editLoading: false,
       editFormRules: {
-        userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }]
+        userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
       },
       userNameReadonly: true,
       // 编辑界面数据
       editForm: {
         id: 0,
         userName: '',
-        nickName: '',
+        name: '',
         roleIds: []
       },
 
@@ -255,12 +255,13 @@ export default {
       addLoading: false,
       addFormRules: {
         userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-        password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
       },
       // 新增界面数据
       addForm: {
         userName: '',
-        nickName: '',
+        name: '',
         password: '',
         roleIds: []
       },
@@ -406,7 +407,7 @@ export default {
       let isValid = true
       if (row && row.userName === 'admin') {
         this.$message({
-          message: row.nickName + '，禁止删除！',
+          message: row.name + '，禁止删除！',
           type: 'warning'
         })
         isValid = false
@@ -436,7 +437,7 @@ export default {
       var row = this.sels && this.sels.find(s => s.userName === 'admin')
       if (row && row.userName === 'admin') {
         this.$message({
-          message: row.nickName + '，禁止删除！',
+          message: row.name + '，禁止删除！',
           type: 'warning'
         })
         isValid = false

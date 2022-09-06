@@ -71,11 +71,9 @@
 <script>
 import { formatTime } from '@/utils'
 import oprationLogApi from '@/api/admin/opration-log'
-import MyContainer from '@/components/my-container'
 
 export default {
   name: 'OprationLog',
-  components: { MyContainer },
   data() {
     return {
       filter: {

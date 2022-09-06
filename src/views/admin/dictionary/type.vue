@@ -190,7 +190,6 @@
 <script>
 import { formatTime } from '@/utils'
 import dictionaryTypeApi from '@/api/admin/dictionary-type'
-import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyWindow from '@/components/my-window'
 
@@ -202,7 +201,7 @@ export default {
   _sync: {
     disabled: true
   },
-  components: { MyContainer, MyConfirmButton, MyWindow },
+  components: { MyConfirmButton, MyWindow },
   data() {
     return {
       filter: {

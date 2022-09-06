@@ -9,19 +9,17 @@
       <slot name="left-aside" />
     </el-aside>
     <el-main style="height:100%;">
-      <section style="height:100%;">
-        <el-container style="height:100%;position:relative;">
-          <el-header v-if="showHeader" height="auto" :style="headerStyle">
-            <slot name="header" />
-          </el-header>
-          <el-main :style="mainStyle">
-            <slot />
-          </el-main>
-          <el-footer v-if="showFooter" height :style="footerStyle">
-            <slot name="footer" />
-          </el-footer>
-        </el-container>
-      </section>
+      <el-container style="height:100%;position:relative;">
+        <el-header v-if="showHeader" height="auto" :style="headerStyle">
+          <slot name="header" />
+        </el-header>
+        <el-main :style="mainStyle">
+          <slot />
+        </el-main>
+        <el-footer v-if="showFooter" height :style="footerStyle">
+          <slot name="footer" />
+        </el-footer>
+      </el-container>
     </el-main>
     <el-aside
       v-if="showRightAside"
@@ -49,6 +47,7 @@
 </my-container>
  */
 import resizable from '@/directive/resizable'
+
 export default {
   name: 'MyContainer',
   directives: { resizable },
@@ -92,15 +91,15 @@ export default {
     },
     headerStyle: {
       type: [String, JSON],
-      default: 'padding:10px 0px 0px 10px;'
+      default: 'padding:10px;'
     },
     mainStyle: {
       type: [String, JSON],
-      default: 'padding:0px 10px;'
+      default: 'padding:10px;'
     },
     footerStyle: {
       type: [String, JSON],
-      default: 'padding:5px 0px 10px 10px;'
+      default: 'padding:10px;'
     },
     leftAsideStyle: {
       type: [String, JSON],
@@ -113,24 +112,36 @@ export default {
   },
   computed: {
     currentLeftAsideResizeOptions() {
-      return {
-        maxWidth: '85%',
-        disabled: !this.resizable,
-        ...this.leftAsideResizeOptions,
-        rangeDom: '.my-container',
-        handles: 'e',
-        onlySize: true
-      }
+      return Object.assign(
+        {},
+        {
+          maxWidth: '85%',
+          maxHeight: '85%',
+          disabled: !this.resizable
+        },
+        this.leftAsideResizeOptions,
+        {
+          rangeDom: '.my-container',
+          handles: 'e',
+          onlySize: true
+        }
+      )
     },
     currentRightAsideResizeOptions() {
-      return {
-        maxWidth: '85%',
-        disabled: !this.resizable,
-        ...this.rightAsideResizeOptions,
-        rangeDom: '.my-container',
-        handles: 'w',
-        onlySize: true
-      }
+      return Object.assign(
+        {},
+        {
+          maxWidth: '85%',
+          maxHeight: '85%',
+          disabled: !this.resizable
+        },
+        this.rightAsideResizeOptions,
+        {
+          rangeDom: '.my-container',
+          handles: 'w',
+          onlySize: true
+        }
+      )
     }
   }
 }

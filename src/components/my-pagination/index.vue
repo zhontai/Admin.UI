@@ -16,23 +16,6 @@
       <span v-if="checkedCount>0" class="ad-pagination__selection">，已选 {{ checkedCount }} 条</span>
     </template>
   </my-el-pagination>
-  <!-- <el-pagination
-    :layout="currentLayout"
-    :page-sizes="sizes"
-    :current-page="page"
-    :page-size="size"
-    :total="total"
-    :page-count="pageCount"
-    :background="background"
-    :small="small"
-    style="text-align:right;"
-    @size-change="onSizeChange"
-    @current-change="onPageChange"
-  >
-    <template #default>
-      <span v-if="checkedCount>0" class="ad-pagination__selection">，已选 {{ checkedCount }} 条</span>
-    </template>
-  </el-pagination> -->
 </template>
 
 <script>

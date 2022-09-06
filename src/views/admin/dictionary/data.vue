@@ -199,7 +199,6 @@
 <script>
 import { formatTime } from '@/utils'
 import dictionaryApi from '@/api/admin/dictionary'
-import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyWindow from '@/components/my-window'
 
@@ -211,7 +210,7 @@ export default {
   _sync: {
     disabled: true
   },
-  components: { MyContainer, MyConfirmButton, MyWindow },
+  components: { MyConfirmButton, MyWindow },
   props: {
     dictionaryTypeId: {
       type: Number,

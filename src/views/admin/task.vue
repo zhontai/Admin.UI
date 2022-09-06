@@ -203,7 +203,6 @@
 <script>
 import { formatTime } from '@/utils'
 import taskApi from '@/api/admin/task'
-import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyWindow from '@/components/my-window'
 
@@ -215,7 +214,7 @@ export default {
     desc: '',
     cache: true
   },
-  components: { MyContainer, MyConfirmButton, MyWindow },
+  components: { MyConfirmButton, MyWindow },
   data() {
     return {
       filter: {

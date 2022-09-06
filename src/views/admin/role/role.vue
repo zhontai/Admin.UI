@@ -1,22 +1,10 @@
 <template>
-  <my-container v-loading="pageLoading">
+  <my-container v-loading="pageLoading" :show-footer="false">
     <!--查询-->
     <template #header>
       <el-form class="ad-form-query" :inline="true" :model="filter" @submit.native.prevent>
         <el-form-item>
-          <el-input
-            v-model="filter.name"
-            placeholder="角色名"
-            clearable
-            @keyup.enter.native="onSearch"
-          >
-            <template #prefix>
-              <i class="el-input__icon el-icon-search" />
-            </template>
-          </el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onSearch">查询</el-button>
+          <my-search :placeholder="'角色名'" @click="onSearch" />
         </el-form-item>
         <el-form-item v-if="checkPermission(['api:admin:role:add'])">
           <el-button type="primary" @click="onAdd">新增</el-button>
@@ -32,69 +20,59 @@
             @click="onBatchDelete"
           >
             <template #content>
-              <p>确定要批量删除吗？</p>
+              <p>确定要删除吗？</p>
             </template>
-            批量删除
+            删除
           </my-confirm-button>
         </el-form-item>
       </el-form>
     </template>
 
-    <!--列表-->
-    <el-table
-      v-loading="listLoading"
-      :data="roles"
-      highlight-current-row
-      height="'100%'"
-      style="width: 100%;height:100%;"
-      @selection-change="selsChange"
-    >
-      <template #empty>
-        <el-empty :image-size="100" />
-      </template>
-      <el-table-column type="selection" width="50" />
-      <el-table-column prop="name" label="角色名" width />
-      <el-table-column v-if="checkPermission(['api:admin:role:update','api:admin:role:softdelete'])" label="操作" width="180">
-        <template #default="{ $index, row }">
-          <el-dropdown v-if="checkPermission(['api:admin:role:update'])" split-button type="primary" style="margin-left:10px;" @click="onEdit($index, row)" @command="(command)=>onCommand(command,row)">
-            编辑
-            <template #dropdown>
-              <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:90px;text-align:right;">
-                <el-dropdown-item v-if="checkPermission(['api:admin:permission:assign'])" command="setPermission">设置权限</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-          <el-dropdown v-else-if="checkPermission(['api:admin:permission:assign'])" style="margin-left:10px;" @command="(command)=>onCommand(command,row)">
-            <el-button type="primary">
-              更多 <i class="el-icon-arrow-down el-icon--right" />
-            </el-button>
-            <template #dropdown>
-              <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:90px;text-align:right;">
-                <el-dropdown-item v-if="checkPermission(['api:admin:permission:assign'])" command="setPermission">设置权限</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-          <my-confirm-button
-            v-if="checkPermission(['api:admin:role:softdelete'])"
-            type="delete"
-            :loading="row._loading"
-            :validate="deleteValidate"
-            :validate-data="row"
-            @click="onDelete($index, row)"
-          />
+    <el-collapse v-model="activeNames">
+      <el-collapse-item title="一致性 Consistency" name="1">
+        <template slot="title">
+          默认
         </template>
-      </el-table-column>
-    </el-table>
-
-    <!--分页-->
-    <template #footer>
-      <my-pagination
-        ref="pager"
-        :total="total"
-        :checked-count="sels.length"
-        @get-page="getRoles"
-      />
-    </template>
+        <!--列表-->
+        <el-table
+          v-loading="listLoading"
+          :data="roles"
+          highlight-current-row
+          height="'100%'"
+          :show-header="false"
+          style="width: 100%;height:100%;"
+          @selection-change="selsChange"
+        >
+          <template #empty>
+            <el-empty :image-size="100" />
+          </template>
+          <el-table-column type="selection" width="50" />
+          <el-table-column prop="name" label="角色名" width />
+          <el-table-column v-if="checkPermission(['api:admin:role:update','api:admin:role:softdelete'])" label="操作" width="180">
+            <template #default="{ $index, row }">
+              <el-dropdown v-if="checkPermission(['api:admin:role:update'])" split-button type="primary" style="margin-left:10px;" @click="onEdit($index, row)" @command="(command)=>onCommand(command,row)">
+                编辑
+                <template #dropdown>
+                  <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:90px;text-align:right;">
+                    <el-dropdown-item v-if="checkPermission(['api:admin:permission:assign'])" command="setPermission">设置权限</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+              <el-dropdown v-else-if="checkPermission(['api:admin:permission:assign'])" style="margin-left:10px;" @command="(command)=>onCommand(command,row)">
+                <el-button type="primary">
+                  更多 <i class="el-icon-arrow-down el-icon--right" />
+                </el-button>
+                <template #dropdown>
+                  <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:90px;text-align:right;">
+                    <el-dropdown-item v-if="checkPermission(['api:admin:permission:assign'])" command="setPermission">设置权限</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-collapse-item>
+    </el-collapse>
 
     <!--选择权限-->
     <my-select-permission
@@ -218,10 +196,10 @@
 import { formatTime } from '@/utils'
 import roleApi from '@/api/admin/role'
 import permissionApi from '@/api/admin/permission'
-import MyContainer from '@/components/my-container'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySelectPermission from '@/components/my-select-window/permission'
 import MyWindow from '@/components/my-window'
+import MySearch from '@/components/my-search'
 import resizable from '@/directive/resizable'
 
 export default {
@@ -229,10 +207,11 @@ export default {
   _sync: {
     disabled: true
   },
-  components: { MyContainer, MyConfirmButton, MySelectPermission, MyWindow },
+  components: { MyConfirmButton, MySelectPermission, MyWindow, MySearch },
   directives: { resizable },
   data() {
     return {
+      activeNames: ['1', '2'],
       filter: {
         name: ''
       },
@@ -310,26 +289,19 @@ export default {
       return formatTime(time, 'YYYY-MM-DD HH:mm')
     },
     onSearch() {
-      this.$refs.pager.setPage(1)
       this.getRoles()
     },
     // 获取角色列表
     async getRoles() {
-      var pager = this.$refs.pager.getPager()
-      const params = {
-        ...pager,
-        filter: this.filter
-      }
       this.listLoading = true
-      const res = await roleApi.getPage(params)
+      const res = await roleApi.getList(this.filter)
       this.listLoading = false
 
       if (!res?.success) {
         return
       }
 
-      this.total = res.data.total
-      const data = res.data.list
+      const data = res.data
       data.forEach(d => {
         d._loading = false
       })
@@ -412,37 +384,6 @@ export default {
       this.addFormVisible = false
       this.getRoles()
     },
-    // 删除验证
-    deleteValidate(row) {
-      let isValid = true
-      if (row && row.name === 'admin') {
-        this.$message({
-          message: row.description + '，禁止删除！',
-          type: 'warning'
-        })
-        isValid = false
-      }
-
-      return isValid
-    },
-    // 删除
-    async onDelete(index, row) {
-      row._loading = true
-      const para = { id: row.id }
-      const res = await roleApi.softDelete(para)
-      row._loading = false
-
-      if (!res?.success) {
-        return
-      }
-
-      this.$message({
-        message: this.$t('admin.deleteOk'),
-        type: 'success'
-      })
-
-      this.getRoles()
-    },
     // 批量删除验证
     batchDeleteValidate() {
       let isValid = true
@@ -508,3 +449,13 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+:deep(.el-collapse) {
+    border-top-width: 0px;
+    border-bottom-width: 0px;
+    .el-collapse-item__wrap{
+      border-bottom-width: 0px;
+    }
+}
+</style>

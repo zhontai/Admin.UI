@@ -70,12 +70,11 @@
 <script>
 import { formatTime } from '@/utils'
 import positionApi from '@/api/admin/position'
-import MyContainer from '@/components/my-container'
 import MyWindow from '@/components/my-window'
 
 export default {
   name: 'MySelectPosition',
-  components: { MyContainer, MyWindow },
+  components: { MyWindow },
   props: {
     title: {
       type: String,
