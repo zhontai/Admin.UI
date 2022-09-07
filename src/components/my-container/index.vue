@@ -8,7 +8,7 @@
     >
       <slot name="left-aside" />
     </el-aside>
-    <el-main style="height:100%;padding:0px;">
+    <el-main style="height:100%;">
       <el-container style="height:100%;position:relative;">
         <el-header v-if="showHeader" height="auto" :style="headerStyle">
           <slot name="header" />
@@ -95,7 +95,7 @@ export default {
     },
     mainStyle: {
       type: [String, JSON],
-      default: 'padding:10px;'
+      default: 'padding:0px 10px;'
     },
     footerStyle: {
       type: [String, JSON],

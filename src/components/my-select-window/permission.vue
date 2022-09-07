@@ -28,7 +28,7 @@
       <el-table-column label="菜单操作" width>
         <template #default="{ row }">
           <el-checkbox-group v-if="row.apis && row.apis.length > 0" v-model="chekedApis">
-            <el-checkbox v-for="api in row.apis" :key="api.id" :label="api.id" @change="(value)=>onChange(value, row.id)">{{ api.label }}</el-checkbox>
+            <el-checkbox v-for="api in row.apis" :key="api.id" :label="api.id" @change="(value)=>onChange(value, row)">{{ api.label }}</el-checkbox>
           </el-checkbox-group>
         </template>
       </el-table-column>
@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { listToTree, treeToList, getParentsAndSelf } from '@/utils/tree'
+import { listToTree, treeToListWithChildren, getParentsAndSelf } from '@/utils/tree'
 import permissionApi from '@/api/admin/permission'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyWindow from '@/components/my-window'
@@ -130,8 +130,8 @@ export default {
       }
     },
     onSelectAll(selection) {
-      const selections = treeToList(selection)
-      const rows = treeToList(this.permissionTree)
+      const selections = treeToListWithChildren(selection)
+      const rows = treeToListWithChildren(this.permissionTree)
       const checked = selections.length === rows.length
       rows.forEach(row => {
         this.$refs.multipleTable.toggleRowSelection(row, checked)
@@ -145,7 +145,7 @@ export default {
     onSelect(selection, row) {
       const checked = selection.some(s => s.id === row.id)
       if (row.children && row.children.length > 0) {
-        const rows = treeToList(row.children)
+        const rows = treeToListWithChildren(row.children)
         rows.forEach(r => {
           this.$refs.multipleTable.toggleRowSelection(r, checked)
           this.selectApis(checked, r)
@@ -154,7 +154,7 @@ export default {
         this.selectApis(checked, row)
       }
 
-      const parents = getParentsAndSelf(treeToList(this.permissionTree), row)
+      const parents = getParentsAndSelf(treeToListWithChildren(this.permissionTree), row)
       parents.forEach(parent => {
         const checked = this.checkedPermissions.includes(parent.id)
         if (!checked) {
@@ -166,9 +166,9 @@ export default {
         return s.id
       })
     },
-    onChange(value, id) {
+    onChange(value, row) {
       if (value) {
-        const parents = getParentsAndSelf(treeToList(this.permissionTree), { id })
+        const parents = getParentsAndSelf(treeToListWithChildren(this.permissionTree), row)
         parents.forEach(parent => {
           const checked = this.checkedPermissions.includes(parent.id)
           if (!checked) {
@@ -205,7 +205,7 @@ export default {
 
       this.loadingPermissions = false
       const permissionIds = res.data
-      const rows = treeToList(this.permissionTree)
+      const rows = treeToListWithChildren(this.permissionTree)
       rows.forEach(row => {
         const checked = permissionIds.includes(row.id)
         this.$refs.multipleTable.toggleRowSelection(row, checked)

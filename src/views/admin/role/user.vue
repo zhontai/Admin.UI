@@ -1,5 +1,5 @@
 <template>
-  <my-container v-loading="pageLoading" :header-style="'padding-bottom:0px;'">
+  <my-container v-loading="pageLoading">
     <!--顶部操作-->
     <template #header>
       <el-form class="ad-form-query" :inline="true" @submit.native.prevent>
