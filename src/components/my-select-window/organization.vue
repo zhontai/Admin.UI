@@ -64,8 +64,8 @@
 </template>
 
 <script>
-import { formatTime, treeToList } from '@/utils'
-import { listToTree } from '@/utils/tree'
+import { formatTime } from '@/utils'
+import { listToTree, treeToList } from '@/utils/tree'
 import { getList } from '@/api/admin/organization'
 import MyWindow from '@/components/my-window'
 

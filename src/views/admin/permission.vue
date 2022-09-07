@@ -303,7 +303,8 @@
 </template>
 
 <script>
-import { formatTime, treeToList, listToTree, getTreeParents } from '@/utils'
+import { formatTime, deepClone } from '@/utils'
+import { listToTree, treeToList, treeToListWithChildren, getParents } from '@/utils/tree'
 import apiApi from '@/api/admin/api'
 import viewApi from '@/api/admin/view'
 import permissionApi from '@/api/admin/permission'
@@ -444,13 +445,13 @@ export default {
     async getApiList() {
       const res = await apiApi.getList()
       if (res && res.success) {
-        this.apiTree = listToTree(_.cloneDeep(res.data))
+        this.apiTree = listToTree(deepClone(res.data))
       }
     },
     async getViewList() {
       const res = await viewApi.getList()
       if (res && res.success) {
-        this.viewTree = listToTree(_.cloneDeep(res.data))
+        this.viewTree = listToTree(deepClone(res.data))
       }
     },
     // 获取权限列表
@@ -472,20 +473,22 @@ export default {
 
       // 分组树
       const groups = list.filter(l => l.type === 1)
-      this.groupTree = listToTree(_.cloneDeep(groups), {
+      this.groupTree = [{
         id: 0,
         parentId: 0,
-        label: '顶级'
-      })
+        label: '顶级',
+        children: listToTree(deepClone(groups))
+      }]
       ++this.permissionGroup.key
 
       // 菜单树
       const menus = list.filter(l => l.type === 1 || l.type === 2)
-      this.menuTree = listToTree(_.cloneDeep(menus), {
+      this.menuTree = [{
         id: 0,
         parentId: 0,
-        label: '顶级'
-      })
+        label: '顶级',
+        children: listToTree(deepClone(menus))
+      }]
       ++this.permissionMenu.key
       ++this.permissionDot.key
 
@@ -495,7 +498,7 @@ export default {
       list.forEach(l => {
         l._loading = false
       })
-      const tree = listToTree(list)
+      const tree = listToTree(deepClone(list))
       this.permissionTree = tree
     },
     // 删除
@@ -516,7 +519,8 @@ export default {
     },
     // 显示编辑界面
     async onEdit(index, row) {
-      const parents = getTreeParents(this.permissionTree, row.id)
+      const list = treeToList(deepClone(this.permissionTree))
+      const parents = getParents(list, row)
       const parentIds = parents.map(p => p.id)
       parentIds.unshift(0)
 
@@ -704,7 +708,7 @@ export default {
       if (values.length !== 1) {
         return
       }
-      const apis = treeToList(this.apiTree)
+      const apis = treeToList(deepClone(this.apiTree))
       const api = apis.find(a => a.id === values[0])
       if (api && api.label && this.permissionDot.form.label === '') {
         this.permissionDot.form.label = api.label
@@ -712,7 +716,7 @@ export default {
       }
     },
     onChangeView(value) {
-      const views = treeToList(this.viewTree)
+      const views = treeToList(deepClone(this.viewTree))
       const view = views.find(a => a.id === value)
       if (view && view.label) {
         this.permissionMenu.form.label = view.label
@@ -723,8 +727,8 @@ export default {
     },
 
     onSelectAll(selection) {
-      const selections = treeToList(selection)
-      const rows = treeToList(this.permissionTree)
+      const selections = treeToListWithChildren(selection)
+      const rows = treeToListWithChildren(this.permissionTree)
       const checked = selections.length === rows.length
       rows.forEach(row => {
         this.$refs.multipleTable.toggleRowSelection(row, checked)
@@ -735,7 +739,7 @@ export default {
     onSelect(selection, row) {
       const checked = selection.some(s => s.id === row.id)
       if (row.children && row.children.length > 0) {
-        const rows = treeToList(row.children)
+        const rows = treeToListWithChildren(row.children)
         rows.forEach(row => {
           this.$refs.multipleTable.toggleRowSelection(row, checked)
         })

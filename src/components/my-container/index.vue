@@ -8,7 +8,7 @@
     >
       <slot name="left-aside" />
     </el-aside>
-    <el-main style="height:100%;">
+    <el-main style="height:100%;padding:0px;">
       <el-container style="height:100%;position:relative;">
         <el-header v-if="showHeader" height="auto" :style="headerStyle">
           <slot name="header" />

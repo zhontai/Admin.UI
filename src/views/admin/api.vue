@@ -190,7 +190,8 @@
 </template>
 
 <script>
-import { formatTime, treeToList, listToTree, getTreeParents } from '@/utils'
+import { formatTime } from '@/utils'
+import { listToTree, treeToList, getParents } from '@/utils/tree'
 import apiApi from '@/api/admin/api'
 import { getSwaggerJson } from '@/api/admin/api.extend'
 import MyWindow from '@/components/my-window'
@@ -272,11 +273,12 @@ export default {
 
       const list = _.cloneDeep(res.data)
       const parentModules = list.filter(l => l.parentId === 0)
-      this.modules = listToTree(_.cloneDeep(parentModules), {
+      this.modules = [{
         id: 0,
         parentId: 0,
-        label: '顶级'
-      })
+        label: '顶级',
+        children: listToTree(_.cloneDeep(parentModules))
+      }]
 
       list.forEach(l => {
         l._loading = false
@@ -291,7 +293,7 @@ export default {
       const res = await apiApi.get({ id: row.id })
       loading.close()
       if (res && res.success) {
-        const parents = getTreeParents(this.apiTree, row.id)
+        const parents = getParents(this.apiTree, row)
         const parentIds = parents.map(p => p.id)
         parentIds.unshift(0)
 

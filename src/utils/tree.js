@@ -1,27 +1,40 @@
 /**
 * @description: 列表转树形列表
 * @example
-listToTree(_.cloneDeep(list), (parent, self) => {
-	return self.parentId === 0
-}, (parent, self) => {
-	return parent.id === self.parentId
-}, (parent, childList) => {
-	parent['childs'] = childList
+listToTree(_.cloneDeep(list))
+
+listToTree(_.cloneDeep(list), {
+  rootWhere: (parent, self) => {
+    return self.parentId === 0
+  },
+  childsWhere: (parent, self) => {
+    return parent.id === self.parentId
+  },
+  addChilds: (parent, childList) => {
+    if (childList?.length > 0) {
+      parent['children'] = childList
+    }
+  }
 })
 */
 export function listToTree(
   list = [],
-  rootWhere = (parent, self) => {
-    return self.parentId === 0
-  },
-  childsWhere = (parent, self) => {
-    return parent.id === self.parentId
-  },
-  addChilds = (parent, childList) => {
-    parent['children'] = childList
-  },
+  options = {},
   data
 ) {
+  const { rootWhere, childsWhere, addChilds } = Object.assign({
+    rootWhere: (parent, self) => {
+      return self.parentId === 0
+    },
+    childsWhere: (parent, self) => {
+      return parent.id === self.parentId
+    },
+    addChilds: (parent, childList) => {
+      if (childList?.length > 0) {
+        parent['children'] = childList
+      }
+    }
+  }, options || {})
   let tree = []
   // 空列表
   if (!(list?.length > 0)) {
@@ -42,7 +55,7 @@ export function listToTree(
       return
     }
     rootChildList.forEach(item => {
-      const childList = listToTree(list, childsWhere, childsWhere, addChilds, item)
+      const childList = listToTree(list, { rootWhere: childsWhere, childsWhere, addChilds }, item)
       addChilds && addChilds(item, childList)
     })
     addChilds && addChilds(root, rootChildList)
@@ -51,40 +64,69 @@ export function listToTree(
   return tree
 }
 
-export function addListWithChilds(list = [], data, getChilds = (data) => { return data['children'] }) {
-  const childs = getChilds(data)
-  if (childs?.length > 0) {
-    list = list.concat(childs)
-    childs.forEach(child => {
-      addListWithChilds(list, child, getChilds)
-    })
-  }
-  return list
+/**
+* @description: 将树形列表转换为扁平化数据列表
+* @example
+toFlatList(tree, (data) => { return data['children'] }, list)
+*/
+export function toFlatList(tree, getChilds, flatList = [], noChildren = true) {
+  tree.forEach(item => {
+    flatList.push(item)
+    const children = getChilds(item)
+    if (children?.length > 0) {
+      toFlatList(children, getChilds, flatList, noChildren)
+    }
+    if (noChildren) {
+      delete item.children
+    }
+  })
 }
 
 /**
-* @description: 树形列表转列表
+* @description: 树形列表转列表无子级
 * @example
+treeToList(_.cloneDeep(tree))
+
 treeToList(_.cloneDeep(tree), (data) => { return data['children'] })
 */
 export function treeToList(tree = [], getChilds = (data) => { return data['children'] }) {
-  let list = []
+  const list = []
   // 空树
   if (!(tree?.length > 0)) {
     return list
   }
 
-  tree.forEach(root => {
-    list = addListWithChilds(list, root, getChilds)
-    list.push(root)
-  })
+  toFlatList(tree, getChilds, list)
+
+  return list
+}
+
+/**
+* @description: 树形列表转列表包含子级
+* @example
+treeToListWithChildren(_.cloneDeep(tree))
+
+treeToListWithChildren(_.cloneDeep(tree), (data) => { return data['children'] })
+*/
+export function treeToListWithChildren(tree = [], getChilds = (data) => { return data['children'] }) {
+  const list = []
+  // 空树
+  if (!(tree?.length > 0)) {
+    return list
+  }
+
+  toFlatList(tree, getChilds, list, false)
+
   return list
 }
 
 /**
 * @description: 获得自身所有父级列表
 * @example
-const parents = getParents(items, self, (item, self) => {
+getParents(_.cloneDeep(items), self)
+getParents(treeToList(_.cloneDeep(items), self))
+
+const parents = getParents(_.cloneDeep(items), self, (item, self) => {
 	return item.id === self.parentId
 })
 */
@@ -115,8 +157,47 @@ export function getParents(
   return parents
 }
 
+/**
+* @description: 获得自身所有父级列表包含自身
+* @example
+getParentsAndSelf(_.cloneDeep(items), self)
+getParentsAndSelf(treeToList(_.cloneDeep(items)), self)
+
+const parents = getParentsAndSelf(_.cloneDeep(items), self, {
+  selfWhere: (item, self) => {
+    return item.id === self.id
+  },
+  parentWhere: (item, self) => {
+    return item.id === self.parentId
+  }
+})
+*/
+export function getParentsAndSelf(
+  list = [],
+  self,
+  options = {}
+) {
+  const { selfWhere, parentWhere } = Object.assign({
+    selfWhere: (item, self) => {
+      return item.id === self.id
+    },
+    parentWhere: (item, self) => {
+      return item.id === self.parentId
+    }
+  }, options || {})
+
+  const parents = getParents(list, self, parentWhere)
+  const me = list.find(item => selfWhere && selfWhere(item, self))
+  if (me) {
+    parents.unshift(me)
+  }
+
+  return parents
+}
+
 export default {
   toTree: listToTree,
   toList: treeToList,
-  getParents
+  getParents,
+  getParentsAndSelf
 }

@@ -4,6 +4,10 @@ export function formatTime(date, pattern) {
   return dayjs(date).format(pattern)
 }
 
+export function deepClone(data) {
+  return JSON.parse(JSON.stringify(data))
+}
+
 export function treeToList(tree = [], idValue = null, childrenField = 'children', idField = 'id', parentIdField = 'parentId') {
   const list = []
   if (!childrenField) childrenField = 'children'

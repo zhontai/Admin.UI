@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { treeToList, listToTree, getTreeParentsWithSelf } from '@/utils'
+import { listToTree, treeToList, getParentsAndSelf } from '@/utils/tree'
 import permissionApi from '@/api/admin/permission'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyWindow from '@/components/my-window'
@@ -154,7 +154,7 @@ export default {
         this.selectApis(checked, row)
       }
 
-      const parents = getTreeParentsWithSelf(this.permissionTree, row.id)
+      const parents = getParentsAndSelf(treeToList(this.permissionTree), row)
       parents.forEach(parent => {
         const checked = this.checkedPermissions.includes(parent.id)
         if (!checked) {
@@ -168,7 +168,7 @@ export default {
     },
     onChange(value, id) {
       if (value) {
-        const parents = getTreeParentsWithSelf(this.permissionTree, id)
+        const parents = getParentsAndSelf(treeToList(this.permissionTree), { id })
         parents.forEach(parent => {
           const checked = this.checkedPermissions.includes(parent.id)
           if (!checked) {

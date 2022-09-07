@@ -18,7 +18,10 @@
         :class="['el-dialog', { 'is-fullscreen': fullscreen, 'el-dialog--center': center }, customClass]"
         :style="style"
       >
-        <my-container header-style="padding:0px;" footer-style="padding:0px;">
+        <my-container   
+          header-style="padding:0px;" 
+          footer-style="padding:0px;"
+        >
           <template #header>
             <div class="el-dialog__header" @dblclick="handleMaximize">
               <slot name="title">

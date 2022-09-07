@@ -186,7 +186,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import MyMenuItem from './components/my-menu-item'
-import { listToTree, getTreeParents } from '@/utils'
+import { listToTree, getParents } from '@/utils/tree'
 import Sortable from 'sortablejs'
 import { isExternalLink } from '@/utils/validate'
 import { toLogout } from '@/router'
@@ -250,7 +250,7 @@ export default {
       const path = this.$route.meta.path
       const menu = this.menus.find(m => m.path === path)
       if (menu && menu.id > 0) {
-        const parents = getTreeParents(this.menuTree, menu.id)
+        const parents = getParents(_.cloneDeep(this.menuTree), menu)
         parentTitles = parents.map(p => p.label)
         parentTitles.push(menu.label)
       }

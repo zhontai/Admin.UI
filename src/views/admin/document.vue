@@ -250,7 +250,7 @@
 </template>
 
 <script>
-import { listToTree, getTreeParents } from '@/utils'
+import { listToTree, getParents } from '@/utils/tree'
 import ImageViewer from 'element-ui/packages/image/src/image-viewer'
 import MyMarkdownEditor from '@/components/my-markdown-editor'
 import MyConfirmButton from '@/components/my-confirm-button'
@@ -538,20 +538,22 @@ export default {
 
       // 分组树
       const groups = list.filter(l => l.type === 1)
-      this.groupTree = listToTree(_.cloneDeep(groups), {
+      this.groupTree = [{
         id: 0,
         parentId: 0,
-        label: '我的文档'
-      })
+        label: '我的文档',
+        children: listToTree(_.cloneDeep(groups))
+      }]
       ++this.documentGroup.key
 
       // 菜单树
       const menus = list.filter(l => l.type === 1 || l.type === 2)
-      this.menuTree = listToTree(_.cloneDeep(menus), {
+      this.menuTree = [{
         id: 0,
         parentId: 0,
-        label: '我的文档'
-      })
+        label: '我的文档',
+        children: listToTree(_.cloneDeep(menus))
+      }]
       ++this.documentMenu.key
 
       // 文档列表
@@ -719,7 +721,7 @@ export default {
     },
     // 显示编辑界面
     async onEdit(index, row) {
-      const parents = getTreeParents(this.documentTree, row.id)
+      const parents = getParents(_.cloneDeep(this.documentTree), row)
       const parentIds = parents.map(p => p.id)
       parentIds.unshift(0)
 

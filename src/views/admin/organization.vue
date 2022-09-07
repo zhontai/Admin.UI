@@ -171,8 +171,8 @@
 </template>
 
 <script>
-import { formatTime, getTreeParents } from '@/utils'
-import { treeToList, listToTree } from '@/utils/tree'
+import { formatTime } from '@/utils'
+import { listToTree, treeToList, getParents } from '@/utils/tree'
 import orgApi from '@/api/admin/organization'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyWindow from '@/components/my-window'
@@ -297,7 +297,7 @@ export default {
       const res = await orgApi.get({ id: row.id })
       loading.close()
       if (res && res.success) {
-        const parents = getTreeParents(this.organizationTree, row.id)
+        const parents = getParents(treeToList(this.organizationTree), row)
         const parentIds = parents.map(p => p.id)
         parentIds.unshift(0)
 

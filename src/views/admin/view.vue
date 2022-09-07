@@ -168,7 +168,8 @@
 </template>
 
 <script>
-import { formatTime, treeToList, listToTree, getTreeParents } from '@/utils'
+import { formatTime } from '@/utils'
+import { listToTree, treeToList, treeToListWithChildren, getParents } from '@/utils/tree'
 import viewApi from '@/api/admin/view'
 import MyWindow from '@/components/my-window'
 import MyConfirmButton from '@/components/my-confirm-button'
@@ -254,11 +255,12 @@ export default {
       const keys = list.filter(l => l.parentId === 0).map(l => l.id + '')
       this.expandRowKeys = keys
 
-      this.modules = listToTree(_.cloneDeep(list), {
+      this.modules = [{
         id: 0,
         parentId: 0,
-        label: '顶级'
-      })
+        label: '顶级',
+        children: listToTree(_.cloneDeep(list))
+      }]
 
       list.forEach(l => {
         l._loading = false
@@ -274,7 +276,7 @@ export default {
       const res = await viewApi.get({ id: row.id })
       loading.close()
       if (res && res.success) {
-        const parents = getTreeParents(this.viewTree, row.id)
+        const parents = getParents(treeToList(_.cloneDeep(this.viewTree)), row)
         const parentIds = parents.map(p => p.id)
         parentIds.unshift(0)
 
@@ -442,8 +444,8 @@ export default {
       // let bb = this.sels
     },
     onSelectAll: function(selection) {
-      const selections = treeToList(selection)
-      const rows = treeToList(this.viewTree)
+      const selections = treeToListWithChildren(selection)
+      const rows = treeToListWithChildren(this.viewTree)
       const checked = selections.length === rows.length
       rows.forEach(row => {
         this.$refs.multipleTable.toggleRowSelection(row, checked)
@@ -454,7 +456,7 @@ export default {
     onSelect: function(selection, row) {
       const checked = selection.some(s => s.id === row.id)
       if (row.children && row.children.length > 0) {
-        const rows = treeToList(row.children)
+        const rows = treeToListWithChildren(row.children)
         rows.forEach(row => {
           this.$refs.multipleTable.toggleRowSelection(row, checked)
         })

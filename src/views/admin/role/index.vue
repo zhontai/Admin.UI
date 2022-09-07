@@ -1,5 +1,11 @@
 <template>
-  <my-container :show-left-aside="true" :resizable="true" :show-header="false" :show-footer="false" :main-style="'padding:0px;'">
+  <my-container
+    :show-left-aside="true"
+    :resizable="true"
+    :show-header="false"
+    :show-footer="false"
+    :main-style="'padding:0px;'"
+  >
     <template #left-aside>
       <my-role @current-change="onCurrentChange" />
     </template>
