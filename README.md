@@ -8,9 +8,9 @@
 *********************************************************
 ### 项目下载后，首先安装依赖包
 ```
-npm install
+npm install --legacy-peer-deps
 或
-npm install --registry=https://registry.npm.taobao.org
+npm install --registry=https://registry.npm.taobao.org --legacy-peer-deps
 ```
 
 ### 安装成功后，运行即可
@@ -19,9 +19,6 @@ npm run dev
 ```
 
 #### Tips：
-
-
-
 ```
 如果你想换端口，可以直接修改根目录下的 vue.config.js 文件
 
@@ -35,11 +32,6 @@ npm run dev
 
 ```
 
-### 开发过程中检查错误，可执行lint
-```
-npm run lint
-```
-
 ### 想要发布生产环境，执行build:prod打包成dist
 ```
 npm run build:prod
@@ -48,4 +40,9 @@ npm run build:prod
 ### 想要发布测试环境，执行build:stage打包成dist
 ```
 npm run build:stage
+```
+
+### 开发过程中检查错误，可执行lint
+```
+npm run lint
 ```

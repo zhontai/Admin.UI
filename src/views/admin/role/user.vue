@@ -2,9 +2,9 @@
   <my-container v-loading="pageLoading">
     <!--顶部操作-->
     <template #header>
-      <el-form class="ad-form-query" :inline="true" @submit.native.prevent>
+      <el-form class="ad-form-query" :inline="true" :model="filter" @submit.native.prevent>
         <el-form-item>
-          <my-search :placeholder="'姓名'" @click="onSearch" />
+          <my-search v-model="filter.name" :placeholder="'姓名'" @click="onSearch" />
         </el-form-item>
         <el-form-item v-if="checkPermission(['api:admin:user:add'])">
           <el-button type="primary" @click="onAdd">添加员工</el-button>
@@ -20,7 +20,7 @@
             @click="onBatchDelete"
           >
             <template #content>
-              <p>确定要批量删除吗？</p>
+              <p>确定要移除吗？</p>
             </template>
             移除员工
           </my-confirm-button>
@@ -43,16 +43,6 @@
       <el-table-column type="selection" width="50" />
       <el-table-column prop="name" label="姓名" width />
     </el-table>
-
-    <!--分页-->
-    <template #footer>
-      <my-pagination
-        ref="pager"
-        :total="total"
-        :checked-count="sels.length"
-        @get-page="getUsers"
-      />
-    </template>
   </my-container>
 </template>
 
@@ -70,15 +60,14 @@ export default {
   components: { MyConfirmButton, MySearch },
   data() {
     return {
-      dynamicFilter: null,
-
+      filter: {
+        name: ''
+      },
       users: [],
       total: 0,
       sels: [], // 列表选中列
       listLoading: false,
-
       pageLoading: false,
-
       deleteLoading: false
     }
   },
@@ -90,30 +79,21 @@ export default {
       return formatTime(time, 'YYYY-MM-DD HH:mm')
     },
     // 查询
-    onSearch(dynamicFilter) {
-      this.$refs.pager.setPage(1)
-      this.dynamicFilter = dynamicFilter
+    onSearch() {
       this.getUsers()
     },
 
     // 获取用户列表
     async getUsers() {
-      var pager = this.$refs.pager.getPager()
-      const params = {
-        ...pager,
-        dynamicFilter: this.dynamicFilter
-      }
-
       this.listLoading = true
-      const res = await userApi.getPage(params)
+      const res = await userApi.getList(this.filter)
       this.listLoading = false
 
       if (!res?.success) {
         return
       }
 
-      this.total = res.data.total
-      const data = res.data.list
+      const data = res.data
       data.forEach(d => {
         d._loading = false
       })
@@ -168,5 +148,10 @@ export default {
 <style lang="scss" scoped>
 .my-search :deep(.el-input-group__prepend) {
   background-color: #fff;
+}
+:deep() {
+    .el-table::before{
+      height: 0px
+    }
 }
 </style>

@@ -65,30 +65,17 @@
               >刷新</el-button>
             </div>
           </template>
-          <el-table
-            ref="multipleTable"
+          <el-tree
+            ref="tree"
             :data="permissionTree"
-            :default-expand-all="true"
-            :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-            row-key="id"
-            highlight-current-row
-            style="width: 100%;"
-            @select-all="onSelectAll"
-            @select="onSelect"
-          >
-            <template #empty>
-              <el-empty :image-size="100" />
-            </template>
-            <el-table-column type="selection" width="50" />
-            <el-table-column prop="label" label="导航菜单" width="200" />
-            <el-table-column label="菜单操作" width>
-              <template #default="{ row }">
-                <el-checkbox-group v-if="row.apis && row.apis.length > 0" v-model="chekedApis">
-                  <el-checkbox v-for="api in row.apis" :key="api.id" :label="api.id" @change="(value)=>onChange(value, row)">{{ api.label }}</el-checkbox>
-                </el-checkbox-group>
-              </template>
-            </el-table-column>
-          </el-table>
+            show-checkbox
+            default-expand-all
+            node-key="id"
+            highlight-current
+            :expand-on-click-node="false"
+            check-on-click-node
+            :indent="16"
+          />
         </el-card>
       </el-col>
     </el-row>
@@ -153,7 +140,6 @@ export default {
     // 获取权限树
     async getPermissions() {
       this.loadingPermissions = true
-      this.onSelectAll([])
 
       const para = {}
       const res = await permissionApi.getPermissionList(para)
@@ -237,75 +223,6 @@ export default {
       this.roleId = id
       this.onSelectAll([])
       this.getRolePermission()
-    },
-    selectApis(checked, row) {
-      if (row.apis) {
-        row.apis.forEach(a => {
-          const index = this.chekedApis.indexOf(a.id)
-          if (checked) {
-            if (index === -1) {
-              this.chekedApis.push(a.id)
-            }
-          } else {
-            if (index > -1) {
-              this.chekedApis.splice(index, 1)
-            }
-          }
-        })
-      }
-    },
-    onSelectAll(selection) {
-      const selections = treeToListWithChildren(selection)
-      const rows = treeToListWithChildren(this.permissionTree)
-      const checked = selections.length === rows.length
-      rows.forEach(row => {
-        this.$refs.multipleTable.toggleRowSelection(row, checked)
-        this.selectApis(checked, row)
-      })
-
-      this.checkedPermissions = this.$refs.multipleTable.selection.map(s => {
-        return s.id
-      })
-    },
-    onSelect(selection, row) {
-      const checked = selection.some(s => s.id === row.id)
-      if (row.children && row.children.length > 0) {
-        const rows = treeToListWithChildren(row.children)
-        rows.forEach(r => {
-          this.$refs.multipleTable.toggleRowSelection(r, checked)
-          this.selectApis(checked, r)
-        })
-      } else {
-        this.selectApis(checked, row)
-      }
-
-      const parents = getParentsAndSelf(treeToListWithChildren(this.permissionTree), row)
-      parents.forEach(parent => {
-        const checked = this.checkedPermissions.includes(parent.id)
-        if (!checked) {
-          this.$refs.multipleTable.toggleRowSelection(parent, true)
-        }
-      })
-
-      this.checkedPermissions = this.$refs.multipleTable.selection.map(s => {
-        return s.id
-      })
-    },
-    onChange(value, row) {
-      if (value) {
-        const parents = getParentsAndSelf(treeToListWithChildren(this.permissionTree), row)
-        parents.forEach(parent => {
-          const checked = this.checkedPermissions.includes(parent.id)
-          if (!checked) {
-            this.$refs.multipleTable.toggleRowSelection(parent, true)
-          }
-        })
-
-        this.checkedPermissions = this.$refs.multipleTable.selection.map(s => {
-          return s.id
-        })
-        debugger
-      }
     }
   }
 }
@@ -342,5 +259,10 @@ export default {
 .role-box{
   margin-bottom:10px;
   border-bottom:1px solid #E4E7ED;
+}
+
+:deep(.el-tree-node.is-expanded>.el-tree-node__children:last-child){
+  display:flex;
+  flex-wrap:wrap;
 }
 </style>

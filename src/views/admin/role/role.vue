@@ -4,7 +4,7 @@
     <template #header>
       <el-form class="ad-form-query" :inline="true" :model="filter" @submit.native.prevent>
         <el-form-item>
-          <my-search :placeholder="'角色名'" @click="onSearch" />
+          <my-search v-model="filter.name" :placeholder="'角色名'" @click="onSearch" />
         </el-form-item>
         <el-form-item v-if="checkPermission(['api:admin:role:add'])">
           <el-button type="primary" @click="onAdd">新增</el-button>
@@ -456,6 +456,12 @@ export default {
     border-bottom-width: 0px;
     .el-collapse-item__wrap{
       border-bottom-width: 0px;
+    }
+}
+
+:deep() {
+    .el-table::before{
+      height: 0px
     }
 }
 </style>

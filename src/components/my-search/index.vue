@@ -86,7 +86,9 @@ export default {
   computed: {
   },
   watch: {
-
+    'filter.value'(val) {
+      this.$emit('input', val)
+    }
   },
   mounted() {
 
