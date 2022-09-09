@@ -191,7 +191,7 @@
 
 <script>
 import { formatTime } from '@/utils'
-import { listToTree, treeToList, getParents } from '@/utils/tree'
+import { listToTree, treeToListWithChildren, getParents } from '@/utils/tree'
 import apiApi from '@/api/admin/api'
 import { getSwaggerJson } from '@/api/admin/api.extend'
 import MyWindow from '@/components/my-window'
@@ -471,8 +471,8 @@ export default {
       // let bb = this.sels
     },
     onSelectAll: function(selection) {
-      const selections = treeToList(selection)
-      const rows = treeToList(this.apiTree)
+      const selections = treeToListWithChildren(selection)
+      const rows = treeToListWithChildren(this.apiTree)
       const checked = selections.length === rows.length
       rows.forEach(row => {
         this.$refs.multipleTable.toggleRowSelection(row, checked)
@@ -483,7 +483,7 @@ export default {
     onSelect: function(selection, row) {
       const checked = selection.some(s => s.id === row.id)
       if (row.children && row.children.length > 0) {
-        const rows = treeToList(row.children)
+        const rows = treeToListWithChildren(row.children)
         rows.forEach(row => {
           this.$refs.multipleTable.toggleRowSelection(row, checked)
         })

@@ -267,7 +267,7 @@ export default {
       return this.currentRow?.id
     },
     title() {
-      return `设置${this.currentRow?.name}（${this.currentRow?.code}）权限`
+      return `设置${this.currentRow?.name}权限`
     },
     resizeOptions() {
       return {

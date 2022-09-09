@@ -91,10 +91,7 @@ import MyElTree from '@/components/element-ui/my-el-tree'
 
 export default {
   name: 'RolePermission',
-  components: {
-    MyConfirmButton,
-    MyElTree
-  },
+  components: { MyConfirmButton, MyElTree },
   data() {
     return {
       roles: [],
@@ -133,8 +130,7 @@ export default {
     async getPermissions() {
       this.loadingPermissions = true
 
-      const para = {}
-      const res = await permissionApi.getPermissionList(para)
+      const res = await permissionApi.getPermissionList()
       this.loadingPermissions = false
       const tree = listToTree(_.cloneDeep(res.data))
       this.permissionTree = tree

@@ -198,6 +198,7 @@ export function getParentsAndSelf(
 export default {
   toTree: listToTree,
   toList: treeToList,
+  toListWithChildren: treeToListWithChildren,
   getParents,
   getParentsAndSelf
 }
