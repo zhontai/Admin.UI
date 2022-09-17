@@ -92,6 +92,13 @@ export const deleteAsync = (params, config = {}) => {
 }
 
 /**
+ * 批量彻底删除用户
+ */
+export const batchDelete = (params, config = {}) => {
+  return request.put(apiPrefix + 'batch-delete', params, config)
+}
+
+/**
  * 删除用户
  */
 export const softDelete = (params, config = {}) => {
@@ -125,6 +132,7 @@ export default {
   updateBasic,
   changePassword,
   deleteAsync,
+  batchDelete,
   softDelete,
   batchSoftDelete,
   avatarUpload

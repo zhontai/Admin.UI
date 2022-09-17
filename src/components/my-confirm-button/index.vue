@@ -119,13 +119,14 @@ export default {
         this.disabledPopover = true
       }
     },
-    valid() {
+    valid(evt) {
       if (this.validate) {
         const isValid = this.validate(this.validateData)
         if (isValid) {
           this.disabledPopover = false
         }
       }
+      this.$emit('valid', evt)
     },
     sure() {
       this.visible = false

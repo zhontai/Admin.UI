@@ -50,6 +50,13 @@ export const deleteAsync = (params, config = {}) => {
 }
 
 /**
+ * 批量彻底删除
+ */
+export const batchDelete = (params, config = {}) => {
+  return request.put(apiPrefix + 'batch-delete', params, config)
+}
+
+/**
  * 删除
  */
 export const softDelete = (params, config = {}) => {
@@ -70,6 +77,7 @@ export default {
   add,
   update,
   deleteAsync,
+  batchDelete,
   softDelete,
   batchSoftDelete
 }
