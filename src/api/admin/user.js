@@ -15,13 +15,6 @@ export const get = (params, config = {}) => {
 }
 
 /**
- * 查询列表
- */
-export const getList = (params, config = {}) => {
-  return request.get(apiPrefix + 'get-list', { params: params, ...config })
-}
-
-/**
  * 查询分页
  */
 export const getPage = (params, config = {}) => {
@@ -121,7 +114,6 @@ export const avatarUpload = (params, config = {}) => {
 
 export default {
   get,
-  getList,
   getPage,
   getLoginUser,
   getSelect,

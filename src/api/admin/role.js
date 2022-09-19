@@ -29,6 +29,13 @@ export const getPage = (params, config = {}) => {
 }
 
 /**
+ * 查询角色用户列表
+ */
+export const getRoleUserList = (params, config = {}) => {
+  return request.get(apiPrefix + 'get-role-user-list', { params: params, ...config })
+}
+
+/**
  * 新增
  */
 export const add = (params, config = {}) => {
@@ -74,6 +81,7 @@ export default {
   get,
   getList,
   getPage,
+  getRoleUserList,
   add,
   update,
   deleteAsync,

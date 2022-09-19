@@ -39,7 +39,7 @@
     </template>
 
     <el-collapse v-model="activeGroupList">
-      <el-collapse-item v-for="group in tree" :key="group.id" :name="group.id">
+      <el-collapse-item v-for="(group, index) in tree" :key="group.id" :name="group.id">
         <template slot="title">
           {{ group.name }}
 
@@ -61,10 +61,12 @@
         </template>
         <!--列表-->
         <el-table
+          ref="table"
           :data="group.children"
           highlight-current-row
           :show-header="false"
-          @selection-change="selsChange"
+          @selection-change="onSelectionChange"
+          @current-change="(currentRow, oldCurrentRow) => onCurrentChange(currentRow, oldCurrentRow, index)"
         >
           <template #empty>
             <el-empty :image-size="50" />
@@ -180,6 +182,7 @@ export default {
       deleteLoading: false,
       selectPermissionVisible: false,
       currentRow: null,
+      tableIndex: -1,
       addRole: false,
       role: {
         init: {
@@ -341,7 +344,7 @@ export default {
       })
       this.getRoles()
     },
-    selsChange: function(sels) {
+    onSelectionChange: function(sels) {
       this.sels = sels
     },
     // 选择权限
@@ -402,6 +405,15 @@ export default {
         this.currentRow = row
         this.selectPermissionVisible = true
       }
+    },
+    onCurrentChange(currentRow, oldCurrentRow, tableIndex) {
+      if (this.tableIndex > -1 && this.tableIndex !== tableIndex) {
+        this.$refs.table[this.tableIndex].setCurrentRow({ id: 0 })
+      }
+
+      this.tableIndex = tableIndex
+      this.currentRow = currentRow
+      this.$emit('current-change', currentRow, oldCurrentRow)
     }
   }
 }

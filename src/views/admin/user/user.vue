@@ -51,14 +51,6 @@
           {{ row.roleNames ? row.roleNames.join(','):'' }}
         </template>
       </el-table-column>
-      <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width />
-      <el-table-column prop="status" label="状态" width>
-        <template #default="{row}">
-          <el-tag :type="row.status == 0 ? 'success' : 'danger'" disable-transitions>
-            {{ row.status == 0 ? '正常' : '禁用' }}
-          </el-tag>
-        </template>
-      </el-table-column>
       <el-table-column v-if="checkPermission(['api:admin:user:update','api:admin:user:softdelete'])" label="操作" width="180">
         <template #default="{ $index, row }">
           <el-button v-if="checkPermission(['api:admin:user:update'])" @click="onEdit($index, row)">编辑</el-button>
@@ -212,7 +204,7 @@ import MySearchWindow from '@/components/my-search-window'
 import MyWindow from '@/components/my-window'
 
 export default {
-  name: 'User',
+  name: 'MyUser',
   components: { MyConfirmButton, MySearch, MySearchWindow, MyWindow },
   data() {
     return {

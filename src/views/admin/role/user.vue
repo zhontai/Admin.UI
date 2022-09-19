@@ -48,16 +48,22 @@
 
 <script>
 import { formatTime } from '@/utils'
-import userApi from '@/api/admin/user'
+import roleApi from '@/api/admin/role'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySearch from '@/components/my-search'
 
 export default {
-  name: 'MyUser',
+  name: 'MyRoleUser',
   _sync: {
     disabled: true
   },
   components: { MyConfirmButton, MySearch },
+  props: {
+    roleId: {
+      type: Number,
+      default: null
+    }
+  },
   data() {
     return {
       filter: {
@@ -69,6 +75,11 @@ export default {
       listLoading: false,
       pageLoading: false,
       deleteLoading: false
+    }
+  },
+  watch: {
+    roleId() {
+      this.getUsers()
     }
   },
   async mounted() {
@@ -86,7 +97,10 @@ export default {
     // 获取用户列表
     async getUsers() {
       this.listLoading = true
-      const res = await userApi.getList(this.filter)
+      const res = await roleApi.getRoleUserList({
+        roleId: this.roleId,
+        name: this.filter.name
+      })
       this.listLoading = false
 
       if (!res?.success) {
