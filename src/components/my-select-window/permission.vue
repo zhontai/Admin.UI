@@ -1,6 +1,6 @@
 <template>
   <my-window
-    v-loading="loadingPermissions"
+    v-loading="loading"
     :title="title"
     :modal="modal"
     :wrapper-closable="true"
@@ -14,7 +14,7 @@
   >
     <my-el-tree
       ref="tree"
-      :data="permissionTree"
+      :data="tree"
       show-checkbox
       default-expand-all
       node-key="id"
@@ -25,7 +25,7 @@
     />
     <template #footer>
       <el-button @click.native="onCancel">取消</el-button>
-      <my-confirm-button type="submit" :loading="setPermissionLoading" @click="onSure" />
+      <my-confirm-button type="submit" :loading="sureLoading" @click="onSure" />
     </template>
   </my-window>
 </template>
@@ -57,7 +57,7 @@ export default {
       type: Boolean,
       default: false
     },
-    setPermissionLoading: {
+    sureLoading: {
       type: Boolean,
       default: false
     },
@@ -76,8 +76,8 @@ export default {
   },
   data() {
     return {
-      permissionTree: [],
-      loadingPermissions: false
+      tree: [],
+      loading: false
     }
   },
   methods: {
@@ -88,32 +88,31 @@ export default {
     },
     // 确定
     onSure() {
-      const permissionIds = this.$refs.tree.getCheckedKeys()
-      this.$emit('click', permissionIds)
+      const ids = this.$refs.tree.getCheckedKeys()
+      this.$emit('click', ids)
     },
     // 初始化
     async init() {
-      await this.getPermissions()
-      await this.bindPermissions()
+      await this.initData()
+      await this.setData()
     },
-    // 获取权限树
-    async getPermissions() {
-      this.loadingPermissions = true
+    // 初始化数据
+    async initData() {
+      this.loading = true
       const res = await permissionApi.getPermissionList()
-      this.loadingPermissions = false
-      const tree = listToTree(_.cloneDeep(res.data))
-      this.permissionTree = tree
+      this.loading = false
+      this.tree = listToTree(_.cloneDeep(res.data))
     },
-    // 绑定权限
-    async bindPermissions() {
+    // 设置数据
+    async setData() {
       if (!(this.roleId > 0 || this.tenantId > 0)) {
         return
       }
 
-      this.loadingPermissions = true
+      this.loading = true
       const res = await (this.tenant ? permissionApi.getTenantPermissionList({ tenantId: this.tenantId })
         : permissionApi.getRolePermissionList({ roleId: this.roleId }))
-      this.loadingPermissions = false
+      this.loading = false
       this.$refs.tree.setCheckedKeys(res.data)
     }
   }

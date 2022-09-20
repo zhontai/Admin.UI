@@ -8,6 +8,7 @@
     :custom-class="'my-search-window'"
     :close-on-click-modal="closeOnClickModal"
     :close-on-press-escape="closeOnPressEscape"
+    :width="width"
   >
     <my-search-filter ref="searchFilter" :fields="fields" />
     <template #footer>
@@ -107,6 +108,10 @@ export default {
       default() {
         return []
       }
+    },
+    width: {
+      type: [Number, String],
+      default: '50%'
     }
   },
   data() {

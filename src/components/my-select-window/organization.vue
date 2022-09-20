@@ -11,50 +11,32 @@
     size="100%"
     drawer-body-style="padding:0px;height: calc(100% - 61px);"
     :before-close="onCancel"
-    @opened="onSearch"
+    @opened="onOpened"
   >
     <my-container v-loading="pageLoading" style="height: 100%;">
-      <!--查询-->
       <template #header>
-        <el-form class="ad-form-query" :inline="true" :model="filter" @submit.native.prevent>
-          <el-form-item>
-            <el-input
-              v-model="filter.name"
-              placeholder="部门名称"
-              clearable
-              @keyup.enter.native="onSearch"
-            >
-              <template #prefix>
-                <i class="el-input__icon el-icon-search" />
-              </template>
-            </el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="onSearch">查询</el-button>
-          </el-form-item>
-        </el-form>
+        <el-input
+          v-model="filterText"
+          placeholder="筛选部门"
+          clearable
+        />
       </template>
-
-      <!--列表-->
-      <el-table
-        ref="multipleTable"
-        v-loading="listLoading"
+      <el-tree
+        ref="tree"
+        :props="{
+          label: 'name'
+        }"
         :data="tree"
-        row-key="id"
-        :default-expand-all="true"
-        highlight-current-row
-        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-        height="'100%'"
-        style="width: 100%;height:100%;"
-        @current-change="onCurrentChange"
-        @row-dblclick="onSure"
-        @select-all="onSelectAll"
-        @select="onSelect"
-      >
-        <el-table-column v-if="multiple" type="selection" width="50" />
-        <el-table-column prop="name" label="部门名称" width />
-        <el-table-column prop="code" label="部门编码" width />
-      </el-table>
+        node-key="id"
+        :highlight-current="!multiple"
+        default-expand-all
+        check-strictly
+        :show-checkbox="multiple"
+        check-on-click-node
+        :expand-on-click-node="false"
+        :indent="16"
+        :filter-node-method="filterNode"
+      />
     </my-container>
     <template #footer>
       <el-button @click.native="onCancel">取消</el-button>
@@ -64,18 +46,17 @@
 </template>
 
 <script>
-import { formatTime } from '@/utils'
-import { listToTree, treeToList } from '@/utils/tree'
+import { listToTree } from '@/utils/tree'
 import { getList } from '@/api/admin/organization'
 import MyWindow from '@/components/my-window'
 
 export default {
-  name: 'MySelectPosition',
+  name: 'MySelectOrg',
   components: { MyWindow },
   props: {
     title: {
       type: String,
-      default: '选择岗位'
+      default: '选择部门'
     },
     visible: {
       type: Boolean,
@@ -100,14 +81,15 @@ export default {
   },
   data() {
     return {
-      filter: {
-        name: ''
-      },
+      filterText: '',
       tree: [],
       listLoading: false,
-      pageLoading: false,
-      currentRow: null,
-      sels: []
+      pageLoading: false
+    }
+  },
+  watch: {
+    filterText(val) {
+      this.$refs.tree.filter(val)
     }
   },
   methods: {
@@ -118,55 +100,38 @@ export default {
     },
     // 确定
     onSure() {
-      this.$emit('click', this.form, this.multiple ? this.sels : this.currentRow)
+      var data = this.multiple ? this.$refs.tree.getCheckedNodes() : this.$refs.tree.getCurrentNode()
+      this.$emit('click', this.form, data)
     },
-    onSearch() {
-      this.getData()
+    async onOpened() {
+      await this.initData()
+      this.$emit('opened')
     },
-    onCurrentChange(row) {
-      this.currentRow = row
+    filterNode(value, data) {
+      if (!value) return true
+      return data.name.indexOf(value) !== -1
     },
-    onSelectionChange(sels) {
-      this.sels = sels
-    },
-    formatCreatedTime: function(row, column, time) {
-      return formatTime(time, 'YYYY-MM-DD HH:mm')
-    },
-    // 获取数据
-    async getData() {
-      const para = {
-        key: this.filter.name
-      }
+    // 初始化数据
+    async initData() {
       this.listLoading = true
-      const res = await getList(para)
+      const res = await getList()
       this.listLoading = false
 
       if (!res?.success) {
         return
       }
 
-      this.tree = listToTree(res.data)
-    },
-    onSelectAll: function(selection) {
-      const selections = treeToList(selection)
-      const rows = treeToList(this.tree)
-      const checked = selections.length === rows.length
-      rows.forEach(row => {
-        this.$refs.multipleTable.toggleRowSelection(row, checked)
+      const list = _.cloneDeep(res.data)
+      list.forEach(d => {
+        d._loading = false
       })
-
-      this.sels = this.$refs.multipleTable.selection
+      this.tree = listToTree(list)
     },
-    onSelect: function(selection, row) {
-      const checked = selection.some(s => s.id === row.id)
-      if (row.children && row.children.length > 0) {
-        const rows = treeToList(row.children)
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row, checked)
-        })
-      }
-
-      this.sels = this.$refs.multipleTable.selection
+    setCheckedNodes(nodes) {
+      this.$refs.tree.setCheckedNodes(nodes)
+    },
+    setCheckedKeys(keys) {
+      this.$refs.tree.setCheckedKeys(keys)
     }
   }
 }

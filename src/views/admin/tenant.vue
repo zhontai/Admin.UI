@@ -115,7 +115,7 @@
     </template>
 
     <!--选择权限-->
-    <my-select-permission :tenant="true" :tenant-id="tenantId" :title="title" :visible.sync="selectPermissionVisible" :set-permission-loading="setPermissionLoading" @click="onSelectPermission" />
+    <my-select-permission :tenant="true" :tenant-id="tenantId" :title="title" :visible.sync="selectPermissionVisible" :sure-loading="setPermissionLoading" @click="onSelectPermission" />
 
     <!--新增窗口-->
     <my-window

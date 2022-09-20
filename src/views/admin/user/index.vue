@@ -1,5 +1,7 @@
 <template>
   <my-container
+    left-aside-width="280px"
+    :left-aside-resize-options="resizeOptions"
     :show-left-aside="true"
     :resizable="true"
     :show-header="false"
@@ -40,9 +42,9 @@ export default {
     resizeOptions() {
       return {
         handles: 'e',
-        onlySize: true,
-        minWidth: 280,
-        maxWidth: 700
+        minWidth: 160,
+        maxWidth: 500,
+        autoCalcRange: false
       }
     }
   },

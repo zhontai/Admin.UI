@@ -176,7 +176,7 @@
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
-            <el-form-item label="部门" prop="email">
+            <el-form-item label="部门" prop="org">
               <el-input v-model="editForm.organizationName" placeholder="请选择部门" readonly autocomplete="off" class="input-with-select" @click.native="onOpenOrganization('editForm')">
                 <el-button slot="append" icon="el-icon-more" @click="onOpenOrganization('editForm')" />
               </el-input>

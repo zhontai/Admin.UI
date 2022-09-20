@@ -50,6 +50,7 @@
     :before-close="beforeClose?beforeClose:onCancel"
     :style="dialogStyle"
     :fullscreen.sync="currentFullscreen"
+    :width="width"
     @open="onOpen"
     @close="onClose"
     @mousedown.native="onMousedown"
@@ -211,6 +212,10 @@ export default {
     size: {
       type: [Number, String],
       default: 'auto'
+    },
+    width: {
+      type: [Number, String],
+      default: '50%'
     },
     drawerBodyStyle: {
       type: String,

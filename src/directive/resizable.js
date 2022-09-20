@@ -207,11 +207,13 @@ class Resizable extends Events {
   handleMouseDown(e) {
     e.preventDefault()
 
-    const rangeDomEl = this.options.rangeDom && this.getElement(this.document, this.options.rangeDom) || this.targetDom.parentNode
-    const rangeDomRect = rangeDomEl?.getBoundingClientRect()
-    if (rangeDomRect) {
-      this.options.maxWidth = rangeDomRect.width - 10
-      this.options.maxHeight = rangeDomRect.height - 10
+    if (this.options.autoCalcRange) {
+      const rangeDomEl = this.options.rangeDom && this.getElement(this.document, this.options.rangeDom) || this.targetDom.parentNode
+      const rangeDomRect = rangeDomEl?.getBoundingClientRect()
+      if (rangeDomRect) {
+        this.options.maxWidth = rangeDomRect.width - 10
+        this.options.maxHeight = rangeDomRect.height - 10
+      }
     }
 
     this.dir = e.target.attributes['_dir'].value

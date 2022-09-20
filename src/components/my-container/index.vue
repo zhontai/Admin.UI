@@ -117,7 +117,8 @@ export default {
         {
           maxWidth: '85%',
           maxHeight: '85%',
-          disabled: !this.resizable
+          disabled: !this.resizable,
+          autoCalcRange: true
         },
         this.leftAsideResizeOptions,
         {
@@ -133,7 +134,8 @@ export default {
         {
           maxWidth: '85%',
           maxHeight: '85%',
-          disabled: !this.resizable
+          disabled: !this.resizable,
+          autoCalcRange: true
         },
         this.rightAsideResizeOptions,
         {

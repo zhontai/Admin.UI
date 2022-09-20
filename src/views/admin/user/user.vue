@@ -81,6 +81,7 @@
       :visible.sync="searchWindowVisible"
       :fields="fields"
       :modal="false"
+      width="600px"
       @click="onSearchFilter"
     />
 
@@ -102,7 +103,7 @@
       >
         <el-row>
           <el-col :xs="24" :sm="24" :md="24" :lg="18" :xl="18">
-            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
+            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
               <el-form-item label="用户名" prop="userName">
                 <el-input
                   v-model="addForm.userName"
@@ -113,17 +114,17 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
+            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
               <el-form-item label="密码" prop="password">
                 <el-input v-model="addForm.password" show-password autocomplete="off" />
               </el-form-item>
             </el-col>
-            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
+            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
               <el-form-item label="姓名" prop="name">
                 <el-input v-model="addForm.name" autocomplete="off" />
               </el-form-item>
             </el-col>
-            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
+            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
               <el-form-item label="角色" prop="roleIds">
                 <el-select v-model="addForm.roleIds" multiple placeholder="请选择角色" style="width:100%;">
                   <el-option
@@ -133,6 +134,13 @@
                     :value="item.id"
                   />
                 </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
+              <el-form-item label="部门" prop="org">
+                <el-input v-model="addForm.orgName" placeholder="请选择部门" readonly autocomplete="off" class="input-with-select" @click.native="onOpenOrg('addForm')">
+                  <el-button slot="append" icon="el-icon-more" @click="onOpenOrg('addForm')" />
+                </el-input>
               </el-form-item>
             </el-col>
           </el-col>
@@ -192,6 +200,15 @@
         <my-confirm-button type="submit" :validate="editFormvalidate" :loading="editLoading" @click="onEditSubmit" />
       </template>
     </my-window>
+
+    <my-select-org
+      ref="org"
+      :visible.sync="orgVisible"
+      :form="orgForm"
+
+      @click="onSelectOrg"
+      @opened="onOpenedOrg"
+    />
   </my-container>
 </template>
 
@@ -202,10 +219,17 @@ import MyConfirmButton from '@/components/my-confirm-button'
 import MySearch from '@/components/my-search'
 import MySearchWindow from '@/components/my-search-window'
 import MyWindow from '@/components/my-window'
+import MySelectOrg from '@/components/my-select-window/organization'
 
 export default {
   name: 'MyUser',
-  components: { MyConfirmButton, MySearch, MySearchWindow, MyWindow },
+  components: { MyConfirmButton, MySearch, MySearchWindow, MyWindow, MySelectOrg },
+  props: {
+    organizationId: {
+      type: Number,
+      default: null
+    }
+  },
   data() {
     return {
       // 高级查询字段
@@ -255,9 +279,18 @@ export default {
         userName: '',
         name: '',
         password: '',
-        roleIds: []
+        roleIds: [],
+        orgIds: []
       },
-      deleteLoading: false
+      deleteLoading: false,
+
+      orgForm: null,
+      orgVisible: false
+    }
+  },
+  watch: {
+    organizationId() {
+      this.getUsers()
     }
   },
   async mounted() {
@@ -461,6 +494,25 @@ export default {
     // 选择
     onSelsChange(sels) {
       this.sels = sels
+    },
+    onOpenOrg(form) {
+      this.orgVisible = true
+      this.$nextTick(() => {
+        this.$refs.org.setCheckedKeys(this[form].orgIds)
+      })
+      this.orgForm = form
+    },
+    onSelectOrg(form, selectData) {
+      this[form].orgIds = selectData.map(a => a.id)
+      if (selectData) {
+        this[form].orgName = selectData[0].name
+        this[form].orgId = selectData[0].id
+      }
+
+      this.orgVisible = false
+    },
+    onOpenedOrg() {
+      this.$refs.org.setCheckedKeys(this[this.orgForm].orgIds)
     }
   }
 }
