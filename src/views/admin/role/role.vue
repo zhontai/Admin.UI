@@ -75,7 +75,7 @@
           <el-table-column prop="name" label="角色名" width />
           <el-table-column v-if="checkPermission(['api:admin:role:update','api:admin:role:softdelete'])" label="操作" width="180">
             <template #default="{ $index, row }">
-              <el-dropdown v-if="checkPermission(['api:admin:role:update'])" split-button type="primary" style="margin-left:10px;" @click="onEdit(row,$index)" @command="(command)=>onCommand(command,row)">
+              <el-dropdown v-if="checkPermission(['api:admin:role:update'])" split-button type="primary" style="margin-left:10px;" @click.stop="onEdit(row,$index)" @command="(command)=>onCommand(command,row)">
                 编辑
                 <template #dropdown>
                   <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:90px;text-align:right;">
@@ -241,6 +241,11 @@ export default {
       this.groupList = data.filter(a => a.parentId === 0)
       this.activeGroupList = this.groupList.map(a => a.id)
       this.tree = listToTree(_.cloneDeep(data))
+      this.$nextTick(() => {
+        if (this.tree?.length > 0 && this.tree[0].children) {
+          this.$refs.table[0].setCurrentRow(this.tree[0].children[0])
+        }
+      })
     },
     async edit(row) {
       this.pageLoading = true

@@ -23,11 +23,9 @@
       </template>
       <el-tree
         ref="tree"
-        :props="{
-          label: 'name'
-        }"
+        :props="props"
         :data="tree"
-        node-key="id"
+        :node-key="nodeKey"
         :highlight-current="!multiple"
         default-expand-all
         check-strictly
@@ -77,6 +75,18 @@ export default {
     modalAppendToBody: {
       type: Boolean,
       default: false
+    },
+    nodeKey: {
+      type: String,
+      default: 'id'
+    },
+    props: {
+      type: Object,
+      default() {
+        return {
+          label: 'name'
+        }
+      }
     }
   },
   data() {
@@ -84,7 +94,9 @@ export default {
       filterText: '',
       tree: [],
       listLoading: false,
-      pageLoading: false
+      pageLoading: false,
+      node: false,
+      checkedList: []
     }
   },
   watch: {
@@ -105,6 +117,7 @@ export default {
     },
     async onOpened() {
       await this.initData()
+      this.$refs.tree[this.node ? 'setCheckedNodes' : 'setCheckedKeys'](this.checkedList)
       this.$emit('opened')
     },
     filterNode(value, data) {
@@ -128,9 +141,13 @@ export default {
       this.tree = listToTree(list)
     },
     setCheckedNodes(nodes) {
+      this.node = true
+      this.checkedList = nodes
       this.$refs.tree.setCheckedNodes(nodes)
     },
     setCheckedKeys(keys) {
+      this.node = false
+      this.checkedList = keys
       this.$refs.tree.setCheckedKeys(keys)
     }
   }

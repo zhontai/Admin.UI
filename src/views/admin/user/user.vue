@@ -143,6 +143,18 @@
                 </el-input>
               </el-form-item>
             </el-col>
+            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
+              <el-form-item label="部门" prop="org">
+                <my-select
+                  v-model="orgLabels"
+                  :value-key="'name'"
+                  multiple
+                  placeholder="请选择部门"
+                  style="width:100%;"
+                  @click.native="onOpenOrg('addForm')"
+                />
+              </el-form-item>
+            </el-col>
           </el-col>
         </el-row>
       </el-form>
@@ -205,9 +217,8 @@
       ref="org"
       :visible.sync="orgVisible"
       :form="orgForm"
-
+      multiple
       @click="onSelectOrg"
-      @opened="onOpenedOrg"
     />
   </my-container>
 </template>
@@ -219,11 +230,12 @@ import MyConfirmButton from '@/components/my-confirm-button'
 import MySearch from '@/components/my-search'
 import MySearchWindow from '@/components/my-search-window'
 import MyWindow from '@/components/my-window'
+import MySelect from '@/components/my-select'
 import MySelectOrg from '@/components/my-select-window/organization'
 
 export default {
   name: 'MyUser',
-  components: { MyConfirmButton, MySearch, MySearchWindow, MyWindow, MySelectOrg },
+  components: { MyConfirmButton, MySearch, MySearchWindow, MyWindow, MySelectOrg, MySelect },
   props: {
     organizationId: {
       type: Number,
@@ -280,12 +292,17 @@ export default {
         name: '',
         password: '',
         roleIds: [],
-        orgIds: []
+        orgs: []
       },
       deleteLoading: false,
 
       orgForm: null,
       orgVisible: false
+    }
+  },
+  computed: {
+    orgLabels() {
+      return this.addForm.orgs?.map(a => a.name)
     }
   },
   watch: {
@@ -498,21 +515,18 @@ export default {
     onOpenOrg(form) {
       this.orgVisible = true
       this.$nextTick(() => {
-        this.$refs.org.setCheckedKeys(this[form].orgIds)
+        this.$refs.org.setCheckedNodes(this[form].orgs)
       })
       this.orgForm = form
     },
     onSelectOrg(form, selectData) {
-      this[form].orgIds = selectData.map(a => a.id)
+      this[form].orgs = selectData.map(a => { return { id: a.id, name: a.name } })
       if (selectData) {
-        this[form].orgName = selectData[0].name
         this[form].orgId = selectData[0].id
+        this[form].orgName = selectData[0].name
       }
 
       this.orgVisible = false
-    },
-    onOpenedOrg() {
-      this.$refs.org.setCheckedKeys(this[this.orgForm].orgIds)
     }
   }
 }
