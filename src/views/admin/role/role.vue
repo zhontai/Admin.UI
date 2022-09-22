@@ -2,9 +2,9 @@
   <my-container v-loading="pageLoading" :show-footer="false">
     <!--查询-->
     <template #header>
-      <el-form class="ad-form-query" :inline="true" :model="filter" @submit.native.prevent>
+      <el-form class="ad-form-query" :inline="true" @submit.native.prevent>
         <el-form-item>
-          <my-search v-model="filter.name" :placeholder="'角色名'" @click="onSearch" />
+          <el-input v-model="filterText" placeholder="筛选角色" clearable />
         </el-form-item>
         <el-form-item v-if="checkPermission(['api:admin:role:add'])">
           <el-dropdown @command="onAddCommand">
@@ -39,7 +39,7 @@
     </template>
 
     <el-collapse v-model="activeGroupList">
-      <el-collapse-item v-for="(group, index) in tree" :key="group.id" :name="group.id">
+      <el-collapse-item v-for="(group, index) in tree" v-show="group.children?.length > 0" :key="group.id" :name="group.id">
         <template slot="title">
           {{ group.name }}
 
@@ -65,6 +65,7 @@
           :data="group.children"
           highlight-current-row
           :show-header="false"
+          current-row-key="id"
           @selection-change="onSelectionChange"
           @current-change="(currentRow, oldCurrentRow) => onCurrentChange(currentRow, oldCurrentRow, index)"
         >
@@ -158,7 +159,6 @@ import permissionApi from '@/api/admin/permission'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySelectPermission from '@/components/my-select-window/permission'
 import MyWindow from '@/components/my-window'
-import MySearch from '@/components/my-search'
 import resizable from '@/directive/resizable'
 import { listToTree } from '@/utils/tree'
 
@@ -167,13 +167,12 @@ export default {
   _sync: {
     disabled: true
   },
-  components: { MyConfirmButton, MySelectPermission, MyWindow, MySearch },
+  components: { MyConfirmButton, MySelectPermission, MyWindow },
   directives: { resizable },
   data() {
     return {
-      filter: {
-        name: ''
-      },
+      filterText: '',
+      dataList: [],
       tree: [],
       groupList: [],
       activeGroupList: [],
@@ -190,7 +189,10 @@ export default {
           parentId: 0,
           name: ''
         },
-        form: {},
+        form: {
+          name: '',
+          parentId: 0
+        },
         visible: false,
         loading: false,
         rules: {
@@ -211,23 +213,38 @@ export default {
       return `设置${this.currentRow?.name}权限`
     }
   },
+  watch: {
+    filterText(val) {
+      this.filterRoles(val)
+    }
+  },
   mounted() {
     this.getRoles()
-  },
-  beforeUpdate() {
-    // console.log('update')
   },
   methods: {
     formatCreatedTime: function(row, column, time) {
       return formatTime(time, 'YYYY-MM-DD HH:mm')
     },
-    onSearch() {
-      this.getRoles()
+    filterRoles(val) {
+      if (val) {
+        const data = this.dataList.filter(a => a.parentId !== 0 && a.name.indexOf(val) > -1)
+        this.tree = listToTree(_.cloneDeep(this.groupList.concat(data)))
+      } else {
+        this.tree = listToTree(_.cloneDeep(this.dataList))
+      }
+      this.$nextTick(() => {
+        for (let index = 0; index < this.tree.length; index++) {
+          if (this.tree[index].children?.length > 0) {
+            this.$refs.table[index].setCurrentRow(this.tree[index].children[0])
+            break
+          }
+        }
+      })
     },
     // 获取角色列表
     async getRoles() {
       this.pageLoading = true
-      const res = await roleApi.getList(this.filter)
+      const res = await roleApi.getList()
       this.pageLoading = false
 
       if (!res?.success) {
@@ -238,6 +255,7 @@ export default {
       data.forEach(d => {
         d._loading = false
       })
+      this.dataList = data
       this.groupList = data.filter(a => a.parentId === 0)
       this.activeGroupList = this.groupList.map(a => a.id)
       this.tree = listToTree(_.cloneDeep(data))
@@ -371,6 +389,7 @@ export default {
     },
     // 新增操作
     onAddCommand(command) {
+      this.role.form = this.role.init
       switch (command) {
         case 'addRole':
           this.addRole = true
@@ -386,6 +405,7 @@ export default {
     },
     // 新增角色操作
     onAddRole(row) {
+      this.role.form = this.role.init
       this.role.form.parentId = row.id
       this.addRole = true
       this.role.visible = true
@@ -412,13 +432,14 @@ export default {
       }
     },
     onCurrentChange(currentRow, oldCurrentRow, tableIndex) {
-      if (this.tableIndex > -1 && this.tableIndex !== tableIndex) {
+      if (this.tableIndex > -1 && tableIndex !== this.tableIndex && currentRow?.id > 0) {
         this.$refs.table[this.tableIndex].setCurrentRow({ id: 0 })
       }
 
       this.tableIndex = tableIndex
-      this.currentRow = currentRow
-      this.$emit('current-change', currentRow, oldCurrentRow)
+      if (currentRow?.id > 0) {
+        this.$emit('current-change', currentRow, oldCurrentRow)
+      }
     }
   }
 }

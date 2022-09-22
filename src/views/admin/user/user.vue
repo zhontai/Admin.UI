@@ -98,7 +98,7 @@
         ref="addForm"
         :model="addForm"
         :rules="addFormRules"
-        label-width="80px"
+        label-width="90px"
         :inline="false"
       >
         <el-row>
@@ -126,33 +126,40 @@
             </el-col>
             <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
               <el-form-item label="角色" prop="roleIds">
-                <el-select v-model="addForm.roleIds" multiple placeholder="请选择角色" style="width:100%;">
-                  <el-option
-                    v-for="item in select.roles"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
-              <el-form-item label="部门" prop="org">
-                <el-input v-model="addForm.orgName" placeholder="请选择部门" readonly autocomplete="off" class="input-with-select" @click.native="onOpenOrg('addForm')">
-                  <el-button slot="append" icon="el-icon-more" @click="onOpenOrg('addForm')" />
-                </el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
-              <el-form-item label="部门" prop="org">
                 <my-select
-                  v-model="orgLabels"
-                  :value-key="'name'"
+                  v-model="addForm.roles"
+                  :props="{ label:'name' }"
+                  value-key="id"
+                  multiple
+                  placeholder="请选择角色"
+                  style="width:100%;"
+                  @click.native="onOpenRole('addForm')"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
+              <el-form-item label="部门" prop="orgs">
+                <my-select
+                  v-model="addForm.orgs"
+                  :props="{ label:'name' }"
+                  value-key="id"
                   multiple
                   placeholder="请选择部门"
                   style="width:100%;"
                   @click.native="onOpenOrg('addForm')"
                 />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
+              <el-form-item label="主属部门" prop="mainOrgId">
+                <el-select v-model="addForm.mainOrgId" placeholder="请选择主属部门" style="width:100%;">
+                  <el-option
+                    v-for="item in addForm.orgs"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
           </el-col>
@@ -194,14 +201,14 @@
             </el-col>
             <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
               <el-form-item label="角色" prop="roleIds">
-                <el-select v-model="editForm.roleIds" multiple placeholder="请选择角色" style="width:100%;">
+                <!-- <el-select v-model="editForm.roleIds" multiple placeholder="请选择角色" style="width:100%;">
                   <el-option
                     v-for="item in select.roles"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"
                   />
-                </el-select>
+                </el-select> -->
               </el-form-item>
             </el-col>
           </el-col>
@@ -216,9 +223,17 @@
     <my-select-org
       ref="org"
       :visible.sync="orgVisible"
-      :form="orgForm"
       multiple
+      :form="orgForm"
       @click="onSelectOrg"
+    />
+
+    <my-select-role
+      ref="role"
+      :visible.sync="roleVisible"
+      multiple
+      :form="roleForm"
+      @click="onSelectRole"
     />
   </my-container>
 </template>
@@ -232,10 +247,11 @@ import MySearchWindow from '@/components/my-search-window'
 import MyWindow from '@/components/my-window'
 import MySelect from '@/components/my-select'
 import MySelectOrg from '@/components/my-select-window/organization'
+import MySelectRole from '@/components/my-select-window/role'
 
 export default {
   name: 'MyUser',
-  components: { MyConfirmButton, MySearch, MySearchWindow, MyWindow, MySelectOrg, MySelect },
+  components: { MyConfirmButton, MySearch, MySearchWindow, MyWindow, MySelectOrg, MySelect, MySelectRole },
   props: {
     organizationId: {
       type: Number,
@@ -284,7 +300,9 @@ export default {
       addFormRules: {
         userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+        orgs: [{ required: true, message: '请选择部门', trigger: 'change' }],
+        mainOrgId: [{ required: true, message: '请选择主属部门', trigger: 'change' }]
       },
       // 新增界面数据
       addForm: {
@@ -292,12 +310,17 @@ export default {
         name: '',
         password: '',
         roleIds: [],
-        orgs: []
+        mainOrgId: null,
+        orgs: [],
+        roles: []
       },
       deleteLoading: false,
 
       orgForm: null,
-      orgVisible: false
+      orgVisible: false,
+
+      roleForm: null,
+      roleVisible: false
     }
   },
   computed: {
@@ -308,6 +331,13 @@ export default {
   watch: {
     organizationId() {
       this.getUsers()
+    },
+    'addForm.orgs'() {
+      if (this.addForm.orgs.some(a => a.id === this.addForm.mainOrgId)) {
+        return
+      }
+
+      this.addForm.mainOrgId = this.addForm.orgs?.length > 0 ? this.addForm.orgs[0].id : null
     }
   },
   async mounted() {
@@ -513,20 +543,26 @@ export default {
       this.sels = sels
     },
     onOpenOrg(form) {
+      this.orgForm = form
       this.orgVisible = true
       this.$nextTick(() => {
         this.$refs.org.setCheckedNodes(this[form].orgs)
       })
-      this.orgForm = form
     },
     onSelectOrg(form, selectData) {
       this[form].orgs = selectData.map(a => { return { id: a.id, name: a.name } })
-      if (selectData) {
-        this[form].orgId = selectData[0].id
-        this[form].orgName = selectData[0].name
-      }
-
       this.orgVisible = false
+    },
+    onOpenRole(form) {
+      this.roleForm = form
+      this.roleVisible = true
+      this.$nextTick(() => {
+        this.$refs.role.setCheckedList(this[form].roles)
+      })
+    },
+    onSelectRole(form, selectData) {
+      this[form].roles = selectData.map(a => { return { id: a.id, name: a.name } })
+      this.roleVisible = false
     }
   }
 }

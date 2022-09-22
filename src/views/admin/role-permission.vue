@@ -14,26 +14,27 @@
               >刷新</el-button>
             </div>
           </template>
-          <div class="role-box">
-            <div
-              v-for="o in roles"
-              :key="o.id"
-              :class="o.id == roleId ? 'active' : ''"
-              class="item role-item"
-              @click="roleSelect(o.id)"
-            >
-              <span>{{ o.name }}</span>
-              <span style="float:right;">{{ o.description }}</span>
-            </div>
-          </div>
-          <!--分页-->
-          <my-pagination
-            ref="pager"
-            :total="total"
-            :auto-layout="false"
-            layout="simpleJumper"
-            @get-page="getRoles"
-          />
+          <el-collapse v-model="activeGroupList">
+            <el-collapse-item v-for="(group, index) in roleTree" :key="group.id" :name="group.id">
+              <template slot="title">
+                {{ group.name }}
+              </template>
+              <!--列表-->
+              <el-table
+                ref="table"
+                :data="group.children"
+                highlight-current-row
+                :show-header="false"
+                current-row-key="id"
+                @current-change="(currentRow, oldCurrentRow) => onCurrentChange(currentRow, oldCurrentRow, index)"
+              >
+                <template #empty>
+                  <el-empty :image-size="50" />
+                </template>
+                <el-table-column prop="name" label="角色名" width />
+              </el-table>
+            </el-collapse-item>
+          </el-collapse>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="18" class="toolbar perms">
@@ -94,14 +95,16 @@ export default {
   components: { MyConfirmButton, MyElTree },
   data() {
     return {
-      roles: [],
+      roleTree: [],
+      activeGroupList: [],
       total: 0,
       roleId: 0,
       permissionTree: [],
       apis: [],
       loadingRoles: false,
       loadingPermissions: false,
-      loadingSave: false
+      loadingSave: false,
+      tableIndex: -1
     }
   },
   mounted() {
@@ -115,16 +118,23 @@ export default {
     },
     // 获取角色列表
     async getRoles() {
-      var pager = this.$refs.pager.getPager()
-      const params = {
-        ...pager
-      }
       this.loadingRoles = true
-      const res = await roleApi.getPage(params)
+      const res = await roleApi.getList(this.filter)
       this.loadingRoles = false
 
-      this.total = res.data.total
-      this.roles = res.data?.list
+      if (!res?.success) {
+        return
+      }
+
+      const data = res.data
+      this.groupList = data.filter(a => a.parentId === 0)
+      this.activeGroupList = this.groupList.map(a => a.id)
+      this.roleTree = listToTree(_.cloneDeep(data))
+      this.$nextTick(() => {
+        if (this.roleTree?.length > 0 && this.roleTree[0].children) {
+          this.$refs.table[0].setCurrentRow(this.roleTree[0].children[0])
+        }
+      })
     },
     // 获取权限树
     async getPermissions() {
@@ -178,8 +188,15 @@ export default {
         type: 'success'
       })
     },
-    roleSelect(id) {
-      this.roleId = id
+    onCurrentChange(currentRow, oldCurrentRow, tableIndex) {
+      if (this.tableIndex > -1 && this.tableIndex !== tableIndex) {
+        this.$refs.table[this.tableIndex].setCurrentRow({ id: 0 })
+      }
+
+      this.tableIndex = tableIndex
+      this.currentRow = currentRow
+
+      this.roleId = currentRow.id
       this.getRolePermission()
     }
   }
@@ -214,8 +231,14 @@ export default {
   padding: 3px 0px;
 }
 
-.role-box{
-  margin-bottom:10px;
-  border-bottom:1px solid #E4E7ED;
+:deep() {
+  .el-collapse{
+    border-top-width: 0px;
+    border-bottom-width: 0px;
+    .el-collapse-item__wrap{
+      border-bottom-width: 0px;
+    }
+  }
 }
+
 </style>

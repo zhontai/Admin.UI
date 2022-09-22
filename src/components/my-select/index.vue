@@ -227,6 +227,10 @@ export default {
       type: String,
       default: 'value'
     },
+    props: {
+      type: Object,
+      default: null
+    },
     collapseTags: Boolean,
     popperAppendToBody: {
       type: Boolean,
@@ -235,6 +239,11 @@ export default {
   },
 
   data() {
+    const innerProps = Object.assign(
+      {},
+      { label: 'label' },
+      this.props
+    )
     return {
       options: [],
       cachedOptions: [],
@@ -257,7 +266,8 @@ export default {
       currentPlaceholder: '',
       menuVisibleOnFocus: false,
       isOnComposition: false,
-      isSilentBlur: false
+      isSilentBlur: false,
+      innerProps
     }
   },
 
@@ -574,7 +584,7 @@ export default {
       }
       if (option) return option
       const label = (!isObject && !isNull && !isUndefined)
-        ? String(value) : ''
+        ? String(value) : value[this.innerProps.label]
       const newOption = {
         value: value,
         currentLabel: label

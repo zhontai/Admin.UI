@@ -15,11 +15,7 @@
   >
     <my-container v-loading="pageLoading" style="height: 100%;">
       <template #header>
-        <el-input
-          v-model="filterText"
-          placeholder="筛选部门"
-          clearable
-        />
+        <el-input v-model="filterText" placeholder="筛选部门" clearable />
       </template>
       <el-tree
         ref="tree"
@@ -93,7 +89,6 @@ export default {
     return {
       filterText: '',
       tree: [],
-      listLoading: false,
       pageLoading: false,
       node: false,
       checkedList: []
@@ -126,9 +121,9 @@ export default {
     },
     // 初始化数据
     async initData() {
-      this.listLoading = true
+      this.pageLoading = true
       const res = await getList()
-      this.listLoading = false
+      this.pageLoading = false
 
       if (!res?.success) {
         return
