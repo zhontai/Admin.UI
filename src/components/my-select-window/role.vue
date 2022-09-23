@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { listToTree } from '@/utils/tree'
+import { listToTree, treeToListWithChildren } from '@/utils/tree'
 import { getList } from '@/api/admin/role'
 import MyWindow from '@/components/my-window'
 
@@ -115,18 +115,29 @@ export default {
     },
     // 确定
     onSure() {
-      this.$emit('click', this.form, this.checkedList)
+      let selection = []
+      this.$refs.table?.forEach(a => {
+        selection = selection.concat(a.selection)
+      })
+
+      this.$emit('click', this.form, selection)
     },
     async onOpened() {
       await this.initData()
+      this.bindData()
+      this.$emit('opened')
+    },
+    bindData() {
       this.$nextTick(() => {
+        const list = treeToListWithChildren(this.tree)
         this.checkedList?.forEach(a => {
-          this.$refs.table?.forEach(b => {
-            b.toggleRowSelection(a, true)
-          })
+          const rowData = list.find(b => b.id === a.id)
+          if (rowData) {
+            const tableIndex = this.activeGroupList.findIndex(id => id === rowData.parentId)
+            this.$refs.table[tableIndex].toggleRowSelection(rowData)
+          }
         })
       })
-      this.$emit('opened')
     },
     filterRoles(val) {
       if (val) {
@@ -135,6 +146,7 @@ export default {
       } else {
         this.tree = listToTree(_.cloneDeep(this.dataList))
       }
+      this.bindData()
     },
     // 初始化数据
     async initData() {

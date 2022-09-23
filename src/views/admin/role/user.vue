@@ -138,7 +138,7 @@ export default {
       })
 
       this.deleteLoading = true
-      const res = await userApi.batchSoftDelete(para.ids)
+      const res = await roleApi.batchSoftDelete(para.ids)
       this.deleteLoading = false
 
       if (!res?.success) {

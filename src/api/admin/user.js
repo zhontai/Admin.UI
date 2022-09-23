@@ -29,13 +29,6 @@ export const getLoginUser = (params, config = {}) => {
 }
 
 /**
- * 查询下拉数据
- */
-export const getSelect = (params, config = {}) => {
-  return request.get(apiPrefix + 'get-select', { params: params, ...config })
-}
-
-/**
  * 查询用户基本信息
  */
 export const getBasic = (params, config = {}) => {
@@ -116,7 +109,6 @@ export default {
   get,
   getPage,
   getLoginUser,
-  getSelect,
   getBasic,
   getPermissions,
   add,

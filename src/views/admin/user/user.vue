@@ -52,15 +52,15 @@
         </template>
       </el-table-column>
       <el-table-column v-if="checkPermission(['api:admin:user:update','api:admin:user:softdelete'])" label="操作" width="180">
-        <template #default="{ $index, row }">
-          <el-button v-if="checkPermission(['api:admin:user:update'])" @click="onEdit($index, row)">编辑</el-button>
+        <template #default="{ row }">
+          <el-button v-if="checkPermission(['api:admin:user:update'])" @click="onEdit(row)">编辑</el-button>
           <my-confirm-button
             v-if="checkPermission(['api:admin:user:softdelete'])"
             type="delete"
             :loading="row._loading"
             :validate="deleteValidate"
             :validate-data="row"
-            @click="onDelete($index, row)"
+            @click="onDelete(row)"
           />
         </template>
       </el-table-column>
@@ -85,19 +85,19 @@
       @click="onSearchFilter"
     />
 
-    <!--新增窗口-->
+    <!--新增编辑窗口-->
     <my-window
       v-if="checkPermission(['api:admin:user:add'])"
-      title="新增用户"
+      :title="`${ form.id > 0 ? '编辑' : '新增' }用户`"
       embed
       drawer
-      :visible.sync="addFormVisible"
-      @close="closeAddForm"
+      :visible.sync="formVisible"
+      @close="closeForm"
     >
       <el-form
-        ref="addForm"
-        :model="addForm"
-        :rules="addFormRules"
+        ref="form"
+        :model="form"
+        :rules="formRules"
         label-width="90px"
         :inline="false"
       >
@@ -106,7 +106,7 @@
             <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
               <el-form-item label="用户名" prop="userName">
                 <el-input
-                  v-model="addForm.userName"
+                  v-model="form.userName"
                   autocomplete="off"
                   :readonly="userNameReadonly"
                   @focus="userNameReadonly = false"
@@ -114,47 +114,47 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
+            <el-col v-if="!(form.id>0)" :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
               <el-form-item label="密码" prop="password">
-                <el-input v-model="addForm.password" show-password autocomplete="off" />
+                <el-input key="password" v-model="form.password" show-password autocomplete="off" />
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
               <el-form-item label="姓名" prop="name">
-                <el-input v-model="addForm.name" autocomplete="off" />
+                <el-input v-model="form.name" autocomplete="off" />
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
-              <el-form-item label="角色" prop="roleIds">
+              <el-form-item label="角色" prop="roles">
                 <my-select
-                  v-model="addForm.roles"
+                  v-model="form.roles"
                   :props="{ label:'name' }"
                   value-key="id"
                   multiple
                   placeholder="请选择角色"
                   style="width:100%;"
-                  @click.native="onOpenRole('addForm')"
+                  @click.native="onOpenRole('form')"
                 />
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
-              <el-form-item label="部门" prop="orgs">
+              <el-form-item label="部门" prop="emp.orgs">
                 <my-select
-                  v-model="addForm.orgs"
+                  v-model="form.emp.orgs"
                   :props="{ label:'name' }"
                   value-key="id"
                   multiple
                   placeholder="请选择部门"
                   style="width:100%;"
-                  @click.native="onOpenOrg('addForm')"
+                  @click.native="onOpenOrg('form')"
                 />
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
-              <el-form-item label="主属部门" prop="mainOrgId">
-                <el-select v-model="addForm.mainOrgId" placeholder="请选择主属部门" style="width:100%;">
+              <el-form-item label="主属部门" prop="emp.mainOrgId">
+                <el-select v-model="form.emp.mainOrgId" placeholder="请选择主属部门" style="width:100%;">
                   <el-option
-                    v-for="item in addForm.orgs"
+                    v-for="item in form.emp.orgs"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"
@@ -166,61 +166,12 @@
         </el-row>
       </el-form>
       <template #footer>
-        <el-button @click.native="addFormVisible = false">取消</el-button>
-        <my-confirm-button type="submit" :validate="addFormvalidate" :loading="addLoading" @click="onAddSubmit" />
+        <el-button @click.native="formVisible = false">取消</el-button>
+        <my-confirm-button type="submit" :validate="formvalidate" :loading="loading" @click="onSubmit" />
       </template>
     </my-window>
 
-    <!--编辑窗口-->
-    <my-window
-      v-if="checkPermission(['api:admin:user:update'])"
-      title="编辑用户"
-      embed
-      drawer
-      :visible.sync="editFormVisible"
-      @close="closeEditForm"
-    >
-      <el-form
-        ref="editForm"
-        :model="editForm"
-        :rules="editFormRules"
-        label-width="80px"
-        :inline="false"
-      >
-        <el-row>
-          <el-col :xs="24" :sm="24" :md="24" :lg="18" :xl="18">
-            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-              <el-form-item label="用户名" prop="userName">
-                <el-input v-model="editForm.userName" autocomplete="off" />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-              <el-form-item label="姓名" prop="name">
-                <el-input v-model="editForm.name" autocomplete="off" />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6">
-              <el-form-item label="角色" prop="roleIds">
-                <!-- <el-select v-model="editForm.roleIds" multiple placeholder="请选择角色" style="width:100%;">
-                  <el-option
-                    v-for="item in select.roles"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
-                  />
-                </el-select> -->
-              </el-form-item>
-            </el-col>
-          </el-col>
-        </el-row>
-      </el-form>
-      <template #footer>
-        <el-button @click.native="editFormVisible = false">取消</el-button>
-        <my-confirm-button type="submit" :validate="editFormvalidate" :loading="editLoading" @click="onEditSubmit" />
-      </template>
-    </my-window>
-
-    <my-select-org
+    <my-select-window-org
       ref="org"
       :visible.sync="orgVisible"
       multiple
@@ -228,7 +179,7 @@
       @click="onSelectOrg"
     />
 
-    <my-select-role
+    <my-select-window-role
       ref="role"
       :visible.sync="roleVisible"
       multiple
@@ -239,19 +190,18 @@
 </template>
 
 <script>
-import { formatTime } from '@/utils'
 import userApi from '@/api/admin/user'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySearch from '@/components/my-search'
 import MySearchWindow from '@/components/my-search-window'
 import MyWindow from '@/components/my-window'
 import MySelect from '@/components/my-select'
-import MySelectOrg from '@/components/my-select-window/organization'
-import MySelectRole from '@/components/my-select-window/role'
+import MySelectWindowOrg from '@/components/my-select-window/organization'
+import MySelectWindowRole from '@/components/my-select-window/role'
 
 export default {
   name: 'MyUser',
-  components: { MyConfirmButton, MySearch, MySearchWindow, MyWindow, MySelectOrg, MySelect, MySelectRole },
+  components: { MyConfirmButton, MySearch, MySearchWindow, MyWindow, MySelectWindowOrg, MySelect, MySelectWindowRole },
   props: {
     organizationId: {
       type: Number,
@@ -259,6 +209,16 @@ export default {
     }
   },
   data() {
+    const formData = {
+      userName: '',
+      name: '',
+      password: '',
+      roles: [],
+      emp: {
+        orgs: [],
+        mainOrgId: null
+      }
+    }
     return {
       // 高级查询字段
       fields: [
@@ -279,41 +239,20 @@ export default {
       listLoading: false,
 
       pageLoading: false,
-      addDialogFormVisible: false,
-      editFormVisible: false, // 编辑界面是否显示
-      editLoading: false,
-      editFormRules: {
-        userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
-      },
-      userNameReadonly: true,
-      // 编辑界面数据
-      editForm: {
-        id: 0,
-        userName: '',
-        name: '',
-        roleIds: []
-      },
 
-      addFormVisible: false, // 新增界面是否显示
-      addLoading: false,
-      addFormRules: {
+      userNameReadonly: true,
+      formVisible: false, // 新增界面是否显示
+      loading: false,
+      formRules: {
         userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
-        orgs: [{ required: true, message: '请选择部门', trigger: 'change' }],
-        mainOrgId: [{ required: true, message: '请选择主属部门', trigger: 'change' }]
+        'emp.orgs': [{ required: true, message: '请选择部门', trigger: 'change' }],
+        'emp.mainOrgId': [{ required: true, message: '请选择主属部门', trigger: 'change' }]
       },
+      initForm: _.cloneDeep(formData),
       // 新增界面数据
-      addForm: {
-        userName: '',
-        name: '',
-        password: '',
-        roleIds: [],
-        mainOrgId: null,
-        orgs: [],
-        roles: []
-      },
+      form: _.cloneDeep(formData),
       deleteLoading: false,
 
       orgForm: null,
@@ -325,28 +264,24 @@ export default {
   },
   computed: {
     orgLabels() {
-      return this.addForm.orgs?.map(a => a.name)
+      return this.form.emp?.orgs?.map(a => a.name)
     }
   },
   watch: {
     organizationId() {
       this.getUsers()
     },
-    'addForm.orgs'() {
-      if (this.addForm.orgs.some(a => a.id === this.addForm.mainOrgId)) {
+    'form.emp.orgs'() {
+      if (this.form.emp.orgs.some(a => a.id === this.form.emp.mainOrgId)) {
         return
       }
-
-      this.addForm.mainOrgId = this.addForm.orgs?.length > 0 ? this.addForm.orgs[0].id : null
+      this.form.emp.mainOrgId = this.form.emp.orgs.length > 0 ? this.form.emp.orgs[0].id : null
     }
   },
   async mounted() {
     await this.getUsers()
   },
   methods: {
-    formatCreatedTime(row, column, time) {
-      return formatTime(time, 'YYYY-MM-DD HH:mm')
-    },
     // 查询
     onSearch(dynamicFilter) {
       this.$refs.pager.setPage(1)
@@ -389,89 +324,62 @@ export default {
       })
       this.users = data
     },
+    // 显示新增界面
+    async onAdd() {
+      this.form = _.cloneDeep(this.initForm)
+      this.formVisible = true
+    },
     // 显示编辑界面
-    async onEdit(index, row) {
+    async onEdit(row) {
       this.pageLoading = true
       const res = await userApi.get({ id: row.id })
       this.pageLoading = false
       if (res && res.success) {
-        const { form, select } = res.data
-        this.select = select
-        this.editForm = form
-        this.editFormVisible = true
+        this.formVisible = true
+        const data = _.cloneDeep(this.initForm)
+        _.merge(data, res.data)
+        if (!data.emp) {
+          data.emp = {
+            orgs: [],
+            mainOrgId: null
+          }
+        }
+
+        this.form = data
       }
     },
-    closeEditForm() {
-      this.$refs.editForm.resetFields()
-    },
-    // 编辑验证
-    editFormvalidate() {
-      let isValid = false
-      this.$refs.editForm.validate(valid => {
-        isValid = valid
-      })
-      return isValid
-    },
-    // 编辑
-    async onEditSubmit() {
-      this.editLoading = true
-      const para = _.cloneDeep(this.editForm)
-
-      const res = await userApi.update(para)
-      this.editLoading = false
-
-      if (!res?.success) {
-        return
-      }
-
-      this.$message({
-        message: this.$t('admin.updateOk'),
-        type: 'success'
-      })
-      this.$refs['editForm'].resetFields()
-      this.editFormVisible = false
-      this.getUsers()
-    },
-    // 显示新增界面
-    async onAdd() {
-      this.pageLoading = true
-      const res = await userApi.getSelect()
-      this.pageLoading = false
-      if (res && res.success) {
-        const { select } = res.data
-        this.select = select
-        this.addFormVisible = true
-      }
-    },
-    closeAddForm() {
-      this.$refs.addForm.resetFields()
+    closeForm() {
+      this.$refs.form.resetFields()
     },
     // 新增验证
-    addFormvalidate() {
+    formvalidate() {
       let isValid = false
-      this.$refs.addForm.validate(valid => {
+      this.$refs.form.validate(valid => {
         isValid = valid
       })
       return isValid
     },
     // 新增
-    async onAddSubmit() {
-      this.addLoading = true
-      const para = _.cloneDeep(this.addForm)
-
-      const res = await userApi.add(para)
-      this.addLoading = false
+    async onSubmit() {
+      this.loading = true
+      const para = _.cloneDeep(this.form)
+      para.roleIds = para.roles?.map(a => a.id)
+      para.emp.orgIds = para.emp?.orgs?.map(a => a.id)
+      delete para.roles
+      delete para.emp.orgs
+      const res = await userApi[para.id > 0 ? 'update' : 'add'](para)
+      this.loading = false
 
       if (!res?.success) {
         return
       }
 
       this.$message({
-        message: this.$t('admin.addOk'),
+        message: para.id > 0 ? this.$t('admin.updateOk') : this.$t('admin.addOk'),
         type: 'success'
       })
-      this.$refs['addForm'].resetFields()
-      this.addFormVisible = false
+      this.$refs['form'].resetFields()
+      this.formVisible = false
       this.getUsers()
     },
     // 删除验证
@@ -488,10 +396,10 @@ export default {
       return isValid
     },
     // 删除
-    async onDelete(index, row) {
+    async onDelete(row) {
       row._loading = true
       const para = { id: row.id }
-      const res = await userApi.softDelete(para)
+      const res = await userApi.deleteAsync(para)
       row._loading = false
 
       if (!res?.success) {
@@ -525,7 +433,7 @@ export default {
       })
 
       this.deleteLoading = true
-      const res = await userApi.batchSoftDelete(para.ids)
+      const res = await userApi.batchDelete(para.ids)
       this.deleteLoading = false
 
       if (!res?.success) {
@@ -542,17 +450,6 @@ export default {
     onSelsChange(sels) {
       this.sels = sels
     },
-    onOpenOrg(form) {
-      this.orgForm = form
-      this.orgVisible = true
-      this.$nextTick(() => {
-        this.$refs.org.setCheckedNodes(this[form].orgs)
-      })
-    },
-    onSelectOrg(form, selectData) {
-      this[form].orgs = selectData.map(a => { return { id: a.id, name: a.name } })
-      this.orgVisible = false
-    },
     onOpenRole(form) {
       this.roleForm = form
       this.roleVisible = true
@@ -563,6 +460,17 @@ export default {
     onSelectRole(form, selectData) {
       this[form].roles = selectData.map(a => { return { id: a.id, name: a.name } })
       this.roleVisible = false
+    },
+    onOpenOrg(form) {
+      this.orgForm = form
+      this.orgVisible = true
+      this.$nextTick(() => {
+        this.$refs.org.setCheckedNodes(this[form].emp.orgs)
+      })
+    },
+    onSelectOrg(form, selectData) {
+      this[form].emp.orgs = selectData.map(a => { return { id: a.id, name: a.name } })
+      this.orgVisible = false
     }
   }
 }
