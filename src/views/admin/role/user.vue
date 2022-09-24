@@ -1,5 +1,5 @@
 <template>
-  <my-container v-loading="pageLoading">
+  <my-container>
     <!--顶部操作-->
     <template #header>
       <el-form class="ad-form-query" :inline="true" :model="filter" @submit.native.prevent>
@@ -51,19 +51,14 @@ import { formatTime } from '@/utils'
 import roleApi from '@/api/admin/role'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySearch from '@/components/my-search'
+import { mapState } from 'vuex'
 
 export default {
-  name: 'MyRoleUser',
+  name: 'MyPageRoleUser',
   _sync: {
     disabled: true
   },
   components: { MyConfirmButton, MySearch },
-  props: {
-    roleId: {
-      type: Number,
-      default: null
-    }
-  },
   data() {
     return {
       filter: {
@@ -73,17 +68,20 @@ export default {
       total: 0,
       sels: [], // 列表选中列
       listLoading: false,
-      pageLoading: false,
       deleteLoading: false
     }
   },
-  watch: {
-    roleId() {
-      this.getUsers()
-    }
+  computed: {
+    ...mapState('admin/role', {
+      roleId: 'roleId'
+    })
   },
-  async mounted() {
-    await this.getUsers()
+  watch: {
+    roleId(v, ov) {
+      if (v > 0) {
+        this.getUsers()
+      }
+    }
   },
   methods: {
     formatCreatedTime(row, column, time) {

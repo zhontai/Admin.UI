@@ -188,7 +188,7 @@ import { mapGetters } from 'vuex'
 import MyMenuItem from './components/my-menu-item'
 import { listToTree, getParents } from '@/utils/tree'
 import Sortable from 'sortablejs'
-import { isExternalLink } from '@/utils/validate'
+import { externalLink } from '@/utils/test'
 import { toLogout } from '@/router'
 import resizable from '@/directive/resizable'
 // import { setStyle } from 'element-ui/lib/utils/dom'
@@ -344,7 +344,7 @@ export default {
       // 检查外链
       cloneMenus.forEach(m => {
         if (!m.newWindow) {
-          m.newWindow = isExternalLink(m.path)
+          m.newWindow = externalLink(m.path)
         }
       })
       this.menuTree = listToTree(cloneMenus)

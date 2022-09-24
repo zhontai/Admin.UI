@@ -1,21 +1,22 @@
 <template>
   <my-container
     :show-left-aside="true"
+    :left-aside-resize-options="resizeOptions"
     :resizable="true"
     :show-header="false"
     :show-footer="false"
     :main-style="'padding:0px;'"
   >
     <template #left-aside>
-      <my-role @current-change="onCurrentChange" />
+      <my-page-role />
     </template>
-    <my-user :role-id="roleId" />
+    <my-page-role-user />
   </my-container>
 </template>
 
 <script>
-import MyRole from './role'
-import MyUser from './user'
+import MyPageRole from './role'
+import MyPageRoleUser from './user'
 import resizable from '@/directive/resizable'
 
 /**
@@ -29,30 +30,17 @@ export default {
     desc: '',
     cache: true
   },
-  components: { MyRole, MyUser },
+  components: { MyPageRole, MyPageRoleUser },
   directives: { resizable },
-  data() {
-    return {
-      roleId: null
-    }
-  },
   computed: {
     resizeOptions() {
       return {
         handles: 'e',
         onlySize: true,
-        minWidth: 280,
-        maxWidth: 700
+        minWidth: 400,
+        maxWidth: 800,
+        autoCalcRange: false
       }
-    }
-  },
-  mounted() {
-  },
-  beforeUpdate() {
-  },
-  methods: {
-    onCurrentChange(currentRow, oldCurrentRow) {
-      this.roleId = currentRow.id
     }
   }
 }

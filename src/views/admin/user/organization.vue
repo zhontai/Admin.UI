@@ -1,5 +1,5 @@
 <template>
-  <my-container>
+  <my-container v-loading="pageLoading">
     <template #header>
       <el-input
         v-model="filterText"
@@ -27,20 +27,18 @@
 <script>
 import { listToTree } from '@/utils/tree'
 import orgApi from '@/api/admin/organization'
+import { mapMutations } from 'vuex'
 
 export default {
-  name: 'MyOrg',
+  name: 'MyPageOrg',
   _sync: {
-    disabled: false,
-    title: '部门管理',
-    desc: '',
-    cache: true
+    disabled: true
   },
   data() {
     return {
       filterText: '',
       tree: [],
-      listLoading: false
+      pageLoading: false
     }
   },
   watch: {
@@ -48,19 +46,25 @@ export default {
       this.$refs.tree.filter(val)
     }
   },
+  created() {
+    this.setOrgId(null)
+  },
   mounted() {
     this.getList()
   },
   methods: {
+    ...mapMutations('admin/user', {
+      setOrgId: 'setOrgId'
+    }),
     filterNode(value, data) {
       if (!value) return true
       return data.name.indexOf(value) !== -1
     },
     // 获取列表
     async getList() {
-      this.listLoading = true
+      this.pageLoading = true
       const res = await orgApi.getList()
-      this.listLoading = false
+      this.pageLoading = false
 
       if (!res?.success) {
         return
@@ -71,9 +75,14 @@ export default {
         d._loading = false
       })
       this.tree = listToTree(list)
+      if (this.tree?.length > 0) {
+        this.$nextTick(() => {
+          document.querySelector('.el-tree-node__content:first-child')?.click()
+        })
+      }
     },
     onCurrentChange(currentNodeData) {
-      this.$emit('current-change', currentNodeData)
+      this.setOrgId(currentNodeData.id)
     }
   }
 }

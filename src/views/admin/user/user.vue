@@ -104,37 +104,13 @@
         <el-row>
           <el-col :xs="24" :sm="24" :md="24" :lg="18" :xl="18">
             <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
-              <el-form-item label="用户名" prop="userName">
-                <el-input
-                  v-model="form.userName"
-                  autocomplete="off"
-                  :readonly="userNameReadonly"
-                  @focus="userNameReadonly = false"
-                  @blur="userNameReadonly = true"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col v-if="!(form.id>0)" :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
-              <el-form-item label="密码" prop="password">
-                <el-input key="password" v-model="form.password" show-password autocomplete="off" />
-              </el-form-item>
-            </el-col>
-            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
               <el-form-item label="姓名" prop="name">
                 <el-input v-model="form.name" autocomplete="off" />
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
-              <el-form-item label="角色" prop="roles">
-                <my-select
-                  v-model="form.roles"
-                  :props="{ label:'name' }"
-                  value-key="id"
-                  multiple
-                  placeholder="请选择角色"
-                  style="width:100%;"
-                  @click.native="onOpenRole('form')"
-                />
+              <el-form-item label="手机号" prop="mobile">
+                <el-input v-model="form.mobile" autocomplete="off" />
               </el-form-item>
             </el-col>
             <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
@@ -160,6 +136,40 @@
                     :value="item.id"
                   />
                 </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
+              <el-form-item label="用户名" prop="userName">
+                <el-input
+                  v-model="form.userName"
+                  autocomplete="off"
+                  :readonly="userNameReadonly"
+                  @focus="userNameReadonly = false"
+                  @blur="userNameReadonly = true"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col v-if="!(form.id>0)" :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
+              <el-form-item label="密码" prop="password">
+                <el-input key="password" v-model="form.password" show-password autocomplete="off" />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
+              <el-form-item label="邮箱" prop="email">
+                <el-input v-model="form.email" autocomplete="off" />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
+              <el-form-item label="角色" prop="roles">
+                <my-select
+                  v-model="form.roles"
+                  :props="{ label:'name' }"
+                  value-key="id"
+                  multiple
+                  placeholder="请选择角色"
+                  style="width:100%;"
+                  @click.native="onOpenRole('form')"
+                />
               </el-form-item>
             </el-col>
           </el-col>
@@ -198,16 +208,15 @@ import MyWindow from '@/components/my-window'
 import MySelect from '@/components/my-select'
 import MySelectWindowOrg from '@/components/my-select-window/organization'
 import MySelectWindowRole from '@/components/my-select-window/role'
+import { mapState } from 'vuex'
+import { testMobile } from '@/utils/test'
 
 export default {
-  name: 'MyUser',
-  components: { MyConfirmButton, MySearch, MySearchWindow, MyWindow, MySelectWindowOrg, MySelect, MySelectWindowRole },
-  props: {
-    organizationId: {
-      type: Number,
-      default: null
-    }
+  name: 'MyPageUser',
+  _sync: {
+    disabled: true
   },
+  components: { MyConfirmButton, MySearch, MySearchWindow, MyWindow, MySelectWindowOrg, MySelect, MySelectWindowRole },
   data() {
     const formData = {
       userName: '',
@@ -222,8 +231,10 @@ export default {
     return {
       // 高级查询字段
       fields: [
-        { value: 'userName', label: '用户名', default: true },
         { value: 'name', label: '姓名', type: 'string' },
+        { value: 'mobile', label: '手机号', type: 'string' },
+        { value: 'email', label: '邮箱', type: 'string' },
+        { value: 'userName', label: '用户名', type: 'string' },
         { value: 'createdTime', label: '创建时间', type: 'date', operator: 'daterange',
           config: { type: 'daterange', format: 'yyyy-MM-dd', valueFormat: 'yyyy-MM-dd' }
         }
@@ -244,11 +255,16 @@ export default {
       formVisible: false, // 新增界面是否显示
       loading: false,
       formRules: {
-        userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+        name: [{ required: true, message: '请输入姓名', trigger: ['blur', 'change'] }],
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: ['blur', 'change'] },
+          { validator: testMobile, trigger: ['blur', 'change'] }
+        ],
+        email: [{ type: 'email', message: '请输入正确的邮箱', trigger: ['blur', 'change'] }],
         'emp.orgs': [{ required: true, message: '请选择部门', trigger: 'change' }],
-        'emp.mainOrgId': [{ required: true, message: '请选择主属部门', trigger: 'change' }]
+        'emp.mainOrgId': [{ required: true, message: '请选择主属部门', trigger: 'change' }],
+        userName: [{ required: true, message: '请输入用户名', trigger: ['blur', 'change'] }],
+        password: [{ required: true, message: '请输入密码', trigger: ['blur', 'change'] }]
       },
       initForm: _.cloneDeep(formData),
       // 新增界面数据
@@ -263,13 +279,18 @@ export default {
     }
   },
   computed: {
+    ...mapState('admin/user', {
+      orgId: 'orgId'
+    }),
     orgLabels() {
       return this.form.emp?.orgs?.map(a => a.name)
     }
   },
   watch: {
-    organizationId() {
-      this.getUsers()
+    orgId(v, ov) {
+      if (v > 0) {
+        this.getUsers()
+      }
     },
     'form.emp.orgs'() {
       if (this.form.emp.orgs.some(a => a.id === this.form.emp.mainOrgId)) {
@@ -277,9 +298,6 @@ export default {
       }
       this.form.emp.mainOrgId = this.form.emp.orgs.length > 0 ? this.form.emp.orgs[0].id : null
     }
-  },
-  async mounted() {
-    await this.getUsers()
   },
   methods: {
     // 查询
@@ -306,7 +324,8 @@ export default {
       var pager = this.$refs.pager.getPager()
       const params = {
         ...pager,
-        dynamicFilter: this.dynamicFilter
+        dynamicFilter: this.dynamicFilter,
+        filter: this.orgId
       }
 
       this.listLoading = true

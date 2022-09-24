@@ -201,22 +201,17 @@ import { formatTime } from '@/utils'
 import dictionaryApi from '@/api/admin/dictionary'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyWindow from '@/components/my-window'
+import { mapState } from 'vuex'
 
 /**
  * 数据字典类型
  */
 export default {
-  name: 'MyDictionaryData',
+  name: 'MyPageDictionaryData',
   _sync: {
     disabled: true
   },
   components: { MyConfirmButton, MyWindow },
-  props: {
-    dictionaryTypeId: {
-      type: Number,
-      default: null
-    }
-  },
   data() {
     return {
       filter: {
@@ -265,19 +260,21 @@ export default {
     }
   },
   computed: {
+    ...mapState('admin/dictionary', {
+      dictionaryTypeId: 'dictionaryTypeId'
+    })
   },
   watch: {
-    dictionaryTypeId(val) {
-      this.filter.dictionaryTypeId = val
-      this.addForm.dictionaryTypeId = val
-      this.getDataList()
+    dictionaryTypeId(v, ov) {
+      this.filter.dictionaryTypeId = v
+      this.addForm.dictionaryTypeId = v
+      if (v > 0) {
+        this.getDataList()
+      }
     }
   },
   mounted() {
     // this.getDataList()
-  },
-  beforeUpdate() {
-    // console.log('update')
   },
   methods: {
     formatCreatedTime: function(row, column, time) {

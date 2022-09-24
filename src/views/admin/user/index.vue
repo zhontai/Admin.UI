@@ -9,15 +9,15 @@
     :main-style="'padding:0px;'"
   >
     <template #left-aside>
-      <my-organization @current-change="onCurrentChange" />
+      <my-page-org />
     </template>
-    <my-user :organization-id="organizationId" />
+    <my-page-user />
   </my-container>
 </template>
 
 <script>
-import MyOrganization from './organization'
-import MyUser from './user'
+import MyPageOrg from './organization'
+import MyPageUser from './user'
 import resizable from '@/directive/resizable'
 
 /**
@@ -31,30 +31,17 @@ export default {
     desc: '',
     cache: true
   },
-  components: { MyOrganization, MyUser },
+  components: { MyPageOrg, MyPageUser },
   directives: { resizable },
-  data() {
-    return {
-      organizationId: null
-    }
-  },
   computed: {
     resizeOptions() {
       return {
         handles: 'e',
+        onlySize: true,
         minWidth: 160,
         maxWidth: 500,
         autoCalcRange: false
       }
-    }
-  },
-  mounted() {
-  },
-  beforeUpdate() {
-  },
-  methods: {
-    onCurrentChange(currentRow, oldCurrentRow) {
-      this.organizationId = currentRow.id
     }
   }
 }

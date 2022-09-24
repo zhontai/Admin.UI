@@ -5,15 +5,15 @@
     :resizable="true"
   >
     <template #left-aside>
-      <my-dictionary-type @current-change="onCurrentChange" />
+      <my-page-dictionary-type />
     </template>
-    <my-dictionary-data :dictionary-type-id="dictionaryTypeId" />
+    <my-page-dictionary-data />
   </my-container>
 </template>
 
 <script>
-import MyDictionaryType from './type'
-import MyDictionaryData from './data'
+import MyPageDictionaryType from './type'
+import MyPageDictionaryData from './data'
 
 /**
  * 数据字典类型
@@ -23,23 +23,9 @@ export default {
   _sync: {
     disabled: false,
     title: '数据字典',
-    desc: '数据字典',
+    desc: '',
     cache: true
   },
-  components: { MyDictionaryType, MyDictionaryData },
-  data() {
-    return {
-      dictionaryTypeId: null
-    }
-  },
-  mounted() {
-  },
-  beforeUpdate() {
-  },
-  methods: {
-    onCurrentChange(currentRow, oldCurrentRow) {
-      this.dictionaryTypeId = currentRow.id
-    }
-  }
+  components: { MyPageDictionaryType, MyPageDictionaryData }
 }
 </script>

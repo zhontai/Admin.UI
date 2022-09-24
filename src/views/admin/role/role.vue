@@ -76,7 +76,13 @@
           <el-table-column prop="name" label="角色名" width />
           <el-table-column v-if="checkPermission(['api:admin:role:update','api:admin:role:softdelete'])" label="操作" width="180">
             <template #default="{ $index, row }">
-              <el-dropdown v-if="checkPermission(['api:admin:role:update'])" split-button type="primary" style="margin-left:10px;" @click.stop="onEdit(row,$index)" @command="(command)=>onCommand(command,row)">
+              <el-dropdown
+                v-if="checkPermission(['api:admin:role:update'])"
+                split-button
+                style="margin-left:10px;"
+                @click.stop="onEdit(row,$index)"
+                @command="(command)=>onCommand(command,row)"
+              >
                 编辑
                 <template #dropdown>
                   <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:90px;text-align:right;">
@@ -153,7 +159,6 @@
 </template>
 
 <script>
-import { formatTime } from '@/utils'
 import roleApi from '@/api/admin/role'
 import permissionApi from '@/api/admin/permission'
 import MyConfirmButton from '@/components/my-confirm-button'
@@ -161,9 +166,10 @@ import MySelectPermission from '@/components/my-select-window/permission'
 import MyWindow from '@/components/my-window'
 import resizable from '@/directive/resizable'
 import { listToTree } from '@/utils/tree'
+import { mapMutations } from 'vuex'
 
 export default {
-  name: 'MyRole',
+  name: 'MyPageRole',
   _sync: {
     disabled: true
   },
@@ -218,13 +224,16 @@ export default {
       this.filterRoles(val)
     }
   },
+  created() {
+    this.setRoleId(null)
+  },
   mounted() {
     this.getRoles()
   },
   methods: {
-    formatCreatedTime: function(row, column, time) {
-      return formatTime(time, 'YYYY-MM-DD HH:mm')
-    },
+    ...mapMutations('admin/role', {
+      setRoleId: 'setRoleId'
+    }),
     filterRoles(val) {
       if (val) {
         const data = this.dataList.filter(a => a.parentId !== 0 && a.name.indexOf(val) > -1)
@@ -438,7 +447,7 @@ export default {
 
       this.tableIndex = tableIndex
       if (currentRow?.id > 0) {
-        this.$emit('current-change', currentRow, oldCurrentRow)
+        this.setRoleId(currentRow.id)
       }
     }
   }

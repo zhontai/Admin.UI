@@ -188,16 +188,16 @@
 </template>
 
 <script>
-import { formatTime } from '@/utils'
 import dictionaryTypeApi from '@/api/admin/dictionary-type'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyWindow from '@/components/my-window'
+import { mapMutations } from 'vuex'
 
 /**
  * 数据字典类型
  */
 export default {
-  name: 'MyDictionaryType',
+  name: 'MyPageDictionaryType',
   _sync: {
     disabled: true
   },
@@ -243,22 +243,19 @@ export default {
       editFormRef: null,
 
       deleteLoading: false,
-      selectPermissionVisible: false,
       currentRow: null
     }
   },
-  computed: {
+  created() {
+    this.setDictionaryTypeId(null)
   },
   mounted() {
     this.getDataList()
   },
-  beforeUpdate() {
-    // console.log('update')
-  },
   methods: {
-    formatCreatedTime: function(row, column, time) {
-      return formatTime(time, 'YYYY-MM-DD HH:mm')
-    },
+    ...mapMutations('admin/dictionary', {
+      setDictionaryTypeId: 'setDictionaryTypeId'
+    }),
     onSearch() {
       this.$refs.pager.setPage(1)
       this.getDataList()
@@ -285,7 +282,9 @@ export default {
       })
       this.dataList = data
       if (this.total > 0) {
-        this.$refs.dt.setCurrentRow(data[0])
+        this.$nextTick(() => {
+          this.$refs.dt.setCurrentRow(data[0])
+        })
       }
     },
     // 显示新增界面
@@ -435,7 +434,9 @@ export default {
       this.sels = sels
     },
     onCurrentChange(currentRow, oldCurrentRow) {
-      this.$emit('current-change', currentRow, oldCurrentRow)
+      if (currentRow?.id > 0) {
+        this.setDictionaryTypeId(currentRow.id)
+      }
     }
   }
 }
