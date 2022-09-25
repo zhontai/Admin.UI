@@ -38,7 +38,7 @@
       @selection-change="onSelsChange"
     >
       <template #empty>
-        <el-empty :image-size="100" />
+        <el-empty :image-size="100" description="暂无员工" />
       </template>
       <el-table-column type="selection" width="50" />
       <el-table-column prop="name" label="姓名" width />

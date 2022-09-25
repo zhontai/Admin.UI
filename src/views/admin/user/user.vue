@@ -287,9 +287,14 @@ export default {
     }
   },
   watch: {
-    orgId(v, ov) {
-      if (v > 0) {
-        this.getUsers()
+    orgId: {
+      immediate: true,
+      handler(val) {
+        if (val > 0) {
+          this.$nextTick(() => {
+            this.getUsers()
+          })
+        }
       }
     },
     'form.emp.orgs'() {
@@ -297,6 +302,11 @@ export default {
         return
       }
       this.form.emp.mainOrgId = this.form.emp.orgs.length > 0 ? this.form.emp.orgs[0].id : null
+    }
+  },
+  mounted() {
+    if (!(this.orgId > 0)) {
+      this.getUsers()
     }
   },
   methods: {

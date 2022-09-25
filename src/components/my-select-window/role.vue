@@ -168,7 +168,7 @@ export default {
       this.tree = listToTree(_.cloneDeep(data))
     },
     setCheckedList(checkedList) {
-      this.checkedList = checkedList
+      this.checkedList = _.cloneDeep(checkedList)
     },
     onSelectionChange: function(sels) {
       if (sels?.length > 0) {

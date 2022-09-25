@@ -10,7 +10,7 @@
     <el-tree
       ref="tree"
       :props="{
-        label: 'name'
+        label: 'name',
       }"
       :data="tree"
       node-key="id"
@@ -47,9 +47,11 @@ export default {
     }
   },
   created() {
+    console.log('111')
     this.setOrgId(null)
   },
   mounted() {
+    console.log('222')
     this.getList()
   },
   methods: {
@@ -76,13 +78,18 @@ export default {
       })
       this.tree = listToTree(list)
       if (this.tree?.length > 0) {
-        this.$nextTick(() => {
-          document.querySelector('.el-tree-node__content:first-child')?.click()
-        })
+        // this.$nextTick(() => {
+        //   document.querySelector('.el-tree-node__content:first-child')?.click()
+        // })
+        // this.$nextTick(() => {
+        //   this.$refs.tree.setCurrentNode(this.tree[0])
+        // })
       }
     },
     onCurrentChange(currentNodeData) {
-      this.setOrgId(currentNodeData.id)
+      if (currentNodeData?.id > 0) {
+        this.setOrgId(currentNodeData.id)
+      }
     }
   }
 }

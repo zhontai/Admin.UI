@@ -39,7 +39,7 @@
     </template>
 
     <el-collapse v-model="activeGroupList">
-      <el-collapse-item v-for="(group, index) in tree" v-show="group.children?.length > 0" :key="group.id" :name="group.id">
+      <el-collapse-item v-for="(group, index) in tree" :key="group.id" :name="group.id">
         <template slot="title">
           {{ group.name }}
 
@@ -70,7 +70,7 @@
           @current-change="(currentRow, oldCurrentRow) => onCurrentChange(currentRow, oldCurrentRow, index)"
         >
           <template #empty>
-            <el-empty :image-size="50" />
+            <el-empty :image-size="50" description="暂无角色" />
           </template>
           <el-table-column type="selection" width="50" />
           <el-table-column prop="name" label="角色名" width />
@@ -226,8 +226,6 @@ export default {
   },
   created() {
     this.setRoleId(null)
-  },
-  mounted() {
     this.getRoles()
   },
   methods: {
