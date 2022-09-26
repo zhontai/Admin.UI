@@ -47,11 +47,9 @@ export default {
     }
   },
   created() {
-    console.log('111')
     this.setOrgId(null)
   },
   mounted() {
-    console.log('222')
     this.getList()
   },
   methods: {
@@ -78,12 +76,9 @@ export default {
       })
       this.tree = listToTree(list)
       if (this.tree?.length > 0) {
-        // this.$nextTick(() => {
-        //   document.querySelector('.el-tree-node__content:first-child')?.click()
-        // })
-        // this.$nextTick(() => {
-        //   this.$refs.tree.setCurrentNode(this.tree[0])
-        // })
+        this.$nextTick(() => {
+          document.querySelector('.el-tree-node__content:first-child')?.click()
+        })
       }
     },
     onCurrentChange(currentNodeData) {

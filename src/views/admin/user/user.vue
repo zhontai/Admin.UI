@@ -38,12 +38,13 @@
       highlight-current-row
       height="'100%'"
       style="width: 100%;height:100%;"
+      :row-key="(row)=>row.id"
       @selection-change="onSelsChange"
     >
       <template #empty>
         <el-empty :image-size="100" />
       </template>
-      <el-table-column type="selection" width="50" />
+      <el-table-column type="selection" reserve-selection width="50" />
       <el-table-column prop="userName" label="用户名" width />
       <el-table-column prop="name" label="姓名" width />
       <el-table-column prop="roleNames" label="角色" width>
@@ -71,6 +72,8 @@
       <my-pagination
         ref="pager"
         :total="total"
+        :page-size="2"
+        :sizes="[2,30,50,100]"
         :checked-count="sels.length"
         @get-page="getUsers"
       />
@@ -241,12 +244,11 @@ export default {
       ],
       searchWindowVisible: false,
       dynamicFilter: null,
-
+      sels: [],
       users: [],
       roles: [],
       select: { roles: [] },
       total: 0,
-      sels: [], // 列表选中列
       listLoading: false,
 
       pageLoading: false,
@@ -304,12 +306,11 @@ export default {
       this.form.emp.mainOrgId = this.form.emp.orgs.length > 0 ? this.form.emp.orgs[0].id : null
     }
   },
-  mounted() {
-    if (!(this.orgId > 0)) {
-      this.getUsers()
-    }
-  },
   methods: {
+    // 选择
+    onSelsChange(sels) {
+      this.sels = sels
+    },
     // 查询
     onSearch(dynamicFilter) {
       this.$refs.pager.setPage(1)
@@ -474,10 +475,6 @@ export default {
       })
 
       this.getUsers()
-    },
-    // 选择
-    onSelsChange(sels) {
-      this.sels = sels
     },
     onOpenRole(form) {
       this.roleForm = form

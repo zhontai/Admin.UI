@@ -77,9 +77,14 @@ export default {
     })
   },
   watch: {
-    roleId(v, ov) {
-      if (v > 0) {
-        this.getUsers()
+    roleId: {
+      immediate: true,
+      handler(val) {
+        if (val > 0) {
+          this.$nextTick(() => {
+            this.getUsers()
+          })
+        }
       }
     }
   },

@@ -265,16 +265,16 @@ export default {
     })
   },
   watch: {
-    dictionaryTypeId(v, ov) {
-      this.filter.dictionaryTypeId = v
-      this.addForm.dictionaryTypeId = v
-      if (v > 0) {
-        this.getDataList()
+    dictionaryTypeId: {
+      immediate: true,
+      handler(v) {
+        this.filter.dictionaryTypeId = v
+        this.addForm.dictionaryTypeId = v
+        if (v > 0) {
+          this.getDataList()
+        }
       }
     }
-  },
-  mounted() {
-    // this.getDataList()
   },
   methods: {
     formatCreatedTime: function(row, column, time) {

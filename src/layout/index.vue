@@ -90,7 +90,7 @@
       </el-header>
       <el-main class="main" style="height:100%;">
         <keep-alive :include="cachedViews">
-          <router-view :key="key" />
+          <router-view v-if="show" :key="key" />
         </keep-alive>
       </el-main>
       <ul
@@ -106,7 +106,7 @@
         <el-divider
           v-if="canClose || canCloseOthers || canCloseRight || canCloseLeft || canCloseAll"
         />
-        <li v-if="canClose" @click="closecurrentTab">
+        <li v-if="canClose" @click="closeCurrentTab">
           <span>关闭</span>
         </li>
         <li v-if="canCloseOthers" @click="closeOthersTabs">
@@ -169,7 +169,7 @@
         <li v-if="canCloseOthers" @click="closeOthersTabs">
           <i class="el-icon-more" />关闭其它
         </li>
-        <li v-if="canClose" @click="closecurrentTab">
+        <li v-if="canClose" @click="closeCurrentTab">
           <span>关闭</span>
         </li>
         <el-divider
@@ -236,7 +236,8 @@ export default {
       tabPosition: 'top', // top | bottom
       tabType: 'border-card', // '' | border-card | card
       navBarWidth: '221px',
-      expandNavBarWidth: ''
+      expandNavBarWidth: '',
+      show: true
     }
   },
   computed: {
@@ -265,7 +266,7 @@ export default {
       const tab = tabs && tabs.find(t => t.fullPath === fullPath)
       const k = tab && tab._k ? tab._k : ''
 
-      return this.$route.fullPath + k
+      return fullPath + k
     },
     showTabs() {
       return this.tabsList.length > 0
@@ -508,9 +509,19 @@ export default {
         t => t.fullPath === this.rightMenu.selectedTab.fullPath
       )
       tab._k = tab._k ? ++tab._k : 1
+
       this.$store.commit('app/saveTabsData', JSON.stringify(this.tabsList))
+
+      this.show = false
+      this.$store.commit('tabsView/delete_cached_view', { name: tab.name })
+      setTimeout(() => {
+        this.show = true
+        this.$nextTick(() => {
+          this.$store.commit('tabsView/add_cached_view', { name: tab.name })
+        })
+      }, 0)
     },
-    closecurrentTab() {
+    closeCurrentTab() {
       this.rightMenu.selectedTab &&
       this.onRemoveTab(this.rightMenu.selectedTab.fullPath)
     },
