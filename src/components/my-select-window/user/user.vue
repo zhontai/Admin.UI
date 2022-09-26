@@ -47,8 +47,6 @@
       <el-table-column type="selection" reserve-selection width="50" />
       <el-table-column prop="userName" label="用户名" width />
       <el-table-column prop="name" label="姓名" width />
-      <el-table-column prop="mobile" label="手机号" width />
-      <el-table-column prop="email" label="邮箱" width />
       <el-table-column prop="roleNames" label="角色" width>
         <template #default="{row}">
           {{ row.roleNames ? row.roleNames.join(','):'' }}
