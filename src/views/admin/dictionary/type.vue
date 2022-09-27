@@ -197,7 +197,7 @@ import { mapMutations } from 'vuex'
  * 数据字典类型
  */
 export default {
-  name: 'MyPageDictionaryType',
+  name: 'MyDictionaryType',
   _sync: {
     disabled: true
   },
@@ -242,12 +242,8 @@ export default {
       },
       editFormRef: null,
 
-      deleteLoading: false,
-      currentRow: null
+      deleteLoading: false
     }
-  },
-  created() {
-    this.setDictionaryTypeId(null)
   },
   mounted() {
     this.getDataList()
@@ -434,9 +430,7 @@ export default {
       this.sels = sels
     },
     onCurrentChange(currentRow, oldCurrentRow) {
-      if (currentRow?.id > 0) {
-        this.setDictionaryTypeId(currentRow.id)
-      }
+      this.$emit('change', _.cloneDeep(currentRow))
     }
   }
 }

@@ -14,6 +14,7 @@
       }"
       :data="tree"
       node-key="id"
+      :current-node-key="currentNodeKey"
       default-expand-all
       highlight-current
       :expand-on-click-node="false"
@@ -27,10 +28,12 @@
 <script>
 import { listToTree } from '@/utils/tree'
 import orgApi from '@/api/admin/organization'
-import { mapMutations } from 'vuex'
 
+/**
+ * 用户部门
+ */
 export default {
-  name: 'MyPageOrg',
+  name: 'MySelectUserOrg',
   _sync: {
     disabled: true
   },
@@ -38,7 +41,8 @@ export default {
     return {
       filterText: '',
       tree: [],
-      pageLoading: false
+      pageLoading: false,
+      currentNodeKey: 0
     }
   },
   watch: {
@@ -46,16 +50,10 @@ export default {
       this.$refs.tree.filter(val)
     }
   },
-  created() {
-    this.setOrgId(null)
-  },
   mounted() {
     this.getList()
   },
   methods: {
-    ...mapMutations('admin/user', {
-      setOrgId: 'setOrgId'
-    }),
     filterNode(value, data) {
       if (!value) return true
       return data.name.indexOf(value) !== -1
@@ -77,14 +75,12 @@ export default {
       this.tree = listToTree(list)
       if (this.tree?.length > 0) {
         this.$nextTick(() => {
-          document.querySelector('.el-tree-node__content:first-child')?.click()
+          this.$refs.tree.setCurrentKey(this.tree[0].id)
         })
       }
     },
     onCurrentChange(currentNodeData) {
-      if (currentNodeData?.id > 0) {
-        this.setOrgId(currentNodeData.id)
-      }
+      this.$emit('change', _.cloneDeep(currentNodeData))
     }
   }
 }

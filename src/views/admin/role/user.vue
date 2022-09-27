@@ -43,22 +43,38 @@
       <el-table-column type="selection" width="50" />
       <el-table-column prop="name" label="姓名" width />
     </el-table>
+
+    <!--选择用户-->
+    <my-select-user
+      :role-id="roleId"
+      title="添加员工"
+      :visible.sync="selectUserVisible"
+      @click="onSelectUser"
+    />
   </my-container>
 </template>
 
 <script>
-import { formatTime } from '@/utils'
 import roleApi from '@/api/admin/role'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySearch from '@/components/my-search'
-import { mapState } from 'vuex'
+import MySelectUser from '@/components/my-select-window/user'
 
+/**
+ * 角色用户
+ */
 export default {
-  name: 'MyPageRoleUser',
+  name: 'MyRoleUser',
   _sync: {
     disabled: true
   },
-  components: { MyConfirmButton, MySearch },
+  components: { MyConfirmButton, MySearch, MySelectUser },
+  props: {
+    roleId: {
+      type: Number,
+      default: null
+    }
+  },
   data() {
     return {
       filter: {
@@ -68,13 +84,9 @@ export default {
       total: 0,
       sels: [], // 列表选中列
       listLoading: false,
-      deleteLoading: false
+      deleteLoading: false,
+      selectUserVisible: false
     }
-  },
-  computed: {
-    ...mapState('admin/role', {
-      roleId: 'roleId'
-    })
   },
   watch: {
     roleId: {
@@ -89,8 +101,11 @@ export default {
     }
   },
   methods: {
-    formatCreatedTime(row, column, time) {
-      return formatTime(time, 'YYYY-MM-DD HH:mm')
+    onRoleChange(row) {
+      if (row?.id > 0) {
+        this.orgId = row.id
+        this.getUsers()
+      }
     },
     // 查询
     onSearch() {
@@ -117,7 +132,7 @@ export default {
       this.users = data
     },
     onAdd() {
-
+      this.selectUserVisible = true
     },
     // 批量删除验证
     batchDeleteValidate() {
@@ -157,6 +172,29 @@ export default {
     // 选择
     onSelsChange(sels) {
       this.sels = sels
+    },
+    // 选择用户
+    async onSelectUser(userList) {
+      if (!(userList?.length > 0)) {
+        this.selectUserVisible = false
+        return
+      }
+      const userIds = userList?.map(a => a.id)
+      const para = { userIds, roleId: this.roleId }
+      this.loadingSave = true
+      const res = await roleApi.addRoleUserList(para)
+      this.loadingSave = false
+
+      if (!res?.success) {
+        return
+      }
+
+      this.selectUserVisible = false
+      this.getUsers()
+      this.$message({
+        message: this.$t('admin.saveOk'),
+        type: 'success'
+      })
     }
   }
 }

@@ -36,7 +36,14 @@ export const getRoleUserList = (params, config = {}) => {
 }
 
 /**
- * 新增
+ * 新增角色用户列表
+ */
+export const addRoleUserList = (params, config = {}) => {
+  return request.post(apiPrefix + 'add-role-user-list', params, config)
+}
+
+/**
+ * role-add
  */
 export const add = (params, config = {}) => {
   return request.post(apiPrefix + 'add', params, config)
@@ -82,6 +89,7 @@ export default {
   getList,
   getPage,
   getRoleUserList,
+  addRoleUserList,
   add,
   update,
   deleteAsync,
