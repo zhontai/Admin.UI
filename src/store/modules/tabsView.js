@@ -9,7 +9,7 @@ export default {
     },
     add_cached_view: (state, view) => {
       if (state.cachedViews.includes(view.name)) return
-      if (!view.meta.noCache && view.name) {
+      if (!view.meta?.noCache && view.name) {
         state.cachedViews.push(view.name)
       }
     },
