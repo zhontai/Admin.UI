@@ -136,34 +136,23 @@ export default {
     },
     // 批量删除验证
     batchDeleteValidate() {
-      let isValid = true
-      var row = this.sels && this.sels.find(s => s.userName === 'admin')
-      if (row && row.userName === 'admin') {
-        this.$message({
-          message: row.nickName + '，禁止删除！',
-          type: 'warning'
-        })
-        isValid = false
-      }
+      const isValid = true
 
       return isValid
     },
     // 批量删除
     async onBatchDelete() {
-      const para = { ids: [] }
-      para.ids = this.sels.map(s => {
-        return s.id
-      })
-
+      const userIds = this.sels?.map(a => a.id)
+      const para = { userIds, roleId: this.roleId }
       this.deleteLoading = true
-      const res = await roleApi.batchSoftDelete(para.ids)
+      const res = await roleApi.removeRoleUser(para)
       this.deleteLoading = false
 
       if (!res?.success) {
         return
       }
       this.$message({
-        message: this.$t('admin.batchDeleteOk'),
+        message: this.$t('admin.removeOk'),
         type: 'success'
       })
 

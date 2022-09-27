@@ -36,10 +36,17 @@ export const getRoleUserList = (params, config = {}) => {
 }
 
 /**
- * 新增角色用户列表
+ * 新增角色用户
  */
-export const addRoleUserList = (params, config = {}) => {
-  return request.post(apiPrefix + 'add-role-user-list', params, config)
+export const addRoleUser = (params, config = {}) => {
+  return request.post(apiPrefix + 'add-role-user', params, config)
+}
+
+/**
+ * 移除角色用户
+ */
+export const removeRoleUser = (params, config = {}) => {
+  return request.post(apiPrefix + 'remove-role-user', params, config)
 }
 
 /**
@@ -89,7 +96,8 @@ export default {
   getList,
   getPage,
   getRoleUserList,
-  addRoleUserList,
+  addRoleUser,
+  removeRoleUser,
   add,
   update,
   deleteAsync,

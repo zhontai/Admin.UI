@@ -9,6 +9,7 @@ export default {
     submitOk: '提交成功',
     submitNotOk: '提交失败',
     deleteOk: '已删除', // 删除成功
+    removeOk: '已移除', // 移除成功
     deleteNotOk: '删除失败',
     batchDeleteOk: '已批量删除' // 批量删除成功
   },
