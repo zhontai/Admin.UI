@@ -55,20 +55,22 @@
       <el-table-column type="selection" width="50" />
       <el-table-column prop="name" label="企业名称" width />
       <el-table-column prop="code" label="企业编码" width />
+      <el-table-column prop="realName" label="姓名" width />
+      <el-table-column prop="phone" label="手机号" width />
       <el-table-column prop="dataIsolationTypeName" label="数据隔离" width="120" />
       <el-table-column prop="dbTypeName" label="数据库" width="120" />
-      <el-table-column prop="idleTime" label="空闲时间（分）" width="120" />
-      <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width />
+      <!-- <el-table-column prop="idleTime" label="空闲时间（分）" width="120" /> -->
+      <!-- <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width /> -->
       <!--<el-table-column prop="CreatedUserName" label="创建者" width="" >-->
       <!--</el-table-column>-->
-      <el-table-column prop="enabled" label="状态" width="80">
+      <!-- <el-table-column prop="enabled" label="状态" width="80">
         <template #default="{row}">
           <el-tag
             :type="row.enabled ? 'success' : 'danger'"
             disable-transitions
           >{{ row.enabled ? '正常' : '禁用' }}</el-tag>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column v-if="checkPermission(['api:admin:tenant:update','api:admin:tenant:softdelete','api:admin:permission:assign','api:admin:permission:delete'])" label="操作" width="260">
         <template #default="{ $index, row }">
           <el-dropdown
@@ -187,11 +189,11 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+          <!-- <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="空闲时间（分）" prop="idleTime">
               <el-input-number v-model="addForm.idleTime" controls-position="right" :min="0" style="width:100%;" />
             </el-form-item>
-          </el-col>
+          </el-col> -->
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="状态" prop="enabled">
               <el-select v-model="addForm.enabled" placeholder="请选择租户状态" style="width:100%;">
@@ -296,11 +298,11 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+          <!-- <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="空闲时间（分）" prop="idleTime">
               <el-input-number v-model="editForm.idleTime" controls-position="right" :min="0" style="width:100%;" />
             </el-form-item>
-          </el-col>
+          </el-col> -->
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="状态" prop="enabled">
               <el-select v-model="editForm.enabled" placeholder="请选择租户状态" style="width:100%;">
@@ -390,7 +392,13 @@ export default {
         { 'label': 'OdbcKingbaseES', 'value': 13 },
         { 'label': 'ShenTong', 'value': 14 },
         { 'label': 'KingbaseES', 'value': 15 },
-        { 'label': 'Firebird', 'value': 16 }
+        { 'label': 'Custom', 'value': 17 },
+        { 'label': 'ClickHouse', 'value': 18 },
+        { 'label': 'GBase', 'value': 19 },
+        { 'label': 'CustomOracle', 'value': 20 },
+        { 'label': 'CustomSqlServer', 'value': 21 },
+        { 'label': 'CustomMySql', 'value': 22 },
+        { 'label': 'CustomPostgreSQL', 'value': 23 }
       ],
       listLoading: false,
 
