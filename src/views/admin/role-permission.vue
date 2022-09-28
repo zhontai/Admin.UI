@@ -128,8 +128,12 @@ export default {
 
       const data = res.data
       this.groupList = data.filter(a => a.parentId === 0)
-      this.activeGroupList = this.groupList.map(a => a.id)
       this.roleTree = listToTree(_.cloneDeep(data))
+      this.roleTree.forEach(a => {
+        if (a.children?.length > 0) {
+          this.activeGroupList.push(a.id)
+        }
+      })
       this.$nextTick(() => {
         if (this.roleTree?.length > 0 && this.roleTree[0].children) {
           this.$refs.table[0].setCurrentRow(this.roleTree[0].children[0])
