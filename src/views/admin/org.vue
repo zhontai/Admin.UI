@@ -18,7 +18,7 @@
         <el-form-item>
           <el-button type="primary" icon="el-icon-search" @click="onSearch">查询</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:admin:organization:add'])">
+        <el-form-item v-if="checkPermission(['api:admin:org:add'])">
           <el-button type="primary" icon="el-icon-plus" @click="handleAdd">新增</el-button>
         </el-form-item>
       </el-form>
@@ -28,7 +28,7 @@
     <el-table
       ref="multipleTable"
       v-loading="listLoading"
-      :data="organizationTree"
+      :data="orgTree"
       row-key="id"
       :default-expand-all="true"
       highlight-current-row
@@ -54,11 +54,11 @@
           >{{ row.enabled ? '正常' : '禁用' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="checkPermission(['api:admin:organization:update','api:admin:organization:softdelete'])" label="操作" fixed="right" width="180">
-        <template v-if="checkPermission(['api:admin:organization:add'])" #default="{ $index, row }">
+      <el-table-column v-if="checkPermission(['api:admin:org:update','api:admin:org:softdelete'])" label="操作" fixed="right" width="180">
+        <template v-if="checkPermission(['api:admin:org:add'])" #default="{ $index, row }">
           <el-button icon="el-icon-edit" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
-            v-if="checkPermission(['api:admin:organization:add'])"
+            v-if="checkPermission(['api:admin:org:add'])"
             :type="'delete'"
             :loading="row._loading"
             :icon="'el-icon-delete'"
@@ -70,7 +70,7 @@
 
     <!--新增窗口-->
     <my-window
-      v-if="checkPermission(['api:admin:organization:add'])"
+      v-if="checkPermission(['api:admin:org:add'])"
       title="新增"
       :visible.sync="addFormVisible"
       @close="closeAddForm"
@@ -80,7 +80,7 @@
           <el-cascader
             :key="addFormKey"
             v-model="addForm.parentIds"
-            :options="organizations"
+            :options="orgs"
             :props="{ checkStrictly: true, label: 'name', value: 'id' }"
             filterable
             clearable
@@ -120,7 +120,7 @@
 
     <!--编辑窗口-->
     <my-window
-      v-if="checkPermission(['api:admin:organization:update'])"
+      v-if="checkPermission(['api:admin:org:update'])"
       title="编辑"
       :visible.sync="editFormVisible"
       @close="closeEditForm"
@@ -131,7 +131,7 @@
             :key="editFormKey"
             v-model="editForm.parentIds"
             placeholder="请选择，支持搜索功能"
-            :options="organizations"
+            :options="orgs"
             :props="{ checkStrictly: true, label: 'name', value: 'id' }"
             filterable
             style="width:100%;"
@@ -173,12 +173,12 @@
 <script>
 import { formatTime } from '@/utils'
 import { listToTree, treeToList, treeToListWithChildren, getParents } from '@/utils/tree'
-import orgApi from '@/api/admin/organization'
+import orgApi from '@/api/admin/org'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MyWindow from '@/components/my-window'
 
 export default {
-  name: 'Organization',
+  name: 'Org',
   _sync: {
     disabled: false,
     title: '部门管理',
@@ -191,8 +191,8 @@ export default {
       filter: {
         name: ''
       },
-      organizationTree: [],
-      organizations: [],
+      orgTree: [],
+      orgs: [],
       statusList: [
         { name: '激活', value: true },
         { name: '禁用', value: false }
@@ -261,7 +261,7 @@ export default {
 
       const list = _.cloneDeep(res.data)
 
-      this.organizations = {
+      this.orgs = {
         id: 0,
         parentId: 0,
         name: '顶级',
@@ -272,7 +272,7 @@ export default {
         d._loading = false
       })
       const tree = listToTree(list)
-      this.organizationTree = tree
+      this.orgTree = tree
     },
     // 删除
     async onDelete(index, row) {
@@ -297,7 +297,7 @@ export default {
       const res = await orgApi.get({ id: row.id })
       loading.close()
       if (res && res.success) {
-        const parents = getParents(treeToList(this.organizationTree), row)
+        const parents = getParents(treeToList(this.orgTree), row)
         const parentIds = parents.map(p => p.id)
         parentIds.unshift(0)
 
@@ -386,7 +386,7 @@ export default {
     },
     onSelectAll: function(selection) {
       const selections = treeToListWithChildren(selection)
-      const rows = treeToListWithChildren(this.organizationTree)
+      const rows = treeToListWithChildren(this.orgTree)
       const checked = selections.length === rows.length
       rows.forEach(row => {
         this.$refs.multipleTable.toggleRowSelection(row, checked)

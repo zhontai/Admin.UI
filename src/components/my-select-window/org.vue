@@ -41,7 +41,7 @@
 
 <script>
 import { listToTree } from '@/utils/tree'
-import { getList } from '@/api/admin/organization'
+import { getList } from '@/api/admin/org'
 import MyWindow from '@/components/my-window'
 
 export default {

@@ -27,13 +27,13 @@
 
 <script>
 import { listToTree } from '@/utils/tree'
-import orgApi from '@/api/admin/organization'
+import orgApi from '@/api/admin/org'
 
 /**
  * 用户部门
  */
 export default {
-  name: 'MyUserOrg',
+  name: 'MySelectUserOrg',
   _sync: {
     disabled: true
   },
@@ -76,7 +76,6 @@ export default {
       if (this.tree?.length > 0) {
         this.$nextTick(() => {
           this.$refs.tree.setCurrentKey(this.tree[0].id)
-          this.onCurrentChange(this.tree[0])
         })
       }
     },

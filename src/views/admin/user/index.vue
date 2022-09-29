@@ -222,9 +222,9 @@ import MySearch from '@/components/my-search'
 import MySearchWindow from '@/components/my-search-window'
 import MyWindow from '@/components/my-window'
 import MySelect from '@/components/my-select'
-import MySelectWindowOrg from '@/components/my-select-window/organization'
+import MySelectWindowOrg from '@/components/my-select-window/org'
 import MySelectWindowRole from '@/components/my-select-window/role'
-import MyUserOrg from './organization'
+import MyUserOrg from './org'
 import { testMobile } from '@/utils/test'
 
 /**

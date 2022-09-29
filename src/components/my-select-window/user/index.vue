@@ -75,7 +75,7 @@
 <script>
 import userApi from '@/api/admin/user'
 import MySearch from '@/components/my-search'
-import MySelectUserOrg from './organization'
+import MySelectUserOrg from './org'
 import MyWindow from '@/components/my-window'
 
 /**

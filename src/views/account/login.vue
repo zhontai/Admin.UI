@@ -186,25 +186,6 @@ export default {
       if (!res.success) {
         this.loginLoading = false
         this.loginText = '重新登录'
-        /*
-        switch (res.data) {
-          case 1:
-            this.getLoginVerifyCode()
-            this.$refs.verifyCode.focus()
-            break
-          case 2:
-            this.$refs.verifyCode.focus()
-            break
-          case 3:
-            this.getLoginVerifyCode()
-            this.$refs.userName.focus()
-            break
-          case 4:
-            this.getLoginVerifyCode()
-            this.$refs.password.focus()
-            break
-        }
-        */
         this.$refs.captcha.refresh()
         return
       }
