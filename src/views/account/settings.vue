@@ -13,12 +13,15 @@
         >
           <el-row :gutter="50">
             <el-col :sm="12" :xs="24">
+              <el-form-item label="姓名" prop="name">
+                <el-input v-model="editForm.name" />
+              </el-form-item>
               <el-form-item label="我的昵称" prop="nickName">
                 <el-input v-model="editForm.nickName" />
               </el-form-item>
-              <el-form-item label="个人简介">
-                <el-input v-model="editForm.remark" type="textarea" rows="4" />
-              </el-form-item>
+              <!-- <el-form-item label="个人简介">
+                <el-input v-model="editForm.introduce" type="textarea" rows="4" />
+              </el-form-item> -->
             </el-col>
             <el-col :sm="12" :xs="24">
               <el-form-item label="头像">

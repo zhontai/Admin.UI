@@ -167,7 +167,7 @@
           </el-col>
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="手机号码" prop="phone">
-              <el-input v-model="addForm.phone" auto-complete="off" />
+              <el-input v-model="addForm.phone" auto-complete="off" maxlength="11" />
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
@@ -276,7 +276,7 @@
           </el-col>
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="手机号码" prop="phone">
-              <el-input v-model="editForm.phone" auto-complete="off" />
+              <el-input v-model="editForm.phone" auto-complete="off" maxlength="11" />
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">

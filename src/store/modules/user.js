@@ -63,7 +63,7 @@ const actions = {
       return res
     }
 
-    const name = user.nickName ? user.nickName : user.userName
+    const name = user.nickName ? user.nickName : (user.name ? user.name : user.userName)
     commit('setName', name)
     commit('setAvatar', user.avatar)
     commit('setMenus', res.data.menus)

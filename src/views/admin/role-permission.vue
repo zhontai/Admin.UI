@@ -15,7 +15,7 @@
             </div>
           </template>
           <el-collapse v-model="activeGroupList">
-            <el-collapse-item v-for="(group, index) in roleTree" :key="group.id" :name="group.id">
+            <el-collapse-item v-for="(group, index) in roleTree" v-show="group.children?.length > 0" :key="group.id" :name="group.id">
               <template slot="title">
                 {{ group.name }}
               </template>

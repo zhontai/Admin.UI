@@ -125,13 +125,13 @@
               </el-col>
               <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
                 <el-form-item label="手机号" prop="mobile">
-                  <el-input v-model="form.mobile" autocomplete="off" />
+                  <el-input v-model="form.mobile" autocomplete="off" maxlength="11" />
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
-                <el-form-item label="部门" prop="emp.orgs">
+                <el-form-item label="部门" prop="staff.orgs">
                   <my-select
-                    v-model="form.emp.orgs"
+                    v-model="form.staff.orgs"
                     :props="{ label:'name' }"
                     value-key="id"
                     multiple
@@ -142,10 +142,10 @@
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
-                <el-form-item label="主属部门" prop="emp.mainOrgId">
-                  <el-select v-model="form.emp.mainOrgId" placeholder="请选择主属部门" style="width:100%;">
+                <el-form-item label="主属部门" prop="staff.mainOrgId">
+                  <el-select v-model="form.staff.mainOrgId" placeholder="请选择主属部门" style="width:100%;">
                     <el-option
-                      v-for="item in form.emp.orgs"
+                      v-for="item in form.staff.orgs"
                       :key="item.id"
                       :label="item.name"
                       :value="item.id"
@@ -254,7 +254,7 @@ export default {
       name: '',
       password: '',
       roles: [],
-      emp: {
+      staff: {
         orgs: [],
         mainOrgId: null
       }
@@ -291,8 +291,8 @@ export default {
           { validator: testMobile, trigger: ['blur', 'change'] }
         ],
         email: [{ type: 'email', message: '请输入正确的邮箱', trigger: ['blur', 'change'] }],
-        'emp.orgs': [{ required: true, message: '请选择部门', trigger: 'change' }],
-        'emp.mainOrgId': [{ required: true, message: '请选择主属部门', trigger: 'change' }],
+        'staff.orgs': [{ required: true, message: '请选择部门', trigger: 'change' }],
+        'staff.mainOrgId': [{ required: true, message: '请选择主属部门', trigger: 'change' }],
         userName: [{ required: true, message: '请输入用户名', trigger: ['blur', 'change'] }],
         password: [{ required: true, message: '请输入密码', trigger: ['blur', 'change'] }]
       },
@@ -307,12 +307,13 @@ export default {
       roleForm: null,
       roleVisible: false,
 
-      orgId: null
+      orgId: null,
+      org: null
     }
   },
   computed: {
     orgLabels() {
-      return this.form.emp?.orgs?.map(a => a.name)
+      return this.form.staff?.orgs?.map(a => a.name)
     },
     resizeOptions() {
       return {
@@ -325,16 +326,17 @@ export default {
     }
   },
   watch: {
-    'form.emp.orgs'() {
-      if (this.form.emp.orgs.some(a => a.id === this.form.emp.mainOrgId)) {
+    'form.staff.orgs'() {
+      if (this.form.staff.orgs.some(a => a.id === this.form.staff.mainOrgId)) {
         return
       }
-      this.form.emp.mainOrgId = this.form.emp.orgs.length > 0 ? this.form.emp.orgs[0].id : null
+      this.form.staff.mainOrgId = this.form.staff.orgs.length > 0 ? this.form.staff.orgs[0].id : null
     }
   },
   methods: {
     onOrgChange(row) {
       if (row?.id > 0) {
+        this.org = { id: row.id, name: row.name }
         this.orgId = row.id
         this.getUsers()
       }
@@ -389,6 +391,7 @@ export default {
     // 显示新增界面
     async onAdd() {
       this.form = _.cloneDeep(this.initForm)
+      this.form.staff.orgs = [_.cloneDeep(this.org)]
       this.formVisible = true
     },
     // 显示编辑界面
@@ -400,8 +403,8 @@ export default {
         this.formVisible = true
         const data = _.cloneDeep(this.initForm)
         _.merge(data, res.data)
-        if (!data.emp) {
-          data.emp = {
+        if (!data.staff) {
+          data.staff = {
             orgs: [],
             mainOrgId: null
           }
@@ -426,9 +429,9 @@ export default {
       this.loading = true
       const para = _.cloneDeep(this.form)
       para.roleIds = para.roles?.map(a => a.id)
-      para.emp.orgIds = para.emp?.orgs?.map(a => a.id)
+      para.staff.orgIds = para.staff?.orgs?.map(a => a.id)
       delete para.roles
-      delete para.emp.orgs
+      delete para.staff.orgs
       const res = await userApi[para.id > 0 ? 'update' : 'add'](para)
       this.loading = false
 
@@ -523,11 +526,11 @@ export default {
       this.orgForm = form
       this.orgVisible = true
       this.$nextTick(() => {
-        this.$refs.org.setCheckedNodes(this[form].emp.orgs)
+        this.$refs.org.setCheckedNodes(this[form].staff.orgs)
       })
     },
     onSelectOrg(form, selectData) {
-      this[form].emp.orgs = selectData.map(a => { return { id: a.id, name: a.name } })
+      this[form].staff.orgs = selectData.map(a => { return { id: a.id, name: a.name } })
       this.orgVisible = false
     }
   }
