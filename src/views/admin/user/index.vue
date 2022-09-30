@@ -129,9 +129,9 @@
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
-                <el-form-item label="部门" prop="staff.orgs">
+                <el-form-item label="部门" prop="orgs">
                   <my-select
-                    v-model="form.staff.orgs"
+                    v-model="form.orgs"
                     :props="{ label:'name' }"
                     value-key="id"
                     multiple
@@ -142,10 +142,10 @@
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
-                <el-form-item label="主属部门" prop="staff.mainOrgId">
-                  <el-select v-model="form.staff.mainOrgId" placeholder="请选择主属部门" style="width:100%;">
+                <el-form-item label="主属部门" prop="mainOrgId">
+                  <el-select v-model="form.mainOrgId" placeholder="请选择主属部门" style="width:100%;">
                     <el-option
-                      v-for="item in form.staff.orgs"
+                      v-for="item in form.orgs"
                       :key="item.id"
                       :label="item.name"
                       :value="item.id"
@@ -254,10 +254,9 @@ export default {
       name: '',
       password: '',
       roles: [],
-      staff: {
-        orgs: [],
-        mainOrgId: null
-      }
+      orgs: [],
+      mainOrgId: null,
+      staff: {}
     }
     return {
       // 高级查询字段
@@ -291,8 +290,8 @@ export default {
           { validator: testMobile, trigger: ['blur', 'change'] }
         ],
         email: [{ type: 'email', message: '请输入正确的邮箱', trigger: ['blur', 'change'] }],
-        'staff.orgs': [{ required: true, message: '请选择部门', trigger: 'change' }],
-        'staff.mainOrgId': [{ required: true, message: '请选择主属部门', trigger: 'change' }],
+        'orgs': [{ required: true, message: '请选择部门', trigger: 'change' }],
+        'mainOrgId': [{ required: true, message: '请选择主属部门', trigger: 'change' }],
         userName: [{ required: true, message: '请输入用户名', trigger: ['blur', 'change'] }],
         password: [{ required: true, message: '请输入密码', trigger: ['blur', 'change'] }]
       },
@@ -326,11 +325,11 @@ export default {
     }
   },
   watch: {
-    'form.staff.orgs'() {
-      if (this.form.staff.orgs.some(a => a.id === this.form.staff.mainOrgId)) {
+    'form.orgs'() {
+      if (this.form.orgs.some(a => a.id === this.form.mainOrgId)) {
         return
       }
-      this.form.staff.mainOrgId = this.form.staff.orgs.length > 0 ? this.form.staff.orgs[0].id : null
+      this.form.mainOrgId = this.form.orgs.length > 0 ? this.form.orgs[0].id : null
     }
   },
   methods: {
@@ -391,7 +390,7 @@ export default {
     // 显示新增界面
     async onAdd() {
       this.form = _.cloneDeep(this.initForm)
-      this.form.staff.orgs = [_.cloneDeep(this.org)]
+      this.form.orgs = [_.cloneDeep(this.org)]
       this.formVisible = true
     },
     // 显示编辑界面
@@ -404,10 +403,7 @@ export default {
         const data = _.cloneDeep(this.initForm)
         _.merge(data, res.data)
         if (!data.staff) {
-          data.staff = {
-            orgs: [],
-            mainOrgId: null
-          }
+          data.staff = {}
         }
 
         this.form = data
@@ -429,9 +425,9 @@ export default {
       this.loading = true
       const para = _.cloneDeep(this.form)
       para.roleIds = para.roles?.map(a => a.id)
-      para.staff.orgIds = para.staff?.orgs?.map(a => a.id)
+      para.orgIds = para.orgs?.map(a => a.id)
       delete para.roles
-      delete para.staff.orgs
+      delete para.orgs
       const res = await userApi[para.id > 0 ? 'update' : 'add'](para)
       this.loading = false
 
@@ -526,11 +522,11 @@ export default {
       this.orgForm = form
       this.orgVisible = true
       this.$nextTick(() => {
-        this.$refs.org.setCheckedNodes(this[form].staff.orgs)
+        this.$refs.org.setCheckedNodes(this[form].orgs)
       })
     },
     onSelectOrg(form, selectData) {
-      this[form].staff.orgs = selectData.map(a => { return { id: a.id, name: a.name } })
+      this[form].orgs = selectData.map(a => { return { id: a.id, name: a.name } })
       this.orgVisible = false
     }
   }
