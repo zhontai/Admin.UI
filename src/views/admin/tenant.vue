@@ -194,7 +194,7 @@
               <el-input-number v-model="addForm.idleTime" controls-position="right" :min="0" style="width:100%;" />
             </el-form-item>
           </el-col> -->
-          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+          <!-- <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="状态" prop="enabled">
               <el-select v-model="addForm.enabled" placeholder="请选择租户状态" style="width:100%;">
                 <el-option
@@ -205,7 +205,7 @@
                 />
               </el-select>
             </el-form-item>
-          </el-col>
+          </el-col> -->
         </el-row>
         <el-row>
           <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
@@ -303,7 +303,7 @@
               <el-input-number v-model="editForm.idleTime" controls-position="right" :min="0" style="width:100%;" />
             </el-form-item>
           </el-col> -->
-          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+          <!-- <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="状态" prop="enabled">
               <el-select v-model="editForm.enabled" placeholder="请选择租户状态" style="width:100%;">
                 <el-option
@@ -314,7 +314,7 @@
                 />
               </el-select>
             </el-form-item>
-          </el-col>
+          </el-col> -->
         </el-row>
         <el-row>
           <el-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
@@ -425,7 +425,10 @@ export default {
         id: 0,
         name: '',
         code: '',
-        dataIsolationType: 1,
+        realName: '',
+        phone: '',
+        email: '',
+        dataIsolationType: 4,
         dbType: 0,
         connectionString: '',
         idleTime: 10,
@@ -454,7 +457,10 @@ export default {
       addForm: {
         name: '',
         code: '',
-        dataIsolationType: 1,
+        realName: '',
+        phone: '',
+        email: '',
+        dataIsolationType: 4,
         dbType: 0,
         connectionString: '',
         idleTime: 10,

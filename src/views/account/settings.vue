@@ -85,12 +85,7 @@
           <el-row>
             <el-col :sm="12" :xs="24">
               <el-form-item label="旧密码" prop="oldPassword">
-                <el-input
-                  v-model="editPwdForm.oldPassword"
-                  type="text"
-                  show-password
-                  auto-complete="off"
-                />
+                <el-input v-model="editPwdForm.oldPassword" show-password auto-complete="off" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -165,7 +160,7 @@ export default {
       isPc: true,
       tabsPosition: 'left',
       editFormRules: {
-        nickName: [{ required: true, message: '请输入我的昵称', trigger: 'blur' }]
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
       },
       editForm: {
         id: 0,
