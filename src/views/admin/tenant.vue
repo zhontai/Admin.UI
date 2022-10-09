@@ -57,7 +57,6 @@
       <el-table-column prop="code" label="企业编码" width />
       <el-table-column prop="realName" label="姓名" width />
       <el-table-column prop="phone" label="手机号" width />
-      <el-table-column prop="dataIsolationTypeName" label="数据隔离" width="120" />
       <el-table-column prop="dbTypeName" label="数据库" width="120" />
       <!-- <el-table-column prop="idleTime" label="空闲时间（分）" width="120" /> -->
       <!-- <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width /> -->
@@ -146,18 +145,6 @@
               <el-input v-model="addForm.code" auto-complete="off" />
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-            <el-form-item label="数据隔离类型" prop="dataIsolationType">
-              <el-select v-model="addForm.dataIsolationType" placeholder="数据隔离类型" style="width:100%;">
-                <el-option
-                  v-for="item in dataIsolationTypeList"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
         </el-row>
         <el-row>
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
@@ -177,6 +164,11 @@
           </el-col>
         </el-row>
         <el-row>
+          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+            <el-form-item label="数据库键名">
+              <el-input v-model="editForm.dbKey" auto-complete="off" />
+            </el-form-item>
+          </el-col>
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="数据库" prop="dbType">
               <el-select v-model="addForm.dbType" filterable placeholder="请选择数据库" style="width:100%;">
@@ -255,18 +247,6 @@
               <el-input v-model="editForm.code" auto-complete="off" />
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-            <el-form-item label="数据隔离类型" prop="dataIsolationType">
-              <el-select v-model="editForm.dataIsolationType" placeholder="数据隔离类型" style="width:100%;">
-                <el-option
-                  v-for="item in dataIsolationTypeList"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
         </el-row>
         <el-row>
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
@@ -286,6 +266,11 @@
           </el-col>
         </el-row>
         <el-row>
+          <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
+            <el-form-item label="数据库键名">
+              <el-input v-model="editForm.dbKey" auto-complete="off" />
+            </el-form-item>
+          </el-col>
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="数据库" prop="dbType">
               <el-select v-model="editForm.dbType" filterable placeholder="请选择数据库" style="width:100%;">
@@ -367,15 +352,12 @@ export default {
       tenants: [],
       total: 0,
       sels: [], // 列表选中列
-      statusList: [
-        { name: '激活', value: true },
-        { name: '禁用', value: false }
-      ],
-      dataIsolationTypeList: [
-        { 'label': '独立数据库', 'value': 1 },
-        { 'label': '共享数据库', 'value': 4 }
-      ],
+      // statusList: [
+      //   { name: '激活', value: true },
+      //   { name: '禁用', value: false }
+      // ],
       dbTypeList: [
+        { 'label': '', 'value': '' },
         { 'label': 'MySql', 'value': 0 },
         { 'label': 'SqlServer', 'value': 1 },
         { 'label': 'PostgreSQL', 'value': 2 },
@@ -428,10 +410,9 @@ export default {
         realName: '',
         phone: '',
         email: '',
-        dataIsolationType: 4,
-        dbType: 0,
+        dbKey: '',
+        dbType: '',
         connectionString: '',
-        idleTime: 10,
         description: '',
         enabled: true
       },
@@ -460,10 +441,9 @@ export default {
         realName: '',
         phone: '',
         email: '',
-        dataIsolationType: 4,
-        dbType: 0,
+        dbKey: '',
+        dbType: '',
         connectionString: '',
-        idleTime: 10,
         description: '',
         enabled: true
       },
