@@ -330,6 +330,11 @@ export default {
         return
       }
       this.form.mainOrgId = this.form.orgs.length > 0 ? this.form.orgs[0].id : null
+    },
+    'form.mobile'(v) {
+      if (!this.form.userName) {
+        this.form.userName = v
+      }
     }
   },
   methods: {
