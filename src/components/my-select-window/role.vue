@@ -40,7 +40,7 @@
     </my-container>
     <template #footer>
       <el-button @click.native="onCancel">取消</el-button>
-      <el-button type="primary" @click="onSure">确定</el-button>
+      <el-button type="primary" :loading.sync="sureLoading" @click="onSure">确定</el-button>
     </template>
   </my-window>
 </template>
@@ -59,6 +59,10 @@ export default {
       default: '选择角色'
     },
     visible: {
+      type: Boolean,
+      default: false
+    },
+    sureLoading: {
       type: Boolean,
       default: false
     },

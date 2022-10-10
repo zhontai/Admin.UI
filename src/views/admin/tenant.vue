@@ -166,7 +166,7 @@
         <el-row>
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
             <el-form-item label="数据库键名">
-              <el-input v-model="editForm.dbKey" auto-complete="off" />
+              <el-input v-model="addForm.dbKey" auto-complete="off" />
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="6" :lg="6" :xl="6">

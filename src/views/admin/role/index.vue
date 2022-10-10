@@ -123,6 +123,7 @@
           :role-id="currentRow?.id"
           :title="permissionTitle"
           :visible.sync="selectPermissionVisible"
+          :sure-loading.sync="sureLoading"
           @click="onSelectPermission"
         />
 
@@ -164,7 +165,12 @@
           </el-form>
           <template #footer>
             <el-button @click.native="role.visible = false">取消</el-button>
-            <my-confirm-button type="submit" :validate="validate" :loading="role.loading" @click="onSubmit" />
+            <my-confirm-button
+              type="submit"
+              :validate="validate"
+              :loading="role.loading"
+              @click="onSubmit"
+            />
           </template>
         </my-window>
       </my-container>
@@ -208,6 +214,7 @@ export default {
       pageLoading: false,
       deleteLoading: false,
       selectPermissionVisible: false,
+      sureLoading: false,
       currentRow: null,
       tableIndex: -1,
       addRole: false,
@@ -409,9 +416,9 @@ export default {
     // 选择权限
     async onSelectPermission(permissionIds) {
       const para = { permissionIds, roleId: this.currentRow?.id }
-      this.loadingSave = true
+      this.sureLoading = true
       const res = await permissionApi.assign(para)
-      this.loadingSave = false
+      this.sureLoading = false
 
       if (!res?.success) {
         return

@@ -49,7 +49,8 @@
       :role-id="roleId"
       title="添加员工"
       :visible.sync="selectUserVisible"
-      @click="onSelectUser"
+      :sure-loading.sync="sureLoading"
+      @click="onSelectUsers"
     />
   </my-container>
 </template>
@@ -85,7 +86,8 @@ export default {
       sels: [], // 列表选中列
       listLoading: false,
       deleteLoading: false,
-      selectUserVisible: false
+      selectUserVisible: false,
+      sureLoading: false
     }
   },
   watch: {
@@ -163,16 +165,16 @@ export default {
       this.sels = sels
     },
     // 选择用户
-    async onSelectUser(userList) {
+    async onSelectUsers(userList) {
       if (!(userList?.length > 0)) {
         this.selectUserVisible = false
         return
       }
       const userIds = userList?.map(a => a.id)
       const para = { userIds, roleId: this.roleId }
-      this.loadingSave = true
-      const res = await roleApi.addRoleUserList(para)
-      this.loadingSave = false
+      this.sureLoading = true
+      const res = await roleApi.addRoleUser(para)
+      this.sureLoading = false
 
       if (!res?.success) {
         return
