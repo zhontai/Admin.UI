@@ -164,10 +164,10 @@ export default {
       },
       editForm: {
         id: 0,
+        name: '',
         nickName: '',
-        remark: '',
-        avatar: '',
-        version: 0
+        introduce: '',
+        avatar: ''
       },
 
       editPwdFormRules: {
@@ -180,8 +180,7 @@ export default {
         password: '',
         oldPassword: '',
         newPassword: '',
-        confirmPassword: '',
-        version: 0
+        confirmPassword: ''
       },
       loading: false,
       editLoading: false,
@@ -217,7 +216,6 @@ export default {
     const data = res.data
     this.editForm = { ...data }
     this.editPwdForm.id = data.id
-    this.editPwdForm.version = data.version
   },
   methods: {
     // 上传成功
@@ -261,15 +259,21 @@ export default {
       this.editLoading = false
 
       if (!res?.success) {
+        if (!res.msg) {
+          this.$message({
+            message: this.$t('admin.updateNotOk'),
+            type: 'error'
+          })
+        }
         return
       }
-      ++this.editForm.version
-      ++this.editPwdForm.version
+
       this.$message({
         message: this.$t('admin.updateOk'),
         type: 'success'
       })
-      this.$store.commit('user/setName', para.nickName)
+
+      this.$store.commit('user/setName', para.nickName || para.name)
       this.$store.commit('user/setAvatar', para.avatar)
     },
     editPwdFormvalidate() {
@@ -286,10 +290,16 @@ export default {
       this.editPwdLoading = false
 
       if (!res?.success) {
+        if (!res.msg) {
+          this.$message({
+            message: this.$t('admin.updateNotOk'),
+            type: 'error'
+          })
+        }
+
         return
       }
-      ++this.editForm.version
-      ++this.editPwdForm.version
+
       this.$message({
         message: this.$t('admin.updateOk'),
         type: 'success'
