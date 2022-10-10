@@ -176,7 +176,7 @@ export default {
     },
     // 保存权限
     async save() {
-      const permissionIds = this.$refs.tree.getCheckedKeys()
+      const permissionIds = this.$refs.tree.getCheckedKeys(true)
       const input = { permissionIds, roleId: this.roleId }
 
       this.loadingSave = true

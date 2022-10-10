@@ -24,7 +24,7 @@
           <el-form-item v-if="checkPermission(['api:admin:user:add'])">
             <el-button type="primary" @click="onAdd">新增</el-button>
           </el-form-item>
-          <el-form-item v-if="checkPermission(['api:admin:user:batchsoftdelete'])">
+          <el-form-item v-if="checkPermission(['api:admin:user:batchsoftdelete','api:admin:user:batchdelete'])">
             <my-confirm-button
               :disabled="sels.length === 0"
               :type="'delete'"
@@ -66,11 +66,11 @@
             {{ row.roleNames ? row.roleNames.join(','):'' }}
           </template>
         </el-table-column>
-        <el-table-column v-if="checkPermission(['api:admin:user:update','api:admin:user:softdelete'])" label="操作" width="180">
+        <el-table-column v-if="checkPermission(['api:admin:user:update','api:admin:user:softdelete','api:admin:user:delete'])" label="操作" width="180">
           <template #default="{ row }">
             <el-button v-if="checkPermission(['api:admin:user:update'])" @click="onEdit(row)">编辑</el-button>
             <my-confirm-button
-              v-if="checkPermission(['api:admin:user:softdelete'])"
+              v-if="checkPermission(['api:admin:user:softdelete','api:admin:user:delete'])"
               type="delete"
               :loading="row._loading"
               :validate="deleteValidate"
@@ -170,11 +170,6 @@
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
-                <el-form-item label="邮箱" prop="email">
-                  <el-input v-model="form.email" autocomplete="off" />
-                </el-form-item>
-              </el-col>
-              <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
                 <el-form-item label="角色" prop="roles">
                   <my-select
                     v-model="form.roles"
@@ -185,6 +180,11 @@
                     style="width:100%;"
                     @click.native="onOpenRole('form')"
                   />
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
+                <el-form-item label="邮箱" prop="email">
+                  <el-input v-model="form.email" autocomplete="off" />
                 </el-form-item>
               </el-col>
             </el-col>
@@ -332,9 +332,7 @@ export default {
       this.form.mainOrgId = this.form.orgs.length > 0 ? this.form.orgs[0].id : null
     },
     'form.mobile'(v) {
-      if (!this.form.userName) {
-        this.form.userName = v
-      }
+      this.form.userName = v
     }
   },
   methods: {

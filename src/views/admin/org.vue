@@ -204,7 +204,7 @@ export default {
       editLoading: false,
       editFormRules: {
         parentIds: [{ required: true, message: '请选择上级部门', trigger: 'change' }],
-        name: [{ required: true, message: '请输入部门名称', trigger: 'blur' }]
+        name: [{ required: true, message: '请输入部门名称', trigger: ['blur', 'change'] }]
       },
       // 编辑界面数据
       editForm: {
@@ -222,7 +222,7 @@ export default {
       addLoading: false,
       addFormRules: {
         parentIds: [{ required: true, message: '请选择上级部门', trigger: 'change' }],
-        name: [{ required: true, message: '请输入部门名称', trigger: 'blur' }]
+        name: [{ required: true, message: '请输入部门名称', trigger: ['blur', 'change'] }]
       },
       // 新增界面数据
       addForm: {

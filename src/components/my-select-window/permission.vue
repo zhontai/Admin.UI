@@ -88,7 +88,7 @@ export default {
     },
     // 确定
     onSure() {
-      const ids = this.$refs.tree.getCheckedKeys()
+      const ids = this.$refs.tree.getCheckedKeys(true)
       this.$emit('click', ids)
     },
     // 初始化
