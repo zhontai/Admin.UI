@@ -225,8 +225,8 @@ export default {
           name: ''
         },
         form: {
-          name: '',
-          parentId: 0
+          parentId: 0,
+          name: ''
         },
         visible: false,
         loading: false,
@@ -432,10 +432,11 @@ export default {
     },
     // 新增操作
     onAddCommand(command) {
-      this.role.form = this.role.init
+      this.role.form = _.cloneDeep(this.role.init)
       switch (command) {
         case 'addRole':
           this.addRole = true
+          this.role.form.parentId = ''
           this.role.visible = true
           break
         case 'addRoleGroup':
@@ -448,7 +449,7 @@ export default {
     },
     // 新增角色操作
     onAddRole(row) {
-      this.role.form = this.role.init
+      this.role.form = _.cloneDeep(this.role.init)
       this.role.form.parentId = row.id
       this.addRole = true
       this.role.visible = true
