@@ -149,18 +149,56 @@
                   <el-input v-model="role.form.name" auto-complete="off" />
                 </el-form-item>
               </el-col>
-              <el-col v-if="addRole" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-                <el-form-item label="分组到" prop="parentId">
-                  <el-select key="parentId" v-model="role.form.parentId" placeholder="请选择" style="width:100%;">
-                    <el-option
-                      v-for="item in groupList"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id"
-                    />
-                  </el-select>
-                </el-form-item>
-              </el-col>
+              <template v-if="addRole">
+                <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+                  <el-form-item label="分组到" prop="parentId">
+                    <el-select key="parentId" v-model="role.form.parentId" placeholder="请选择" style="width:100%;">
+                      <el-option
+                        v-for="item in groupList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                      />
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+                  <el-form-item label="数据范围" prop="dataScope">
+                    <el-select
+                      key="dataScope"
+                      v-model="role.form.dataScope"
+                      placeholder="请选择"
+                      style="width:100%;"
+                      @change="onChangeOrg"
+                    >
+                      <el-option
+                        v-for="item in dataScopeList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                    <div v-show="showOrg" style="margin-top:10px;">
+                      <el-tree
+                        ref="tree"
+                        :props="{
+                          label: 'name'
+                        }"
+                        :data="orgTree"
+                        node-key="id"
+                        :highlight-current="false"
+                        :default-expand-all="false"
+                        check-strictly
+                        :show-checkbox="true"
+                        check-on-click-node
+                        :expand-on-click-node="false"
+                        :indent="16"
+                      />
+                    </div>
+
+                  </el-form-item>
+                </el-col>
+              </template>
             </el-row>
           </el-form>
           <template #footer>
@@ -182,6 +220,7 @@
 
 <script>
 import roleApi from '@/api/admin/role'
+import orgApi from '@/api/admin/org'
 import permissionApi from '@/api/admin/permission'
 import MyConfirmButton from '@/components/my-confirm-button'
 import MySelectPermission from '@/components/my-select-window/permission'
@@ -218,14 +257,25 @@ export default {
       currentRow: null,
       tableIndex: -1,
       addRole: false,
+      dataScopeList: [
+        { 'label': '全部', 'value': 1 },
+        { 'label': '本部门和下级部门', 'value': 2 },
+        { 'label': '本部门', 'value': 3 },
+        { 'label': '本人数据', 'value': 4 },
+        { 'label': '指定部门', 'value': 5 }
+      ],
+      orgTree: [],
+      showOrg: false,
       role: {
         init: {
           id: 0,
           parentId: 0,
+          dataScope: 1,
           name: ''
         },
         form: {
           parentId: 0,
+          dataScope: 1,
           name: ''
         },
         visible: false,
@@ -316,6 +366,9 @@ export default {
         this.role.form = res.data
         this.role.visible = true
       }
+    },
+    onChangeOrg(value) {
+      this.showOrg = value === 5
     },
     // 显示编辑界面
     async onEdit(row, index) {
@@ -430,12 +483,21 @@ export default {
         type: 'success'
       })
     },
+    async getOrgTree() {
+      const res = await orgApi.getList()
+      if (!res?.success) {
+        return
+      }
+
+      this.orgTree = listToTree(res.data)
+    },
     // 新增操作
     onAddCommand(command) {
       this.role.form = _.cloneDeep(this.role.init)
       switch (command) {
         case 'addRole':
           this.addRole = true
+          this.getOrgTree()
           this.role.form.parentId = ''
           this.role.visible = true
           break

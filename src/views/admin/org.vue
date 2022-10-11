@@ -81,7 +81,7 @@
             :key="addFormKey"
             v-model="addForm.parentIds"
             :options="orgs"
-            :props="{ checkStrictly: true, label: 'name', value: 'id' }"
+            :props="{ checkStrictly: true, value: 'id', label: 'name' }"
             filterable
             clearable
             style="width:100%;"
@@ -132,7 +132,7 @@
             v-model="editForm.parentIds"
             placeholder="请选择，支持搜索功能"
             :options="orgs"
-            :props="{ checkStrictly: true, label: 'name', value: 'id' }"
+            :props="{ checkStrictly: true, value: 'id', label: 'name' }"
             filterable
             style="width:100%;"
           />
@@ -261,12 +261,12 @@ export default {
 
       const list = _.cloneDeep(res.data)
 
-      this.orgs = {
+      this.orgs = [{
         id: 0,
         parentId: 0,
         name: '顶级',
         children: listToTree(_.cloneDeep(list))
-      }
+      }]
 
       list.forEach(d => {
         d._loading = false
