@@ -449,9 +449,9 @@ export default {
     // 删除验证
     deleteValidate(row) {
       let isValid = true
-      if (row && row.userName === 'admin') {
+      if (row && (row.type === 10 || row.type === 100)) {
         this.$message({
-          message: row.name + '，禁止删除！',
+          message: row.name + '为平台管理员禁止删除',
           type: 'warning'
         })
         isValid = false
@@ -478,10 +478,10 @@ export default {
     // 批量删除验证
     batchDeleteValidate() {
       let isValid = true
-      var row = this.sels && this.sels.find(s => s.userName === 'admin')
-      if (row && row.userName === 'admin') {
+      var row = this.sels && this.sels.find(s => s.type === 10 || s.type === 100)
+      if (row) {
         this.$message({
-          message: row.name + '，禁止删除！',
+          message: row.name + '为平台管理员禁止删除',
           type: 'warning'
         })
         isValid = false
