@@ -297,7 +297,7 @@ export default {
       const res = await orgApi.get({ id: row.id })
       loading.close()
       if (res && res.success) {
-        const parents = getParents(treeToList(this.orgTree), row)
+        const parents = getParents(treeToList(_.cloneDeep(this.orgTree)), row)
         const parentIds = parents.map(p => p.id)
         parentIds.unshift(0)
 

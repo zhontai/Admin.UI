@@ -95,8 +95,8 @@
                     >
                       编辑
                       <template #dropdown>
-                        <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:90px;text-align:right;">
-                          <el-dropdown-item v-if="checkPermission(['api:admin:permission:assign'])" command="setPermission">设置权限</el-dropdown-item>
+                        <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:100px;text-align:right;">
+                          <el-dropdown-item v-if="checkPermission(['api:admin:permission:assign'])" command="setPermission">设置菜单权限</el-dropdown-item>
                         </el-dropdown-menu>
                       </template>
                     </el-dropdown>
@@ -105,8 +105,8 @@
                         更多 <i class="el-icon-arrow-down el-icon--right" />
                       </el-button>
                       <template #dropdown>
-                        <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:90px;text-align:right;">
-                          <el-dropdown-item v-if="checkPermission(['api:admin:permission:assign'])" command="setPermission">设置权限</el-dropdown-item>
+                        <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:100px;text-align:right;">
+                          <el-dropdown-item v-if="checkPermission(['api:admin:permission:assign'])" command="setPermission">设置菜单权限</el-dropdown-item>
                         </el-dropdown-menu>
                       </template>
                     </el-dropdown>
@@ -469,7 +469,7 @@ export default {
     },
     // 更多操作
     onCommand(command, row) {
-      // 设置权限
+      // 设置菜单权限
       if (command === 'setPermission') {
         this.currentRow = row
         this.selectPermissionVisible = true
