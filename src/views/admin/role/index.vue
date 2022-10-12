@@ -286,7 +286,8 @@ export default {
         loading: false,
         rules: {
           name: [{ required: true, message: '请输入角色名', trigger: 'blur' }],
-          parentId: [{ required: true, message: '请选择角色分组', trigger: 'change' }]
+          parentId: [{ required: true, message: '请选择角色分组', trigger: 'change' }],
+          dataScope: [{ required: true, message: '请选择数据范围', trigger: 'change' }]
         }
       },
       roleId: null

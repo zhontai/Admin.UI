@@ -142,8 +142,8 @@
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
-                <el-form-item label="主属部门" prop="mainOrgId">
-                  <el-select v-model="form.mainOrgId" placeholder="请选择主属部门" style="width:100%;">
+                <el-form-item label="主属部门" prop="orgId">
+                  <el-select v-model="form.orgId" placeholder="请选择主属部门" style="width:100%;">
                     <el-option
                       v-for="item in form.orgs"
                       :key="item.id"
@@ -255,7 +255,7 @@ export default {
       password: '',
       roles: [],
       orgs: [],
-      mainOrgId: null,
+      orgId: null,
       staff: {}
     }
     return {
@@ -291,7 +291,7 @@ export default {
         ],
         email: [{ type: 'email', message: '请输入正确的邮箱', trigger: ['blur', 'change'] }],
         'orgs': [{ required: true, message: '请选择部门', trigger: 'change' }],
-        'mainOrgId': [{ required: true, message: '请选择主属部门', trigger: 'change' }],
+        'orgId': [{ required: true, message: '请选择主属部门', trigger: 'change' }],
         userName: [{ required: true, message: '请输入用户名', trigger: ['blur', 'change'] }],
         password: [{ required: true, message: '请输入密码', trigger: ['blur', 'change'] }]
       },
@@ -326,13 +326,15 @@ export default {
   },
   watch: {
     'form.orgs'() {
-      if (this.form.orgs.some(a => a.id === this.form.mainOrgId)) {
+      if (this.form.orgs.some(a => a.id === this.form.orgId)) {
         return
       }
-      this.form.mainOrgId = this.form.orgs.length > 0 ? this.form.orgs[0].id : null
+      this.form.orgId = this.form.orgs.length > 0 ? this.form.orgs[0].id : null
     },
     'form.mobile'(v) {
-      this.form.userName = v
+      if (!(this.form.id > 0)) {
+        this.form.userName = v
+      }
     }
   },
   methods: {
