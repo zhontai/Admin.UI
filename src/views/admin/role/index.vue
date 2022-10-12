@@ -186,6 +186,7 @@
                         }"
                         :data="orgTree"
                         node-key="id"
+                        empty-text="暂无部门"
                         :highlight-current="false"
                         :default-expand-all="false"
                         check-strictly
@@ -193,6 +194,8 @@
                         check-on-click-node
                         :expand-on-click-node="false"
                         :indent="16"
+                        :default-expanded-keys="role.form.orgIds"
+                        :default-checked-keys="role.form.orgIds"
                       />
                     </div>
 
@@ -265,17 +268,18 @@ export default {
         { 'label': '指定部门', 'value': 5 }
       ],
       orgTree: [],
-      showOrg: false,
       role: {
         init: {
           id: 0,
           parentId: 0,
           dataScope: 1,
+          orgIds: [],
           name: ''
         },
         form: {
           parentId: 0,
           dataScope: 1,
+          orgIds: [],
           name: ''
         },
         visible: false,
@@ -289,6 +293,9 @@ export default {
     }
   },
   computed: {
+    showOrg() {
+      return this.role.form.dataScope === 5
+    },
     roleTitle() {
       return `${(this.role.form.id > 0 ? '编辑' : '新增')}${this.addRole ? '角色' : '分组'}`
     },
@@ -360,6 +367,7 @@ export default {
     },
     async edit(row) {
       this.pageLoading = true
+      await this.getOrgTree()
       const res = await roleApi.get({ id: row.id })
       this.pageLoading = false
       if (res && res.success) {
@@ -397,6 +405,10 @@ export default {
     async onSubmit() {
       this.role.loading = true
       const para = _.cloneDeep(this.role.form)
+      para.orgIds = []
+      if (para.dataScope === 5) {
+        para.orgIds = this.$refs.tree.getCheckedKeys()
+      }
       const res = await (para.id > 0 ? roleApi.update(para) : roleApi.add(para))
       this.role.loading = false
 
@@ -492,16 +504,22 @@ export default {
       this.orgTree = listToTree(res.data)
     },
     // 新增操作
-    onAddCommand(command) {
-      this.role.form = _.cloneDeep(this.role.init)
+    async onAddCommand(command) {
       switch (command) {
         case 'addRole':
+          this.role.form = _.cloneDeep(this.role.init)
           this.addRole = true
-          this.getOrgTree()
+          this.pageLoading = true
+          await this.getOrgTree()
+          this.pageLoading = false
           this.role.form.parentId = ''
           this.role.visible = true
           break
         case 'addRoleGroup':
+          this.role.form = {
+            id: 0,
+            name: ''
+          }
           this.addRole = false
           this.role.visible = true
           break
