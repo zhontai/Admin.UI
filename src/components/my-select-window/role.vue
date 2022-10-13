@@ -195,6 +195,9 @@ export default {
     .el-collapse-item__wrap{
       border-bottom-width: 0px;
     }
+    .el-collapse-item__content{
+      padding-bottom: 5px;
+    }
   }
 }
 </style>
