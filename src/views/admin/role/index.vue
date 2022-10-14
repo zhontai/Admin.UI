@@ -28,7 +28,7 @@
                 </template>
               </el-dropdown>
             </el-form-item>
-            <el-form-item v-if="checkPermission(['api:admin:role:batchsoftdelete'])">
+            <el-form-item v-if="checkPermission(['api:admin:role:batchdelete'])">
               <my-confirm-button
                 :disabled="sels.length === 0"
                 :type="'delete'"
@@ -52,9 +52,23 @@
             <template slot="title">
               {{ group.name }}
 
-              <el-button type="text" size="medium" icon="el-icon-plus" style="margin-left:10px;" @click.stop="onAddRole(group)" />
-              <el-button type="text" size="medium" icon="el-icon-edit" @click.stop="onEditGroup(group)" />
+              <el-button
+                v-if="checkPermission(['api:admin:role:add'])"
+                type="text"
+                size="medium"
+                icon="el-icon-plus"
+                style="margin-left:10px;"
+                @click.stop="onAddRole(group)"
+              />
+              <el-button
+                v-if="checkPermission(['api:admin:role:update'])"
+                type="text"
+                size="medium"
+                icon="el-icon-edit"
+                @click.stop="onEditGroup(group)"
+              />
               <my-confirm-button
+                v-if="checkPermission(['api:admin:role:delete'])"
                 type="text"
                 icon="el-icon-delete"
                 placement="bottom-end"
@@ -83,7 +97,7 @@
               </template>
               <el-table-column type="selection" width="50" />
               <el-table-column prop="name" label="角色名" width />
-              <el-table-column v-if="checkPermission(['api:admin:role:update','api:admin:role:softdelete'])" label="操作" width="180">
+              <el-table-column v-if="checkPermission(['api:admin:role:update','api:admin:permission:assign'])" label="操作" width="180">
                 <template #default="{ $index, row }">
                   <div style="display: inline-block;" @click.stop>
                     <el-dropdown
@@ -579,6 +593,10 @@ export default {
     }
     .el-collapse-item__content{
       padding-bottom: 5px;
+    }
+    .el-collapse-item__header{
+      height: 38px;
+      line-height: 38px;
     }
 }
 

@@ -6,10 +6,10 @@
         <el-form-item>
           <my-search v-model="filter.name" :placeholder="'姓名'" @click="onSearch" />
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:admin:user:add'])">
+        <el-form-item v-if="checkPermission(['api:admin:role:add-role-user'])">
           <el-button type="primary" @click="onAdd">添加员工</el-button>
         </el-form-item>
-        <el-form-item v-if="checkPermission(['api:admin:user:batchsoftdelete'])">
+        <el-form-item v-if="checkPermission(['api:admin:role:remove-role-user'])">
           <my-confirm-button
             :disabled="sels.length === 0"
             :type="'delete'"

@@ -245,6 +245,10 @@ export default {
     .el-collapse-item__content{
       padding-bottom: 5px;
     }
+    .el-collapse-item__header{
+      height: 38px;
+      line-height: 38px;
+    }
   }
 }
 

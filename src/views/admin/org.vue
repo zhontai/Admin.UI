@@ -336,7 +336,7 @@ export default {
 
       if (para.id === para.parentId) {
         this.$message({
-          message: '上级部门不能是自己！',
+          message: '上级部门不能是本部门',
           type: 'error'
         })
         this.editLoading = false

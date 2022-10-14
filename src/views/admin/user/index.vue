@@ -24,7 +24,7 @@
           <el-form-item v-if="checkPermission(['api:admin:user:add'])">
             <el-button type="primary" @click="onAdd">新增</el-button>
           </el-form-item>
-          <el-form-item v-if="checkPermission(['api:admin:user:batchsoftdelete','api:admin:user:batchdelete'])">
+          <el-form-item v-if="checkPermission(['api:admin:user:batchdelete'])">
             <my-confirm-button
               :disabled="sels.length === 0"
               :type="'delete'"
@@ -66,11 +66,11 @@
             {{ row.roleNames ? row.roleNames.join(','):'' }}
           </template>
         </el-table-column>
-        <el-table-column v-if="checkPermission(['api:admin:user:update','api:admin:user:softdelete','api:admin:user:delete'])" label="操作" width="180">
+        <el-table-column v-if="checkPermission(['api:admin:user:update','api:admin:user:delete'])" label="操作" width="180">
           <template #default="{ row }">
             <el-button v-if="checkPermission(['api:admin:user:update'])" @click="onEdit(row)">编辑</el-button>
             <my-confirm-button
-              v-if="checkPermission(['api:admin:user:softdelete','api:admin:user:delete'])"
+              v-if="checkPermission(['api:admin:user:delete'])"
               type="delete"
               :loading="row._loading"
               :validate="deleteValidate"

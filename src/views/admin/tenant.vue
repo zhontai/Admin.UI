@@ -75,7 +75,6 @@
           <el-dropdown
             v-if="checkPermission(['api:admin:tenant:update','api:admin:permission:assign','api:admin:tenant:delete'])"
             :split-button="checkPermission(['api:admin:tenant:update'])"
-            type="primary"
             style="margin-left:10px;"
             @click="onEdit($index, row)"
             @command="(command)=>onCommand(command,row)"
@@ -87,7 +86,7 @@
               更多 <i class="el-icon-arrow-down el-icon--right" />
             </el-button>
             <template #dropdown>
-              <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:90px;text-align:right;">
+              <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:100px;text-align:right;">
                 <el-dropdown-item v-if="checkPermission(['api:admin:permission:assign'])" command="setPermission">设置权限</el-dropdown-item>
                 <el-dropdown-item v-if="checkPermission(['api:admin:tenant:delete'])" command="delete">彻底删除</el-dropdown-item>
               </el-dropdown-menu>
