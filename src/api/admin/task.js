@@ -36,17 +36,31 @@ export const update = (params, config = {}) => {
 }
 
 /**
- * 彻底删除
+ * 暂停任务
  */
-export const deleteAsync = (params, config = {}) => {
-  return request.delete(apiPrefix + 'delete', { params: params, ...config })
+export const pause = (params, config = {}) => {
+  return request.post(apiPrefix + 'pause', params, config)
 }
 
 /**
- * 批量彻底删除
+ * 启动任务
  */
-export const batchDelete = (params, config = {}) => {
-  return request.put(apiPrefix + 'batch-delete', params, config)
+export const resume = (params, config = {}) => {
+  return request.post(apiPrefix + 'resume', params, config)
+}
+
+/**
+ * 执行任务
+ */
+export const run = (params, config = {}) => {
+  return request.post(apiPrefix + 'run', params, config)
+}
+
+/**
+ * 删除任务
+ */
+export const deleteAsync = (params, config = {}) => {
+  return request.delete(apiPrefix + 'delete', { params: params, ...config })
 }
 
 export default {
@@ -54,6 +68,8 @@ export default {
   getPage,
   add,
   update,
-  deleteAsync,
-  batchDelete
+  pause,
+  resume,
+  run,
+  deleteAsync
 }
