@@ -21,7 +21,7 @@
       <el-table-column prop="elapsedMilliseconds" label="耗时(ms)" width="80" />
       <el-table-column prop="exception" label="异常" min-width="180" />
       <el-table-column prop="Remark" label="备注" min-width="180" />
-      <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width="160" />
+      <el-table-column prop="createTime" label="创建时间" :formatter="formatCreatedTime" width="160" />
     </el-table>
 
     <!--分页-->
