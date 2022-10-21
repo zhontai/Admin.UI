@@ -3,6 +3,21 @@
     <el-collapse v-model="activeNames" accordion>
       <el-collapse-item title="2022年" name="2022">
         <el-timeline>
+          <el-timeline-item timestamp="版本 2.2.1" placement="top">
+            <el-card>
+              <h4>后端：</h4>
+              <h4>新增 appconfig新增validate权限验证配置，支持匿名、登录、授权访问设置</h4>
+              <h4>新增 dbconfig新增assemblyNames程序集配置</h4>
+              <h4>修复 租户登录后设置角色菜单，菜单未正确显示的问题</h4>
+              <h4>优化 dbconfig多数据库配置</h4>
+              <h4>后端项目模板：</h4>
+              <h4>升级 项目模板ZhonTai.Template升至2.2.1</h4>
+              <h4>新增 支持权限数据库admindb和模块项目数据库appdb分离</h4>
+              <h4>新增 生成项目参数-md | --merge-db true 合并数据库，-ms | --micro-service true 设置项目为微服务项目，支持匿名访问api</h4>
+              <h4>修复 设置无新版接口文档时，没有使用swagger文档显示的问题</h4>
+              <p>小雪转中雪 提交于 2022-10-20</p>
+            </el-card>
+          </el-timeline-item>
           <el-timeline-item timestamp="版本 2.2.0" placement="top">
             <el-card>
               <h4>后端：</h4>
@@ -26,8 +41,8 @@
               <h4>新增 任务管理，支持任务查询、暂停、启动、立即运行、删除、查看日志功能</h4>
               <h4>新增 新增树形列表工具tree.json</h4>
               <h4>新增 规则校验test.js</h4>
-              <h4>新增 my-container容器新增左侧和右侧布局</h4>
-              <h4>新增 my-select-window下新增user员工、org部门、role角色窗口选择组件</h4>
+              <h4>新增 my-container容器支持左侧和右侧布局</h4>
+              <h4>新增 my-select-window下新增员工user、部门org、角色role窗口选择组件</h4>
               <h4>新增 角色管理新增角色分组、设置数据权限、角色用户列表、添加员工、移除员工功能</h4>
               <h4>新增 租户新增数据库注册键名，删除空闲时间设置</h4>
               <h4>修改 权限表格树组件更改成树形组件，支持任意级横向显示</h4>
