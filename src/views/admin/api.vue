@@ -193,7 +193,7 @@
 import { formatTime } from '@/utils'
 import { listToTree, treeToListWithChildren, getParents } from '@/utils/tree'
 import apiApi from '@/api/admin/api'
-import { getSwaggerJson } from '@/api/admin/api.extend'
+import { getSwaggerResources, getSwaggerJson } from '@/api/admin/api.extend'
 import MyWindow from '@/components/my-window'
 import MyConfirmButton from '@/components/my-confirm-button'
 
@@ -415,10 +415,8 @@ export default {
 
       this.onGetList()
     },
-    // 同步api
-    async onSync() {
-      this.syncLoading = true
-      const res = await getSwaggerJson()
+    async syncApi(url) {
+      const res = await getSwaggerJson(url)
 
       if (!res) {
         this.syncLoading = false
@@ -455,16 +453,35 @@ export default {
       }
 
       const syncRes = await apiApi.sync({ apis })
-      this.syncLoading = false
 
       if (!syncRes?.success) {
         return
       }
-      this.$message({
-        message: this.$t('api.sync'),
-        type: 'success'
-      })
-      this.onGetList()
+    },
+    // 同步api
+    async onSync() {
+      this.syncLoading = true
+      const resSwaggerResources = await getSwaggerResources()
+
+      if (!resSwaggerResources) {
+        this.syncLoading = false
+        return
+      }
+
+      if (resSwaggerResources?.length > 0) {
+        for (let index = 0, len = resSwaggerResources.length, last = len - 1; index < len; index++) {
+          const swaggerResource = resSwaggerResources[index]
+          await this.syncApi(swaggerResource.url)
+          if (index === last) {
+            this.syncLoading = false
+            this.$message({
+              message: this.$t('api.sync'),
+              type: 'success'
+            })
+            this.onGetList()
+          }
+        }
+      }
     },
     // 生成前端api
     onGenerate() {
