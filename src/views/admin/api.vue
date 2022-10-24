@@ -452,35 +452,35 @@ export default {
         }
       }
 
-      const syncRes = await apiApi.sync({ apis })
-
-      if (!syncRes?.success) {
-        return
-      }
+      return await apiApi.sync({ apis })
     },
     // 同步api
     async onSync() {
       this.syncLoading = true
       const resSwaggerResources = await getSwaggerResources()
 
-      if (!resSwaggerResources) {
-        this.syncLoading = false
-        return
-      }
-
-      if (resSwaggerResources?.length > 0) {
+      if (_.isArray(resSwaggerResources) && resSwaggerResources?.length > 0) {
         for (let index = 0, len = resSwaggerResources.length, last = len - 1; index < len; index++) {
           const swaggerResource = resSwaggerResources[index]
-          await this.syncApi(swaggerResource.url)
+          const resSyncApi = await this.syncApi(swaggerResource.url)
           if (index === last) {
             this.syncLoading = false
-            this.$message({
-              message: this.$t('api.sync'),
-              type: 'success'
-            })
-            this.onGetList()
+            if (resSyncApi?.code) {
+              this.$message({
+                message: '同步Api失败',
+                type: 'error'
+              })
+            } else {
+              this.$message({
+                message: this.$t('api.sync'),
+                type: 'success'
+              })
+              this.onGetList()
+            }
           }
         }
+      } else {
+        this.syncLoading = false
       }
     },
     // 生成前端api
