@@ -70,10 +70,10 @@
             {{ row.roleNames ? row.roleNames.join(','):'' }}
           </template>
         </el-table-column>
-        <el-table-column v-if="checkPermission(['api:admin:user:update','api:admin:user:delete'])" label="操作" width="180">
+        <el-table-column v-if="checkPermission(['api:admin:user:update','api:admin:user:delete','api:admin:user:reset-password','api:admin:user:set-manager'])" label="操作" width="180">
           <template #default="{ row }">
             <el-dropdown
-              v-if="checkPermission(['api:admin:user:update'])"
+              v-if="checkPermission(['api:admin:user:update','api:admin:user:reset-password','api:admin:user:set-manager'])"
               :split-button="checkPermission(['api:admin:user:update'])"
               style="margin-left:10px;"
               @click="onEdit(row)"
@@ -87,8 +87,8 @@
               </el-button>
               <template #dropdown>
                 <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:100px;text-align:right;">
-                  <el-dropdown-item v-if="checkPermission(['api:admin:user:update'])" command="resetPassword">重置密码</el-dropdown-item>
-                  <el-dropdown-item v-if="checkPermission(['api:admin:user:update'])" command="setManager">{{ row.isManager?'取消':'设置' }}主管</el-dropdown-item>
+                  <el-dropdown-item v-if="checkPermission(['api:admin:user:reset-password'])" command="resetPassword">重置密码</el-dropdown-item>
+                  <el-dropdown-item v-if="checkPermission(['api:admin:user:set-manager'])" command="setManager">{{ row.isManager?'取消':'设置' }}主管</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
