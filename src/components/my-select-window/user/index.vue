@@ -84,10 +84,7 @@ import MyWindow from '@/components/my-window'
 export default {
   name: 'User',
   _sync: {
-    disabled: false,
-    title: '用户管理',
-    desc: '',
-    cache: true
+    disabled: false
   },
   components: { MySelectUserOrg, MySearch, MyWindow },
   props: {
@@ -148,6 +145,12 @@ export default {
         maxWidth: 500,
         autoCalcRange: false
       }
+    }
+  },
+  watch: {
+    visible() {
+      this.currentRow = null
+      this.sels = []
     }
   },
   methods: {

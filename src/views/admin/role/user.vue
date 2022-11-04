@@ -46,7 +46,6 @@
 
     <!--选择用户-->
     <my-select-user
-      :role-id="roleId"
       title="添加员工"
       :visible.sync="selectUserVisible"
       :sure-loading.sync="sureLoading"

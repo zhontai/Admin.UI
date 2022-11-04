@@ -57,7 +57,11 @@
           <el-empty :image-size="100" />
         </template>
         <el-table-column type="selection" reserve-selection width="50" />
-        <el-table-column prop="userName" label="用户名" width />
+        <el-table-column prop="userName" label="用户名" width>
+          <template #default="{row}">
+            {{ row.userName }} <el-tag v-if="row.isManager" type="success">主管</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="name" label="姓名" width />
         <el-table-column prop="mobile" label="手机号" width />
         <el-table-column prop="email" label="邮箱" width />
@@ -68,7 +72,27 @@
         </el-table-column>
         <el-table-column v-if="checkPermission(['api:admin:user:update','api:admin:user:delete'])" label="操作" width="180">
           <template #default="{ row }">
-            <el-button v-if="checkPermission(['api:admin:user:update'])" @click="onEdit(row)">编辑</el-button>
+            <el-dropdown
+              v-if="checkPermission(['api:admin:user:update'])"
+              :split-button="checkPermission(['api:admin:user:update'])"
+              style="margin-left:10px;"
+              @click="onEdit(row)"
+              @command="(command)=>onCommand(command,row)"
+            >
+              <template v-if="checkPermission(['api:admin:user:update'])">
+                编辑
+              </template>
+              <el-button v-else type="primary">
+                更多 <i class="el-icon-arrow-down el-icon--right" />
+              </el-button>
+              <template #dropdown>
+                <el-dropdown-menu :visible-arrow="false" style="margin-top: 2px;width:100px;text-align:right;">
+                  <el-dropdown-item v-if="checkPermission(['api:admin:user:update'])" command="resetPassword">重置密码</el-dropdown-item>
+                  <el-dropdown-item v-if="checkPermission(['api:admin:user:update'])" command="setManager">{{ row.isManager?'取消':'设置' }}主管</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+
             <my-confirm-button
               v-if="checkPermission(['api:admin:user:delete'])"
               type="delete"
@@ -170,6 +194,15 @@
                 </el-form-item>
               </el-col>
               <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
+                <el-form-item label="直属主管" prop="email">
+                  <el-input v-model="form.managerUserName" placeholder="请选择直属主管" readonly autocomplete="off" class="input-with-select" @click.native="onOpenSelectManager">
+                    <template slot="append">
+                      <el-button icon="el-icon-more" @click="onOpenSelectManager" />
+                    </template>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="8">
                 <el-form-item label="角色" prop="roles">
                   <my-select
                     v-model="form.roles"
@@ -211,6 +244,14 @@
         :form="roleForm"
         @click="onSelectRole"
       />
+
+      <!--选择直属主管-->
+      <my-select-user
+        title="选择直属主管"
+        :multiple="false"
+        :visible.sync="selectManagerVisible"
+        @click="onSelectManager"
+      />
     </my-container>
   </my-container>
 </template>
@@ -224,6 +265,7 @@ import MyWindow from '@/components/my-window'
 import MySelect from '@/components/my-select'
 import MySelectWindowOrg from '@/components/my-select-window/org'
 import MySelectWindowRole from '@/components/my-select-window/role'
+import MySelectUser from '@/components/my-select-window/user'
 import MyUserOrg from './org'
 import { testMobile } from '@/utils/test'
 
@@ -246,7 +288,8 @@ export default {
     MyWindow,
     MySelectWindowOrg,
     MySelect,
-    MySelectWindowRole
+    MySelectWindowRole,
+    MySelectUser
   },
   data() {
     const formData = {
@@ -256,7 +299,9 @@ export default {
       roles: [],
       orgs: [],
       orgId: null,
-      staff: {}
+      staff: {},
+      managerUserId: null,
+      managerUserName: ''
     }
     return {
       // 高级查询字段
@@ -307,7 +352,9 @@ export default {
       roleVisible: false,
 
       orgId: null,
-      org: null
+      org: null,
+
+      selectManagerVisible: false
     }
   },
   computed: {
@@ -338,6 +385,9 @@ export default {
     }
   },
   methods: {
+    onOpenSelectManager() {
+      this.selectManagerVisible = true
+    },
     onOrgChange(row) {
       if (row?.id > 0) {
         this.org = { id: row.id, name: row.name }
@@ -533,6 +583,78 @@ export default {
     onSelectOrg(form, selectData) {
       this[form].orgs = selectData.map(a => { return { id: a.id, name: a.name } })
       this.orgVisible = false
+    },
+    // 重置密码
+    async resetPassword() {
+      this.pageLoading = true
+      const para = { id: this.currentRow?.id }
+      const res = await userApi.resetPassword(para)
+      this.pageLoading = false
+      if (!res?.success) {
+        this.$message({
+          message: '重置密码失败',
+          type: 'error'
+        })
+        return
+      }
+
+      this.$message({
+        message: `重置密码成功，密码为【${res.data}】`,
+        type: 'success'
+      })
+
+      this.getUsers()
+    },
+    // 设置主管
+    async setManager(row) {
+      this.pageLoading = true
+      const name = row.isManager ? '取消' : '设置'
+      const para = { userId: row.id, orgId: this.orgId, isManager: !row.isManager }
+      const res = await userApi.setManager(para)
+      this.pageLoading = false
+      if (!res?.success) {
+        this.$message({
+          message: `${name}主管失败`,
+          type: 'error'
+        })
+        return
+      }
+
+      this.$message({
+        message: `${name}主管成功`,
+        type: 'success'
+      })
+
+      this.getUsers()
+    },
+    // 更多操作
+    onCommand(command, row) {
+      const me = this
+      this.currentRow = row
+      if (command === 'resetPassword') {
+        this.$confirm('确定要重置密码?', '提示').then(() => {
+          me.resetPassword()
+        }).catch(() => {})
+      } else if (command === 'setManager') {
+        const name = row.isManager ? '取消' : '设置'
+        this.$confirm(`确定要${name}主管?`, '提示').then(() => {
+          me.setManager(row)
+        }).catch(() => {})
+      }
+    },
+    // 选择直属主管
+    onSelectManager(data) {
+      if (data?.id > 0) {
+        console.log(11)
+        this.form.managerUserId = data.id
+        this.form.managerUserName = data.name
+      } else {
+        console.log(22)
+        this.form.managerUserId = null
+        this.form.managerUserName = ''
+      }
+
+      this.selectManagerVisible = false
     }
   }
 }
