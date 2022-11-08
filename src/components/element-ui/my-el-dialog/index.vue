@@ -161,13 +161,7 @@ export default {
       if (!this.fullscreen) {
         style = { ...this.cacheStyle }
       } else {
-        const dialogStyle = this.$refs.dialog.style
-        this.cacheStyle.left = dialogStyle.left
-        this.cacheStyle.top = dialogStyle.top
-        this.cacheStyle.marginLeft = dialogStyle.marginLeft
-        this.cacheStyle.marginTop = dialogStyle.marginTop
-        this.cacheStyle.width = dialogStyle.width
-        this.cacheStyle.height = dialogStyle.height
+        this.setCache()
       }
       return style
     }
@@ -186,6 +180,7 @@ export default {
           document.body.appendChild(this.$el)
         }
       } else {
+        this.setCache()
         this.$el.removeEventListener('scroll', this.updatePopper)
         if (!this.closed) this.$emit('close')
         if (this.destroyOnClose) {
@@ -215,6 +210,15 @@ export default {
   },
 
   methods: {
+    setCache(){
+        const dialogStyle = this.$refs.dialog.style
+        this.cacheStyle.left = dialogStyle.left
+        this.cacheStyle.top = dialogStyle.top
+        this.cacheStyle.marginLeft = dialogStyle.marginLeft
+        this.cacheStyle.marginTop = dialogStyle.marginTop
+        this.cacheStyle.width = dialogStyle.width
+        this.cacheStyle.height = dialogStyle.height
+    },
     getMigratingConfig() {
       return {
         props: {
