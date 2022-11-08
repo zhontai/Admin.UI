@@ -3,6 +3,23 @@
     <el-collapse v-model="activeNames" accordion>
       <el-collapse-item title="2022年" name="2022">
         <el-timeline>
+          <el-timeline-item timestamp="版本 2.3.0 - 2.3.2" placement="top">
+            <el-card>
+              <h4>后端：</h4>
+              <h4>新增 友好异常AppException </h4>
+              <h4>新增 属性、字段、参数必填校验器ValidateRequiredAttribute</h4>
+              <h4>新增 动态api新增响应数据统一格式化，api响应数据格式化和swagger响应参数格式化</h4>
+              <h4>新增 appconfig.js新增动态api配置dynamicApi</h4>
+              <h4>调整 admin接口统一响应数据统一格式化</h4>
+              <h4>后端项目模板：</h4>
+              <h4>升级 项目模板ZhonTai.Template升至2.3.2</h4>
+              <h4>调整 app项目接口统一响应数据统一格式化</h4>
+              <h4>修复 admin项目接口名称没有说明的问题</h4>
+              <h4>前端：</h4>
+              <h4>修复窗口拖拽和调整大小未缓存样式导致关闭窗口有跳动的问题</h4>
+              <p>小雪转中雪 提交于 2022-11-04</p>
+            </el-card>
+          </el-timeline-item>
           <el-timeline-item timestamp="版本 2.2.1" placement="top">
             <el-card>
               <h4>后端：</h4>
