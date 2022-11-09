@@ -3,6 +3,18 @@
     <el-collapse v-model="activeNames" accordion>
       <el-collapse-item title="2022年" name="2022">
         <el-timeline>
+          <el-timeline-item timestamp="版本 3.0.0" placement="top">
+            <el-card>
+              <h4>后端：</h4>
+              <h4>升级 升级.net7.0</h4>
+              <h4>新增 分组特性ApiGroupAttribute，支持接口多分组和无分组（归属于任何分组）设置</h4>
+              <h4>新增 动态api特性DynamicApiAttribute新增接口多分组设置</h4>
+              <h4>后端项目模板：</h4>
+              <h4>升级 升级.net7.0</h4>
+              <h4>升级 升级ZhonTai.Admin至3.0.0</h4>
+              <p>小雪转中雪 提交于 2022-11-08</p>
+            </el-card>
+          </el-timeline-item>
           <el-timeline-item timestamp="版本 2.3.0 - 2.3.2" placement="top">
             <el-card>
               <h4>后端：</h4>
@@ -16,7 +28,7 @@
               <h4>调整 app项目接口统一响应数据统一格式化</h4>
               <h4>修复 admin项目接口名称没有说明的问题</h4>
               <h4>前端：</h4>
-              <h4>修复窗口拖拽和调整大小未缓存样式导致关闭窗口有跳动的问题</h4>
+              <h4>修复 窗口拖拽和调整大小未缓存样式导致关闭窗口有跳动的问题</h4>
               <p>小雪转中雪 提交于 2022-11-04</p>
             </el-card>
           </el-timeline-item>

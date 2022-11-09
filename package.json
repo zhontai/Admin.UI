@@ -1,8 +1,8 @@
 {
   "name": "admin.ui",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "private": true,
-  "description": "中台admin前端解决方案",
+  "description": "中台admin权限管理",
   "author": "小雪转中雪",
   "license": "MIT",
   "scripts": {
