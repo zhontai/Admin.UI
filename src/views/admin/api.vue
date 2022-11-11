@@ -465,17 +465,17 @@ export default {
           const resSyncApi = await this.syncApi(swaggerResource.url)
           if (index === last) {
             this.syncLoading = false
-            if (resSyncApi?.code) {
-              this.$message({
-                message: '同步Api失败',
-                type: 'error'
-              })
-            } else {
+            if (resSyncApi?.success) {
               this.$message({
                 message: this.$t('api.sync'),
                 type: 'success'
               })
               this.onGetList()
+            } else {
+              this.$message({
+                message: '同步Api失败',
+                type: 'error'
+              })
             }
           }
         }
