@@ -1,6 +1,6 @@
 {
   "name": "admin.ui",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "private": true,
   "description": "中台admin权限管理",
   "author": "小雪转中雪",
@@ -27,6 +27,7 @@
     "lodash": "4.17.21",
     "oidc-client": "1.11.5",
     "sortablejs": "1.15.0",
+    "nprogress": "0.2.0",
     "vue": "2.7.10",
     "vue-i18n": "8.26.7",
     "vue-router": "3.5.3",

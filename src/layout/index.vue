@@ -88,10 +88,12 @@
           </el-tabs>
         </div>
       </el-header>
-      <el-main class="main" style="height:100%;">
-        <keep-alive :include="cachedViews">
-          <router-view v-if="show" :key="key" />
-        </keep-alive>
+      <el-main class="main" style="height:100%;overflow: hidden;">
+        <transition name="breadcrumb" mode="out-in">
+          <keep-alive :include="cachedViews">
+            <router-view v-if="show" :key="key" />
+          </keep-alive>
+        </transition>
       </el-main>
       <ul
         v-if="tabPosition === 'top'"
