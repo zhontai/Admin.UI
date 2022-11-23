@@ -88,7 +88,7 @@
           </el-tabs>
         </div>
       </el-header>
-      <el-main class="main" style="height:100%;overflow: hidden;">
+      <el-main class="main" style="height:100%;overflow-x: hidden;">
         <transition name="breadcrumb" mode="out-in">
           <keep-alive :include="cachedViews">
             <router-view v-if="show" :key="key" />
