@@ -188,7 +188,7 @@ export default {
       const params = {
         ...pager,
         dynamicFilter: this.dynamicFilter,
-        filter: this.orgId
+        filter: { orgId: this.orgId }
       }
 
       this.listLoading = true
