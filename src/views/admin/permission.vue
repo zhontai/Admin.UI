@@ -366,9 +366,9 @@ export default {
         parentId: [{ required: true, message: '请选择上级', trigger: 'change' }],
         parentIds: [{ required: true, message: '请选择上级', trigger: 'change' }],
         apiId: [{ required: true, message: '请选择API接口', trigger: 'change' }],
-        label: [{ required: true, message: '请输入名称', trigger: ['blur'] }],
-        code: [{ required: true, message: '请输入编码', trigger: ['blur'] }],
-        path: [{ required: true, message: '请输入菜单地址', trigger: ['blur'] }]
+        label: [{ required: true, message: '请输入名称', trigger: ['blur', 'change'] }],
+        code: [{ required: true, message: '请输入编码', trigger: ['blur', 'change'] }],
+        path: [{ required: true, message: '请输入菜单地址', trigger: ['blur', 'change'] }]
       },
 
       groupTree: [],
