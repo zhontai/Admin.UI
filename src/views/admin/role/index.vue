@@ -285,6 +285,7 @@ export default {
       role: {
         init: {
           id: 0,
+          type: 2,
           parentId: 0,
           dataScope: 1,
           orgIds: [],
@@ -533,7 +534,8 @@ export default {
         case 'addRoleGroup':
           this.role.form = {
             id: 0,
-            name: ''
+            name: '',
+            type: 1
           }
           this.addRole = false
           this.role.visible = true
