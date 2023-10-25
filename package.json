@@ -20,7 +20,7 @@
     "axios": "0.27.2",
     "codemirror": "5.64.0",
     "core-js": "3.25.0",
-    "crypto-js": "4.1.1",
+    "crypto-js": "4.2.0",
     "dayjs": "1.11.5",
     "element-ui": "2.15.10",
     "js-cookie": "3.0.1",
